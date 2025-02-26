@@ -56,46 +56,43 @@ const config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        background: 'hsl(var(--background))',
-        border: 'hsla(var(--border))',
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        foreground: 'hsl(var(--foreground))',
-        input: 'hsl(var(--input))',
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        ring: 'hsl(var(--ring))',
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        success: 'hsl(var(--success))',
-        error: 'hsl(var(--error))',
-        warning: 'hsl(var(--warning))',
+        primary: 'var(--primary)',
+        secondary: 'var(--secondary)',
+        purple: 'var(--dark-purple)',
+        'light-purple': 'var(--light-purple)',
+        orange: 'var(--orange)',
+        yellow: 'var(--yellow)',
+        peach: 'var(--peach)',
+        teal: 'var(--teal)',
+        blue: 'var(--dark-blue)',
+        background: 'var(--background)',
+        gray: 'var(--gray)',
+        beige: 'var(--beige)',
       },
       fontFamily: {
-        mono: ['var(--font-geist-mono)'],
-        sans: ['var(--font-geist-sans)'],
+        sans: ['Montserrat', 'sans-serif'],
+      },
+      fontSize: {
+        display: [
+          '4.375rem',
+          { lineHeight: 'normal', fontWeight: '700', textTransform: 'uppercase' },
+        ],
+        h1: ['3.125rem', { lineHeight: 'normal', fontWeight: '700', textTransform: 'uppercase' }],
+        h2: ['2.1875rem', { lineHeight: 'normal', fontWeight: '700', textTransform: 'uppercase' }],
+        h3: ['1.375rem', { lineHeight: 'normal', fontWeight: '400' }],
+        h3Hover: [
+          '1.375rem',
+          { lineHeight: 'normal', fontWeight: '400', textDecoration: 'underline' },
+        ],
+        h4: ['1.125rem', { lineHeight: 'normal', fontWeight: '600' }],
+        body: ['1rem', { lineHeight: '1.5rem', fontWeight: '400' }],
+        bodySemibold: ['1rem', { lineHeight: 'normal', fontWeight: '600' }],
+        bodyUnderline: [
+          '1rem',
+          { lineHeight: '1.375rem', fontWeight: '600', textDecoration: 'underline' },
+        ],
+        helper: ['0.875rem', { lineHeight: 'normal', fontWeight: '400' }],
+        button: ['1.125rem', { lineHeight: 'normal', fontWeight: '700' }],
       },
       keyframes: {
         'accordion-down': {
@@ -116,31 +113,6 @@ const config = {
               h1: {
                 fontWeight: 'normal',
                 marginBottom: '0.25em',
-              },
-            },
-          ],
-        },
-        base: {
-          css: [
-            {
-              h1: {
-                fontSize: '2.5rem',
-              },
-              h2: {
-                fontSize: '1.25rem',
-                fontWeight: 600,
-              },
-            },
-          ],
-        },
-        md: {
-          css: [
-            {
-              h1: {
-                fontSize: '3.5rem',
-              },
-              h2: {
-                fontSize: '1.5rem',
               },
             },
           ],

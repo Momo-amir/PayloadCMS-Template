@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import React from 'react'
-import logoWhite from 'src/assets/logo-white.svg'
-import logo from 'src/assets/logo.svg'
+import logoWhite from 'src/assets/kollab-logo-white.svg'
+import logo from 'src/assets/kollab-logo-darkblue.svg'
 
 interface Props {
   className?: string
