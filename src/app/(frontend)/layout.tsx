@@ -26,8 +26,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link
           href="/assets/logo-white.svg"
           type="image/svg+xml"
-          className="hidden dark:block "
           rel="icon"
+          media="(prefers-color-scheme: dark)"
           sizes="32x32"
         />
         <link
@@ -35,6 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           className="block dark:hidden"
           rel="icon"
           type="image/svg+xml"
+          media="(prefers-color-scheme: light)"
         />
       </head>
       <body>
