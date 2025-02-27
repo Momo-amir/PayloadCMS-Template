@@ -39,6 +39,10 @@
   }
 }
 
+.hero-rich-text h1 {
+  @apply text-display border-b-8 border-primary pb-2 max-w-min;
+}
+
 html {
   opacity: 0;
 }

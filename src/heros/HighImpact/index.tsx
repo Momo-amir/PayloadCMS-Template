@@ -1,6 +1,4 @@
 'use client'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
-import React, { useEffect } from 'react'
 
 import type { Page } from '@/payload-types'
 
@@ -9,19 +7,10 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 
 export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText }) => {
-  const { setHeaderTheme } = useHeaderTheme()
-
-  useEffect(() => {
-    setHeaderTheme('dark')
-  })
-
   return (
-    <div
-      className="relative -mt-[10.4rem] flex items-center justify-center text-white"
-      data-theme="dark"
-    >
-      <div className="container mb-8 z-10 relative flex items-center justify-center">
-        <div className="max-w-[36.5rem] md:text-center">
+    <div className="relative -mt-[10.4rem] flex items-center justify-center text-primary">
+      <div className="container mb-8 z-10 relative flex items-center ">
+        <div className="max-w-[36.5rem]  hero-rich-text ml-14">
           {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
           {Array.isArray(links) && links.length > 0 && (
             <ul className="flex md:justify-center gap-4">
@@ -37,9 +26,20 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText 
         </div>
       </div>
       <div className="min-h-[80vh] select-none">
-        {media && typeof media === 'object' && (
-          <Media fill imgClassName="-z-10 object-cover" priority resource={media} />
-        )}
+        {media &&
+          typeof media === 'object' &&
+          (media.mimeType && media.mimeType.includes('video') ? (
+            <video
+              className="absolute inset-0 h-full w-full  -z-10 lg:left-[25%] object-cover md:object-contain  lg:top-24 xl:top-48"
+              autoPlay
+              muted
+              loop
+              playsInline
+              src={`/media/${media.filename}`}
+            />
+          ) : (
+            <Media fill imgClassName="-z-10 object-cover" priority resource={media} />
+          ))}
       </div>
     </div>
   )
