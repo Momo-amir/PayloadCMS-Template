@@ -23,7 +23,29 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
-    components: {},
+    theme: 'light',
+    meta: {
+      icons: [
+        {
+          rel: 'icon',
+          type: 'image/svg',
+          url: '../../assets/logo.svg',
+          media: '(prefers-color-scheme: light)',
+        },
+        {
+          rel: 'icon',
+          type: 'image/svg',
+          url: '../../assets/logo-white.svg',
+          media: '(prefers-color-scheme: dark)',
+        },
+      ],
+    },
+    components: {
+      graphics: {
+        Icon: './components/Graphics/Graphics.tsx',
+        Logo: './components/Graphics/Logo.tsx',
+      },
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
