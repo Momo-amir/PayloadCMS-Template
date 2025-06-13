@@ -16,7 +16,6 @@ import { Header } from './website/layout/Header/config'
 import { plugins } from './cms/plugins'
 import { defaultLexical } from '@/cms/fields/defaultLexical'
 import { getServerSideURL } from './cms/utilities/getURL'
-import { VideoLibrary } from './cms/collections/VideoLibrary'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -42,8 +41,8 @@ export default buildConfig({
     },
     components: {
       graphics: {
-        Icon: './components/Graphics/Graphics.tsx',
-        Logo: './components/Graphics/Logo.tsx',
+        Icon: '@/cms/components/Graphics/Graphics.tsx',
+        Logo: '@/cms/components/Graphics/Logo.tsx',
       },
     },
     importMap: {
@@ -80,7 +79,7 @@ export default buildConfig({
       url: process.env.DATABASE_URI || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, VideoLibrary],
+  collections: [Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [
