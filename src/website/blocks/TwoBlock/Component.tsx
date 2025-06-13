@@ -30,8 +30,7 @@ export const TwoBlock: React.FC<{
             if (!Comp) return null
             return (
               <React.Fragment key={`block-${colIdx}-${i}`}>
-                {/* @ts-ignore we know 'block` matches whatever Comp expects,
-                  but TS can’t prove it */}
+                {/* @ts-ignore  */}
                 <Comp {...block} />
               </React.Fragment>
             )
