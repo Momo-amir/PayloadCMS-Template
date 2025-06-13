@@ -31,7 +31,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText 
           typeof media === 'object' &&
           (media.mimeType && media.mimeType.includes('video') ? (
             <video
-              className="absolute inset-0 h-full w-full  -z-10 lg:left-[25%] object-cover md:object-contain  lg:top-24 xl:top-48 overflow-hidden"
+              className="absolute inset-0 h-full w-full  -z-10  object-cover md:object-contain  lg:top-24 xl:top-48 overflow-hidden"
               autoPlay
               muted
               loop
