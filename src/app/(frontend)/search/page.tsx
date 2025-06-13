@@ -1,7 +1,7 @@
 import type { Metadata } from 'next/types'
 
 import { CollectionArchive } from '@/cms/components/CollectionArchive'
-import configPromise from '@/cms/payload.config'
+import configPromise from '@/payload.config'
 import { getPayload } from 'payload'
 import React from 'react'
 import { Search } from '@/website/layout/search/Component'
