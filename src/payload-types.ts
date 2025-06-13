@@ -190,7 +190,7 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | TwoColumnBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -727,6 +727,17 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TwoColumnBlock".
+ */
+export interface TwoColumnBlock {
+  left?: (ArchiveBlock | CallToActionBlock | ContentBlock | FormBlock | MediaBlock)[] | null;
+  right?: (ArchiveBlock | CallToActionBlock | ContentBlock | FormBlock | MediaBlock)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'twoBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1015,6 +1026,7 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        twoBlock?: T | TwoColumnBlockSelect<T>;
       };
   meta?:
     | T
@@ -1111,6 +1123,32 @@ export interface FormBlockSelect<T extends boolean = true> {
   form?: T;
   enableIntro?: T;
   introContent?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TwoColumnBlock_select".
+ */
+export interface TwoColumnBlockSelect<T extends boolean = true> {
+  left?:
+    | T
+    | {
+        archive?: T | ArchiveBlockSelect<T>;
+        cta?: T | CallToActionBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
+        formBlock?: T | FormBlockSelect<T>;
+        mediaBlock?: T | MediaBlockSelect<T>;
+      };
+  right?:
+    | T
+    | {
+        archive?: T | ArchiveBlockSelect<T>;
+        cta?: T | CallToActionBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
+        formBlock?: T | FormBlockSelect<T>;
+        mediaBlock?: T | MediaBlockSelect<T>;
+      };
   id?: T;
   blockName?: T;
 }

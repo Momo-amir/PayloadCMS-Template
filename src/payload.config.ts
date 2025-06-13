@@ -28,13 +28,13 @@ export default buildConfig({
         {
           rel: 'icon',
           type: 'image/svg',
-          url: '../../assets/logo.svg',
+          url: '/assets/logo.svg',
           media: '(prefers-color-scheme: light)',
         },
         {
           rel: 'icon',
           type: 'image/svg',
-          url: '../../assets/logo-white.svg',
+          url: '/assets/logo-white.svg',
           media: '(prefers-color-scheme: dark)',
         },
       ],

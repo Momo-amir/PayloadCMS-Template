@@ -42,7 +42,9 @@
       ],
       "@/cms/*": ["./src/cms/*"],
       "@site/*": ["./src/website/*"],
-      "@/fields/*": ["./src/cms/fields/*"]
+      "@public/*": [
+        "./public/*"
+      ],
     }
   },
   "include": [
