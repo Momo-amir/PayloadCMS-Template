@@ -41,6 +41,7 @@
         "./src/*"
       ],
       "@/cms/*": ["./src/cms/*"],
+      "@site/*": ["./src/website/*"],
       "@/fields/*": ["./src/cms/fields/*"]
     }
   },
