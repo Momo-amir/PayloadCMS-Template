@@ -32,7 +32,7 @@
     ],
     "paths": {
       "@payload-config": [
-        "./src/payload.config.ts"
+        "src/payload.config.ts"
       ],
       "react": [
         "./node_modules/@types/react"
@@ -40,6 +40,8 @@
       "@/*": [
         "./src/*"
       ],
+      "@/cms/*": ["./src/cms/*"],
+      "@/fields/*": ["./src/cms/fields/*"]
     }
   },
   "include": [
