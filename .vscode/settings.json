@@ -50,7 +50,6 @@
     "components.json": false,
     "*.json": false,
     "postcss.config.js": false,
-    "**/hackerthon-kollab-website.db": false,
     ".editorconfig": false,
     "**/.editorconfig": false,
     "**/.gitignore": false,
