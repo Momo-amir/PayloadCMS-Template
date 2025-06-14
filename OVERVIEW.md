@@ -102,6 +102,10 @@ Next.js App Router — handles routing only, no new components needed here.
 - **(payload)/**  
   Admin panel routes and import map (`src/app/(payload)/admin/importMap.js`, API endpoints).
 
+## src/providers
+
+Contains the logic for head tags, global styles, and other providers that wrap the application. This is where the logic for dark mode is handled
+
 ## How It Fits Together
 
 1. **Payload** serves content via API configured in `src/payload.config.ts`.
