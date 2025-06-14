@@ -13,7 +13,7 @@ This setup uses Docker to run the application, including PostgreSQL and the Payl
 - Docker Compose installed
 
 ```bash
-git clone <repo-url> kollab-payload-template
+git clone git@bitbucket.org:it-kartellet/kollab-payload-template.git kollab-payload-template
 cd kollab-payload-template
 run pnpm install or npm install
 # or yarn install
@@ -41,7 +41,7 @@ remove output="standalone" from next.config.js
 ### 1. Clone & Install
 
 ```bash
-git clone <repo-url> kollab-payload-template
+git clone git@bitbucket.org:it-kartellet/kollab-payload-template.git kollab-payload-template
 cd kollab-payload-template
 cp .env.example .env
 pnpm install
