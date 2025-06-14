@@ -438,6 +438,21 @@ export interface CallToActionBlock {
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   columns?:
     | {
         size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
@@ -479,6 +494,7 @@ export interface ContentBlock {
         id?: string | null;
       }[]
     | null;
+  useColumns?: boolean | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'content';
@@ -1073,6 +1089,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
  * via the `definition` "ContentBlock_select".
  */
 export interface ContentBlockSelect<T extends boolean = true> {
+  richText?: T;
   columns?:
     | T
     | {
@@ -1091,6 +1108,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  useColumns?: T;
   id?: T;
   blockName?: T;
 }

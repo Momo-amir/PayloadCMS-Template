@@ -1,13 +1,16 @@
-import { cn } from '@/cms/utilities/ui'
 import React from 'react'
+import { cn } from '@/cms/utilities/ui'
 import RichText from '@/cms/components/RichText'
-
+import { CMSLink } from '@/cms/components/Link'
 import type { ContentBlock as ContentBlockProps } from '@/payload-types'
 
-import { CMSLink } from '@/cms/components/Link'
-
-export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
-  const { columns } = props
+export const ContentBlock: React.FC<ContentBlockProps> = ({
+  useColumns = false,
+  richText,
+  columns,
+}) => {
+  // never allow null
+  const safeColumns = columns ?? []
 
   const colsSpanClasses = {
     full: '12',
@@ -18,26 +21,32 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
 
   return (
     <div className="container my-16">
-      <div className="grid grid-cols-4 lg:grid-cols-12 gap-y-8 gap-x-16">
-        {columns &&
-          columns.length > 0 &&
-          columns.map((col, index) => {
-            const { enableLink, link, richText, size } = col
+      {/* Mode 1: single rich text */}
+      {!useColumns && richText && (
+        <div className="prose w-full">
+          <RichText data={richText} enableGutter={false} />
+        </div>
+      )}
 
+      {/* Mode 2: columns */}
+      {useColumns && safeColumns.length > 0 && (
+        <div className="grid grid-cols-4 lg:grid-cols-12 gap-y-8 gap-x-16">
+          {safeColumns.map((col, index) => {
+            const { enableLink, link, richText, size } = col
             return (
               <div
+                key={index}
                 className={cn(`col-span-4 lg:col-span-${colsSpanClasses[size!]}`, {
                   'md:col-span-2': size !== 'full',
                 })}
-                key={index}
               >
                 {richText && <RichText data={richText} enableGutter={false} />}
-
                 {enableLink && <CMSLink {...link} />}
               </div>
             )
           })}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

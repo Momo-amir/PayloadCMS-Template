@@ -1,6 +1,6 @@
 # Template Structure Overview
 
-This document explains the high-level folder layout and responsibility boundaries for the Kollab template. It is designed to introduce you to the template's structure and how the different parts interact with each other.
+This document explains the high-level folder layout and responsibility boundaries for the Kollab payloadCMS template. It is designed to introduce you to the template's structure and how the different parts interact with each other.
 
 For each section, we will outline the key components and their responsibilities and provide a short explanation and/or [Official Payload Documentation](https://payloadcms.com/docs/getting-started/concepts).
 
@@ -51,6 +51,7 @@ Single-use or global layout sections:
   - Config: `src/website/layout/Footer/config.ts`
   - Render: `src/website/layout/Footer/Component.tsx`
 - **Heros**
+  Hero components are used to display prominent content at the top of pages, such as banners or featured sections. They can vary in impact and design, allowing for different visual emphasis based on the content's importance. Keeping this for the template rather than using a block, as it is a common design practice.
   - Hero configs: `src/website/layout/heros/config.ts`
   - Render logic: `src/website/layout/heros/RenderHero.tsx`
   - Variants:
@@ -80,7 +81,7 @@ Components such as Button, Input, Card, and others serve as our core UI primitiv
 Contains CMS-specific logic and Payload plugins:
 
 - **collections/**  
-  Payload collection configs (`src/cms/collections/...`). Collections define the content types and their fields. think of these as the database layer for the CMS.
+  Payload collection configs (`src/cms/collections/...`). Collections define the content types and their fields. think of these as the database layer for the CMS [DOCS](https://payloadcms.com/docs/configuration/collections).
 - **components/**  
   Shared UI for admin & live preview (e.g., `src/cms/components/RichText`, `Card`, `Link`, `Media`). These components can also be used when creating custom blocks for the public site. fx RichText would be used when creating a block that need to display text, but these components are more akin to data types rather than layout components.
 - **fields/**  
@@ -109,7 +110,3 @@ Next.js App Router — handles routing only, no new components needed here.
 4. **CMS UI** (`src/cms`) powers the admin panel and live previews.
 
 This separation keeps the public site components (`src/website`) distinct from CMS logic (`src/cms`) and routing (`src/app`).
-
-# TBD FOR TEMPLATE
-
-### Database change, we need to remove the sqlite database and decide on what to use instead.
