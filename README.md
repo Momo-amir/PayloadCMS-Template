@@ -15,6 +15,8 @@ This setup uses Docker to run the application, including PostgreSQL and the Payl
 ```bash
 git clone <repo-url> kollab-payload-template
 cd kollab-payload-template
+run pnpm install or npm install
+# or yarn install
 cp [.env.example](http://_vscodecontentref_/1) .env
 # adjust POSTGRES_* in .env if desired
 
