@@ -58,6 +58,7 @@ const config = {
       colors: {
         primary: 'var(--primary)',
         secondary: 'var(--secondary)',
+        background: 'var(--background)',
         purple: 'var(--dark-purple)',
         'light-purple': 'var(--light-purple)',
         orange: 'var(--orange)',
@@ -65,7 +66,6 @@ const config = {
         peach: 'var(--peach)',
         teal: 'var(--teal)',
         blue: 'var(--dark-blue)',
-        background: 'var(--background)',
         gray: 'var(--gray)',
         beige: 'var(--beige)',
       },
