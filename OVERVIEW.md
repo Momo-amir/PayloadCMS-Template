@@ -2,7 +2,7 @@
 
 This document explains the high-level folder layout and responsibility boundaries for the Kollab template. It is designed to introduce you to the template's structure and how the different parts interact with each other.
 
-For each section, we will outline the key components and their responsibilities and provide relevant examples or [Official Payload Documentation](https://payloadcms.com/docs/getting-started/concepts).
+For each section, we will outline the key components and their responsibilities and provide a short explanation and/or [Official Payload Documentation](https://payloadcms.com/docs/getting-started/concepts).
 
 ## Root
 
@@ -23,11 +23,11 @@ Repeatable “layout builder” blocks you can drop into any page or post [DOCS]
 
 - ArchiveBlock (`src/website/blocks/ArchiveBlock/Component.tsx`) - Layout type with relations to Posts
 - TwoBlock (`src/website/blocks/TwoBlock/Component.tsx`) - Layout type with two columns with relations to other blocks
-- CallToActionBlock (`src/website/blocks/CallToAction/Component.tsx`) - Content type with a call to action
+- CallToActionBlock (`src/website/blocks/CallToAction/Component.tsx`) - Content type for a call to action
 - CodeBlock (`src/website/blocks/CodeBlock/Component.tsx`) - Content type for displaying code snippets
-- ContactBlock (`src/website/blocks/Contact/Component.tsx`) - Content type for contact information
+- ContactBlock (`src/website/blocks/Contact/Component.tsx`) - Content type for a contact information component
 - ContentBlock (`src/website/blocks/Content/Component.tsx`) - Content type for text content
-- FormBlock (`src/website/blocks/Form/Component.tsx`) - Content type for forms
+- FormBlock (`src/website/blocks/Form/Component.tsx`) - Content type for forms that can be build and customized in the CMS
 - MediaBlock (`src/website/blocks/MediaBlock/Component.tsx`) - Content type for media content
 
 Each block has:
@@ -37,7 +37,7 @@ Each block has:
 
 Optionally, some blocks may have:
 
-- Field-specific subcomponents for example `Form/fields`.
+- Field-specific subcomponents for example `Form/fields` can be used to handle all the relation logic to components or blocks.
 
 ### src/website/layout
 
@@ -57,6 +57,10 @@ Single-use or global layout sections:
     - HighImpact (`src/website/layout/heros/HighImpact/index.tsx`)
     - MediumImpact (`src/website/layout/heros/MediumImpact/index.tsx`)
     - LowImpact (`src/website/layout/heros/LowImpact/index.tsx`)
+- **Search**
+  - Before Sync: `src/website/layout/Search/Component.tsx`
+  - Component: `src/website/layout/Search/Component.client.tsx`
+  - field Overrides: `src/website/layout/Search/fields.ts`
 
 ### src/website/components
 
@@ -82,7 +86,7 @@ Contains CMS-specific logic and Payload plugins:
 - **fields/**  
   Custom field definitions (e.g., `src/cms/fields/linkGroup.ts`, `defaultLexical.ts`). The custom fields extend Payload's capabilities, allowing for more complex data structures for specific needs.
 - **plugins/**  
-  Payload plugins setup (`src/cms/plugins/index.ts`).
+  Payload plugins setup (`src/cms/plugins/index.ts`). - Plugins can be either from payloadCMS itself, custom or third-party extensions
 - **utilities/**  
   Helpers (e.g., `src/cms/utilities/getURL.ts`, `ui.ts`).
 - **endpoints/**  
@@ -100,8 +104,8 @@ Next.js App Router — handles routing only, no new components needed here.
 ## How It Fits Together
 
 1. **Payload** serves content via API configured in `src/payload.config.ts`.
-2. **Next.js App Router** (`src/app`) fetches that content.
-3. **RenderHero** + **RenderBlocks** in `src/website` choose the Right React components.
+2. **Next.js App Router** (`src/app`) fetches and correctly routes our app and powers the navigation.
+3. **RenderHero** + **RenderBlocks** in `src/website` our public site components render, the content fetched by Next.js and defined in Payload will be sent to the client.
 4. **CMS UI** (`src/cms`) powers the admin panel and live previews.
 
 This separation keeps the public site components (`src/website`) distinct from CMS logic (`src/cms`) and routing (`src/app`).
