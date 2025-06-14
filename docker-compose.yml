@@ -1,31 +1,38 @@
-version: '3'
-
 services:
   payload:
-    image: node:18-alpine
+    image: node:22.12.0-alpine
+    working_dir: /home/node/app
+
     ports:
-      - '3000:3000'
+      - "3000:3000"  
+    
     volumes:
       - .:/home/node/app
       - node_modules:/home/node/app/node_modules
-    working_dir: /home/node/app/
-    command: sh -c "yarn install && yarn dev"
+    command:
+      - sh
+      - -c
+      - |
+        npm install -g pnpm@10.12.1 \
+        && pnpm install \
+        && pnpm dev
     depends_on:
-      - mongo
+      - postgres
     env_file:
       - .env
 
-  mongo:
-    image: mongo:latest
+  postgres:
+    image: postgres:latest
+    restart: always
     ports:
-      - '27017:27017'
-    command:
-      - --storageEngine=wiredTiger
+      - "5432:5432"
+    environment:
+      POSTGRES_USER:      ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB:        ${POSTGRES_DB:-kollab-payload-template}
     volumes:
-      - data:/data/db
-    logging:
-      driver: none
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  data:
+  pgdata:
   node_modules:

@@ -1,0 +1,9 @@
+.slug-field-component .label-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.slug-field-component .lock-button {
+  margin: 0;
+  padding-bottom: 0.3125rem;
+}/*# sourceMappingURL=index.css.map */

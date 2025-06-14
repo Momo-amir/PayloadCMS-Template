@@ -1,7 +1,7 @@
 {
-  "name": "hackerthon-kollab-website",
+  "name": "kollab-payload-template",
   "version": "1.0.0",
-  "description": "Website template for Payload",
+  "description": "Website template for PayloadCMS created for Kollab Solutions",
   "license": "MIT",
   "type": "module",
   "scripts": {

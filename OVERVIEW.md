@@ -110,3 +110,18 @@ Next.js App Router — handles routing only, no new components needed here.
 4. **CMS UI** (`src/cms`) powers the admin panel and live previews.
 
 This separation keeps the public site components (`src/website`) distinct from CMS logic (`src/cms`) and routing (`src/app`).
+
+## Development Workflow
+
+To work with this template, follow these steps:
+
+1. **Install Dependencies**: Run `npm install` or `pnpm install` to set up the project.
+2. **Follow the Readme**: Use Readme.md for quick setup of the template to set up development environment
+3. **Run the Development Server**: Use docker or run `npm run dev` to start the development server.
+   - If using Docker, run `docker compose up --build` to build the images and start the containers.
+   - If running locally, ensure PostgreSQL is running and configured in `.env`.
+4. **Access the Admin Panel**: Navigate to `http://localhost:3000/admin` to manage your content.
+5. **Configure Payload**: Update `src/payload.config.ts` to add or modify collections, globals, add branding like logos etc.
+6. **Setup Tailwind**: Use `tailwind.config.mjs` to customize the tailwind setup for the project. Change color variables in global.css to match the design
+7. **Develop Components**: Create or modify components in `src/website/components` or `src/cms/components` as needed.
+8. **Create Blocks**: Edit or add new blocks in `src/website/blocks` to extend the layout capabilities of the site.
