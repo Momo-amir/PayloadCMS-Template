@@ -5,7 +5,7 @@ export const TwoBlock: React.FC<{
   left?: TwoBlockField[]
   right?: TwoBlockField[]
 }> = ({ left = [], right = [] }) => (
-  <div className="grid md:grid-cols-6 gap-8 place-items-center">
+  <div className="grid md:grid-cols-6 gap-8 items-center">
     {[left, right].map((column, colIdx) => (
       <div
         key={colIdx}
