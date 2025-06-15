@@ -82,8 +82,8 @@ Contains CMS-specific logic and Payload plugins:
 
 - **collections/**  
   Payload collection configs (`src/cms/collections/...`). Collections define the content types and their fields. think of these as the database layer for the CMS [DOCS](https://payloadcms.com/docs/configuration/collections).
-- **components/**  
-  Shared UI for admin & live preview (e.g., `src/cms/components/RichText`, `Card`, `Link`, `Media`). These components can also be used when creating custom blocks for the public site. fx RichText would be used when creating a block that need to display text, but these components are more akin to data types rather than layout components.
+- **components/**
+  - `/src/cms/components` contains shared data-type and UI pieces for the admin panel (and live preview). Some (RichText, Media, Link, etc.) are also used on the public site, while others power CMS-only features. Because they model your content layer, changes here can have wide-ranging side effects—only modify if you know the impact.
 - **fields/**  
   Custom field definitions (e.g., `src/cms/fields/linkGroup.ts`, `defaultLexical.ts`). The custom fields extend Payload's capabilities, allowing for more complex data structures for specific needs.
 - **plugins/**  
@@ -108,7 +108,7 @@ Contains the logic for head tags, global styles, and other providers that wrap t
 
 ## How It Fits Together
 
-1. **Payload** serves content via API configured in `src/payload.config.ts`.
+1. **Payload** serves content via its local API configured in `src/payload.config.ts`.
 2. **Next.js App Router** (`src/app`) fetches and correctly routes our app and powers the navigation.
 3. **RenderHero** + **RenderBlocks** in `src/website` our public site components render, the content fetched by Next.js and defined in Payload will be sent to the client.
 4. **CMS UI** (`src/cms`) powers the admin panel and live previews.
@@ -119,13 +119,18 @@ This separation keeps the public site components (`src/website`) distinct from C
 
 To work with this template, follow these steps:
 
-1. **Install Dependencies**: Run `npm install` or `pnpm install` to set up the project.
-2. **Follow the Readme**: Use Readme.md for quick setup of the template to set up development environment
-3. **Run the Development Server**: Use docker or run `npm run dev` to start the development server.
+1. **Follow the README**: Use README.md for quick start of the template to set up development environment
+2. **Run the Development Server**: Use docker or run `pnpm run dev` to start the development server.
    - If using Docker, run `docker compose up --build` to build the images and start the containers.
-   - If running locally, ensure PostgreSQL is running and configured in `.env`.
-4. **Access the Admin Panel**: Navigate to `http://localhost:3000/admin` to manage your content.
-5. **Configure Payload**: Update `src/payload.config.ts` to add or modify collections, globals, add branding like logos etc.
-6. **Setup Tailwind**: Use `tailwind.config.mjs` to customize the tailwind setup for the project. Change color variables in global.css to match the design
-7. **Develop Components**: Create or modify components in `src/website/components` or `src/cms/components` as needed.
-8. **Create Blocks**: Edit or add new blocks in `src/website/blocks` to extend the layout capabilities of the site.
+   - If running locally, ensure your local DB is running and configured in `.env`.
+3. **Access the Admin Panel**: Navigate to `http://localhost:3000/admin` to manage your content, first time you access the admin panel, you will need to create an admin user.
+   - Use the credentials you set in your `.env` file for easy credentials management.
+4. **Configure Payload**: Update `src/payload.config.ts` to add or modify collections, globals, additionally add necessary branding like logos, icons, etc.
+   - For more information a link to the official Payload documentation is provided in the root section of this document.
+5. **Setup Tailwind**: Use `tailwind.config.mjs` to customize the theme settings like typography, custom styles and more. For color management, it is recommended to change the global.css variable values to serve your needs instead of creating new ones in the Tailwind config. This allows for quicker theme changes without having to update the styles in all the components.
+6. **Develop Components**: Create or modify components in `src/website/components` or `src/cms/components` as needed.
+   - In regard to cms/components, refer to src/cms section in this document before making changes.
+7. **Develop Blocks**: Edit or add new blocks in `src/website/blocks` to match the needs of the application.
+8. **Test Changes**: Use the development server to test changes in real-time.
+9. **Remove unused code**: As this is a template, you will likely want to remove unused code and components that are not relevant to your project. This can include unused blocks, components, or even entire collections in Payload.
+10. **Build for Production**: When ready, use docker or run `pnpm run build` to build the application for production.

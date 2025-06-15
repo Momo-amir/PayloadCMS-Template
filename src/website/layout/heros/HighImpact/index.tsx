@@ -8,7 +8,7 @@ import RichText from '@/cms/components/RichText'
 
 export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText }) => {
   return (
-    <div className="relative -mt-[10.4rem] flex items-center justify-center text-primary">
+    <div className="relative flex items-center justify-center text-primary">
       <div className="container mb-8 z-10 relative flex items-center ">
         <div className="max-w-[36.5rem]  hero-rich-text ">
           {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
@@ -26,12 +26,12 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText 
           )}
         </div>
       </div>
-      <div className="min-h-[80vh] select-none">
+      <div className="absolute inset-0 -z-10 lg:left-1/4  lg:top-10 overflow-hidden select-none min-h-[80vh]">
         {media &&
           typeof media === 'object' &&
           (media.mimeType && media.mimeType.includes('video') ? (
             <video
-              className="absolute inset-0 h-full w-full  -z-10  object-cover md:object-contain  lg:top-24 xl:top-48 overflow-hidden"
+              className="w-[200vw]"
               autoPlay
               muted
               loop
