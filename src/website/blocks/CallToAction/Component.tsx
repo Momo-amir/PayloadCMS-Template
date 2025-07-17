@@ -4,10 +4,15 @@ import type { CallToActionBlock as CTABlockProps } from '@/payload-types'
 
 import RichText from '@/cms/components/RichText'
 import { CMSLink } from '@/cms/components/Link'
+import { cn } from '@/cms/utilities/ui'
 
-export const CallToActionBlock: React.FC<CTABlockProps> = ({ links, richText }) => {
+export const CallToActionBlock: React.FC<CTABlockProps & { enableGutter?: boolean }> = ({
+  links,
+  richText,
+  enableGutter = true,
+}) => {
   return (
-    <div className="container">
+    <div className={cn({ container: enableGutter })}>
       <div className=" rounded  border p-4 flex flex-col gap-8 md:flex-row md:justify-between md:items-center">
         <div className="max-w-[48rem] flex items-center">
           {richText && <RichText className="mb-0" data={richText} enableGutter={false} />}
