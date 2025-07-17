@@ -4,10 +4,11 @@ import RichText from '@/cms/components/RichText'
 import { CMSLink } from '@/cms/components/Link'
 import type { ContentBlock as ContentBlockProps } from '@/payload-types'
 
-export const ContentBlock: React.FC<ContentBlockProps> = ({
+export const ContentBlock: React.FC<ContentBlockProps & { enableGutter?: boolean }> = ({
   useColumns = false,
   richText,
   columns,
+  enableGutter = false,
 }) => {
   // never allow null
   const safeColumns = columns ?? []
@@ -20,7 +21,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
   }
 
   return (
-    <div className="container my-16">
+    <div className={cn({ 'my-16': enableGutter, container: enableGutter })}>
       {/* Mode 1: single rich text */}
       {!useColumns && richText && (
         <div className="prose w-full">

@@ -21,18 +21,19 @@ export type TwoBlockField = {
 }[keyof ComponentMap]
 
 // 3) type-safe renderer for a single child
-export function renderChildField(field: TwoBlockField, key: React.Key) {
+export function renderChildField(field: TwoBlockField, key: React.Key, enableGutter = true) {
+  const sharedProps = enableGutter ? { enableGutter: false } : {}
   switch (field.blockType) {
     case 'archive':
-      return <ArchiveBlock key={key} {...field} />
+      return <ArchiveBlock key={key} {...field} {...sharedProps} />
     case 'cta':
-      return <CallToActionBlock key={key} {...field} />
+      return <CallToActionBlock key={key} {...field} {...sharedProps} />
     case 'content':
-      return <ContentBlock key={key} {...field} />
+      return <ContentBlock key={key} {...field} {...sharedProps} />
     case 'formBlock':
-      return <FormBlock key={key} {...field} />
+      return <FormBlock key={key} {...field} {...sharedProps} />
     case 'mediaBlock':
-      return <MediaBlock key={key} {...field} />
+      return <MediaBlock key={key} {...field} {...sharedProps} />
     default:
       return null
   }
