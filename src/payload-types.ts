@@ -424,7 +424,7 @@ export interface CallToActionBlock {
           /**
            * Choose how the link should be rendered.
            */
-          appearance?: ('default' | 'outline') | null;
+          appearance?: ('default' | 'outline' | 'light-purple' | 'link' | 'secondary') | null;
         };
         id?: string | null;
       }[]

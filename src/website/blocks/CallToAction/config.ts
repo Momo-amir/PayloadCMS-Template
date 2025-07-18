@@ -29,7 +29,7 @@ export const CallToAction: Block = {
       label: false,
     },
     linkGroup({
-      appearances: ['default', 'outline'],
+      appearances: ['default', 'outline', 'light-purple', 'link', 'secondary'],
       overrides: {
         maxRows: 2,
       },
