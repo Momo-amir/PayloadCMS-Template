@@ -15,6 +15,8 @@
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation next lint --fix",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "dev:migrate": "pnpm payload migrate && pnpm dev",
+    "ci": "pnpm payload migrate && pnpm build",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
   },
@@ -67,6 +69,7 @@
     "npm-check-updates": "^18.0.1",
     "postcss": "^8.5.5",
     "prettier": "^3.5.3",
+    "sass": "^1.90.0",
     "tailwindcss": "^4.1.10",
     "typescript": "5.8.3"
   },

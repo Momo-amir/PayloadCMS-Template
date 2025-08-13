@@ -1,15 +1,7 @@
 @import 'tailwindcss';
-
 @config '../../../tailwind.config.mjs';
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
+// You can now use SCSS (nesting, variables, etc.)
 @layer base {
   *,
   ::after,
@@ -58,15 +50,33 @@
   }
 }
 
-.hero-rich-text h1 {
-  @apply text-h1 lg:text-display border-b-8 border-primary pb-2 max-w-min;
+.hero-rich-text {
+  h1 {
+    @apply text-h1 lg:text-display border-b-8 border-primary pb-2 max-w-min;
+  }
 }
 
 html {
   opacity: 0;
 }
-
 html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
+}
+
+.two-background-spacing {
+  border-radius: 0.8rem;
+  .content-block {
+    padding: 1.5rem;
+  }
+  .two-column-right {
+    .media-block {
+      border-radius: 0 0.8rem 0.8rem 0;
+    }
+  }
+  .two-column-left {
+    .media-block {
+      border-radius: 0.8rem 0 0 0.8rem;
+    }
+  }
 }

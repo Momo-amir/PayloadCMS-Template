@@ -24,7 +24,7 @@ export const ContentBlock: React.FC<ContentBlockProps & { enableGutter?: boolean
     <div className={cn({ 'my-16': enableGutter, container: enableGutter })}>
       {/* Mode 1: single rich text */}
       {!useColumns && richText && (
-        <div className="prose w-full">
+        <div className="prose w-full content-block">
           <RichText data={richText} enableGutter={false} />
         </div>
       )}

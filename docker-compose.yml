@@ -13,9 +13,9 @@ services:
       - sh
       - -c
       - |
-        npm install -g pnpm@10.12.1 \
-        && pnpm install \
-        && pnpm dev
+        if ! command -v pnpm >/dev/null; then npm install -g pnpm@10.12.1; fi
+        pnpm install
+        pnpm dev          # use push mode
     depends_on:
       - postgres
     env_file:
