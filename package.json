@@ -5,6 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "attach": "clear && echo !!! Press 'Ctrl+B' then 'D' to detach! Ctrl+C will terminate the session !!! && sleep 5 && npm run attach:now",
+    "attach:now": "docker compose exec -it payload tmux a",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",

@@ -1,5 +1,7 @@
 services:
   payload:
+    tty: true
+    stdin_open: true
     image: node:22.12.0-alpine
     working_dir: /home/node/app
 
@@ -13,9 +15,11 @@ services:
       - sh
       - -c
       - |
-        npm install -g pnpm@10.12.1 \
+        apk add --no-cache tmux \
+        && npm install -g pnpm@10.12.1 \
         && pnpm install \
-        && pnpm dev
+        && tmux new-session -d -s app 'pnpm dev' \
+        && tmux a -t app \; set-option status off | grep -v '^[[:space:]]*$'
     depends_on:
       - postgres
     env_file:
