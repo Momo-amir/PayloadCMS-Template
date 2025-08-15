@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '../../../../public/assets/access/authenticated'
-import { authenticatedOrPublished } from '../../../../public/assets/access/authenticatedOrPublished'
+import { authenticated } from '../../access/authenticated'
+import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Archive } from '@/website/blocks/ArchiveBlock/config'
 import { CallToAction } from '../../../website/blocks/CallToAction/config'
 import { Content } from '../../../website/blocks/Content/config'
