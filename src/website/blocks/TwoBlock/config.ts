@@ -14,6 +14,27 @@ export const TwoBlock: Block = {
   },
   fields: [
     {
+      name: 'backgroundColor',
+      type: 'select',
+      label: 'Color Palette',
+      defaultValue: '',
+      options: [
+        { label: 'None', value: '' },
+        { label: 'Primary', value: 'bg-primary' },
+        { label: 'Dark Blue', value: 'bg-secondary text-white' },
+        { label: 'Purple', value: 'bg-tertiary text-accent2' },
+        { label: 'Base', value: 'bg-base' },
+        { label: 'Yellow', value: 'bg-highlight text-accent3' },
+        { label: 'Peach', value: 'bg-highlight2 text-accent3' },
+        { label: 'Light blue', value: 'bg-accent text-secondary' },
+        { label: 'Light purple', value: 'bg-accent2 text-tertiary' },
+        { label: 'Orange', value: 'bg-accent3 text-highlight2' },
+      ],
+      admin: {
+        isClearable: false,
+      },
+    },
+    {
       name: 'left',
       type: 'blocks',
       blocks: [Archive, CallToAction, Content, FormBlock, MediaBlock],

@@ -13,7 +13,7 @@ import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/cms/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 
-import './globals.css'
+import './globals.scss'
 import { getServerSideURL } from '@/cms/utilities/getURL'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

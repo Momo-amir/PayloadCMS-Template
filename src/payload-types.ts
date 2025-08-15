@@ -748,6 +748,20 @@ export interface Form {
  * via the `definition` "TwoColumnBlock".
  */
 export interface TwoColumnBlock {
+  backgroundColor?:
+    | (
+        | ''
+        | 'bg-primary'
+        | 'bg-secondary text-white'
+        | 'bg-tertiary text-accent2'
+        | 'bg-base'
+        | 'bg-highlight text-accent3'
+        | 'bg-highlight2 text-accent3'
+        | 'bg-accent text-secondary'
+        | 'bg-accent2 text-tertiary'
+        | 'bg-accent3 text-highlight2'
+      )
+    | null;
   left?: (ArchiveBlock | CallToActionBlock | ContentBlock | FormBlock | MediaBlock)[] | null;
   right?: (ArchiveBlock | CallToActionBlock | ContentBlock | FormBlock | MediaBlock)[] | null;
   id?: string | null;
@@ -1151,6 +1165,7 @@ export interface FormBlockSelect<T extends boolean = true> {
  * via the `definition` "TwoColumnBlock_select".
  */
 export interface TwoColumnBlockSelect<T extends boolean = true> {
+  backgroundColor?: T;
   left?:
     | T
     | {
