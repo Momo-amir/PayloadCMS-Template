@@ -191,7 +191,7 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | TwoColumnBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | TwoColumnBlock | CardBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -772,6 +772,62 @@ export interface TwoColumnBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardBlock".
+ */
+export interface CardBlock {
+  backgroundColor?:
+    | (
+        | ''
+        | 'bg-primary'
+        | 'bg-secondary text-white'
+        | 'bg-tertiary text-accent2'
+        | 'bg-base'
+        | 'bg-highlight text-accent3'
+        | 'bg-highlight2 text-accent3'
+        | 'bg-accent text-secondary'
+        | 'bg-accent2 text-tertiary'
+        | 'bg-accent3 text-highlight2'
+      )
+    | null;
+  heading?: string | null;
+  cards: {
+    title: string;
+    description?: string | null;
+    link: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+      label: string;
+      /**
+       * Choose how the link should be rendered.
+       */
+      appearance?: ('default' | 'link' | 'secondary' | 'outline') | null;
+    };
+    /**
+     * Optional media (image or video) to show at top of card
+     */
+    media?: (number | null) | Media;
+    id?: string | null;
+  }[];
+  /**
+   * Number of columns on large screens.
+   */
+  columns?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cardBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1061,6 +1117,7 @@ export interface PagesSelect<T extends boolean = true> {
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         twoBlock?: T | TwoColumnBlockSelect<T>;
+        cardBlock?: T | CardBlockSelect<T>;
       };
   meta?:
     | T
@@ -1186,6 +1243,35 @@ export interface TwoColumnBlockSelect<T extends boolean = true> {
         formBlock?: T | FormBlockSelect<T>;
         mediaBlock?: T | MediaBlockSelect<T>;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardBlock_select".
+ */
+export interface CardBlockSelect<T extends boolean = true> {
+  backgroundColor?: T;
+  heading?: T;
+  cards?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        media?: T;
+        id?: T;
+      };
+  columns?: T;
   id?: T;
   blockName?: T;
 }
