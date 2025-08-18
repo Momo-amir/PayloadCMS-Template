@@ -1,5 +1,4 @@
-@import 'tailwindcss';
-@config '../../../tailwind.config.mjs';
+@use 'tailwindcss';
 
 // You can now use SCSS (nesting, variables, etc.)
 @layer base {

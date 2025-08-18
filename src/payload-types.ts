@@ -375,7 +375,10 @@ export interface User {
   id: number;
   firstName: string;
   lastName: string;
-  roles?: ('admin' | 'editor')[] | null;
+  /**
+   * User roles. Only admins can edit roles (not their own).
+   */
+  roles?: ('admin' | 'editor' | 'user')[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
