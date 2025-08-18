@@ -13,18 +13,21 @@ export const Users: CollectionConfig = {
     useAsTitle: 'firstName',
   },
   hooks: {
-    afterOperation: [async ({ operation, req }) => {
-      if (operation === 'login') {
-        const roles: string[] = req.user?.roles || []
-        const isPrivileged = roles.includes('admin') || roles.includes('editor')
-        // Allow website-origin logins to proceed if special header present. or add an endpoint for this
-  const websiteAuth = typeof req.headers?.get === 'function' ? req.headers.get('x-website-auth') : undefined
-        if (!isPrivileged && !websiteAuth) {
-          // Throwing aborts login response for admin panel attempts.
-          throw new Error('Unauthorized: standard users must use website login flow.')
+    afterOperation: [
+      async ({ operation, req }) => {
+        if (operation === 'login') {
+          const roles: string[] = req.user?.roles || []
+          const isPrivileged = roles.includes('admin') || roles.includes('editor')
+          // Allow website-origin logins to proceed if special header present. or add an endpoint for this
+          const websiteAuth =
+            typeof req.headers?.get === 'function' ? req.headers.get('x-website-auth') : undefined
+          if (!isPrivileged && !websiteAuth) {
+            // Throwing aborts login response for admin panel attempts.
+            throw new Error('Unauthorized: standard users must use website login flow.')
+          }
         }
-      }
-    }],
+      },
+    ],
   },
   access: {
     // Allow public self‑registration; role will default to 'user'.
