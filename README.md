@@ -89,3 +89,11 @@ npm run start
 # or
 yarn start
 ```
+
+### Personalization
+
+You can personalize the template by modifying the following files:
+
+- **Logo**: Replace the logo files in the `/public/assets` directory with your own logo files. If you keep the names the same, no further changes are needed.
+- **Favicon**: Replace the favicon files in the `/public/assets` directory with your own favicon files. If you keep the names the same, no further changes are needed.
+- **Colors**: Customize the color scheme by modifying the CSS variables in the `globals.scss` file.

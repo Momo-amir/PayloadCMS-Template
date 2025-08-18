@@ -24,14 +24,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <InitTheme />
         <link
-          href="/assets/logo-white.svg"
+          href="/assets/favicon-darkmode.svg"
           type="image/svg+xml"
           rel="icon"
           media="(prefers-color-scheme: dark)"
           sizes="32x32"
         />
         <link
-          href="/assets/logo.svg"
+          href="/assets/favicon-lightmode.svg"
           className="block dark:hidden"
           rel="icon"
           type="image/svg+xml"
