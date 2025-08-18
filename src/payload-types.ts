@@ -775,6 +775,9 @@ export interface TwoColumnBlock {
  * via the `definition` "CardBlock".
  */
 export interface CardBlock {
+  /**
+   * Applied to every card when mode is Single color.
+   */
   backgroundColor?:
     | (
         | ''
@@ -789,6 +792,10 @@ export interface CardBlock {
         | 'bg-accent3 text-highlight2'
       )
     | null;
+  /**
+   * Choose whether to use one color for all cards or set colors individually.
+   */
+  colorMode?: ('block' | 'per-card') | null;
   heading?: string | null;
   cards: {
     title: string;
@@ -816,6 +823,23 @@ export interface CardBlock {
      * Optional media (image or video) to show at top of card
      */
     media?: (number | null) | Media;
+    /**
+     * Used when Color Mode = Individual per card. Ignored otherwise.
+     */
+    cardBackgroundColor?:
+      | (
+          | ''
+          | 'bg-primary'
+          | 'bg-secondary text-white'
+          | 'bg-tertiary text-accent2'
+          | 'bg-base'
+          | 'bg-highlight text-accent3'
+          | 'bg-highlight2 text-accent3'
+          | 'bg-accent text-secondary'
+          | 'bg-accent2 text-tertiary'
+          | 'bg-accent3 text-highlight2'
+        )
+      | null;
     id?: string | null;
   }[];
   /**
@@ -1252,6 +1276,7 @@ export interface TwoColumnBlockSelect<T extends boolean = true> {
  */
 export interface CardBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
+  colorMode?: T;
   heading?: T;
   cards?:
     | T
@@ -1269,6 +1294,7 @@ export interface CardBlockSelect<T extends boolean = true> {
               appearance?: T;
             };
         media?: T;
+        cardBackgroundColor?: T;
         id?: T;
       };
   columns?: T;
