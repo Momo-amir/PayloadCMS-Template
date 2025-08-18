@@ -1,6 +1,6 @@
-@use 'tailwindcss';
+@use 'tailwindcss' as *;
+@config '../../../tailwind.config.mjs';
 
-// You can now use SCSS (nesting, variables, etc.)
 @layer base {
   *,
   ::after,
