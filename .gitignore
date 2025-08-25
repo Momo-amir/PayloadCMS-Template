@@ -7,7 +7,6 @@ node_modules
 .vercel
 .db
 /public/media
-/public/assets
 # Payload default media upload directory
 
 public/robots.txt

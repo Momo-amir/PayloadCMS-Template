@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import React from 'react'
-import logoWhite from '/public/assets/kollab-logo-white.svg'
-import logo from '/public/assets/kollab-logo-darkblue.svg'
+import logoWhite from '/public/assets/logo-on-dark.svg'
+import logo from '/public/assets/logo-on-light.svg'
 
 interface Props {
   className?: string
@@ -19,7 +19,7 @@ export const Logo = (props: Props) => {
     /* eslint-disable @next/next/no-img-element */
     <div>
       <img
-        alt="Kollab Logo"
+        alt="Logo"
         width={193}
         height={34}
         loading={loading}
@@ -31,7 +31,7 @@ export const Logo = (props: Props) => {
 
       <img
         src={logoWhite.src}
-        alt=""
+        alt="Logo-darkmode"
         width={193}
         height={34}
         loading={loading}

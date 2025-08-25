@@ -2,7 +2,7 @@ import type { Field, GroupField } from 'payload'
 
 import deepMerge from '@/cms/utilities/deepMerge'
 
-export type LinkAppearances = 'default' | 'outline' | 'light-purple' | 'link' | 'secondary'
+export type LinkAppearances = 'default' | 'outline' | 'accent' | 'link' | 'secondary'
 
 export const appearanceOptions: Record<LinkAppearances, { label: string; value: string }> = {
   default: {
@@ -13,9 +13,9 @@ export const appearanceOptions: Record<LinkAppearances, { label: string; value: 
     label: 'Outline',
     value: 'outline',
   },
-  'light-purple': {
-    label: 'Light Purple',
-    value: 'light-purple',
+  accent: {
+    label: 'Accent',
+    value: 'accent',
   },
   link: {
     label: 'Link',
