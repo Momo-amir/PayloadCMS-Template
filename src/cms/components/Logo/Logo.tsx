@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import React from 'react'
-import logoWhite from '/public/assets/logo-alternative.svg'
-import logo from '/public/assets/logo.svg'
+import logoWhite from '/public/assets/logo-on-dark.svg'
+import logo from '/public/assets/logo-on-light.svg'
 
 interface Props {
   className?: string

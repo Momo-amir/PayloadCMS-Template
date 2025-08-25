@@ -39,6 +39,22 @@ export const hero: Field = {
       required: true,
     },
     {
+      name: 'theme',
+      type: 'select',
+      defaultValue: 'dark',
+      options: [
+        {
+          label: 'Light',
+          value: 'light',
+        },
+        {
+          label: 'Dark',
+          value: 'dark',
+        },
+      ],
+      required: true,
+    },
+    {
       name: 'richText',
       type: 'richText',
       editor: lexicalEditor({

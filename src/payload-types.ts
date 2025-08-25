@@ -150,6 +150,7 @@ export interface Page {
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    theme: 'light' | 'dark';
     richText?: {
       root: {
         type: string;
@@ -429,7 +430,7 @@ export interface CallToActionBlock {
           /**
            * Choose how the link should be rendered.
            */
-          appearance?: ('default' | 'outline' | 'light-purple' | 'link' | 'secondary') | null;
+          appearance?: ('default' | 'outline' | 'accent' | 'link' | 'secondary') | null;
         };
         id?: string | null;
       }[]
@@ -1117,6 +1118,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         type?: T;
+        theme?: T;
         richText?: T;
         links?:
           | T

@@ -94,6 +94,7 @@ yarn start
 
 You can personalize the template by modifying the following files:
 
-- **Logo**: Replace the logo files in the `/public/assets` directory with your own logo files. If you keep the names the same, no further changes are needed.
-- **Favicon**: Replace the favicon files in the `/public/assets` directory with your own favicon files. If you keep the names the same, no further changes are needed.
-- **Colors**: Customize the color scheme by modifying the CSS variables in the `globals.scss` file.
+- **Logo**: Replace the logo files in the `/public/assets` directory with your own logo files. If you keep the names the same, no further changes are needed. Logo-on-light is for light backgrounds and logo-on-dark is for dark backgrounds.
+- **Favicon**: Replace the favicon files in the `/public/assets` directory with your own favicon files. If you keep the names the same, no further changes are needed. They are named with support for light and dark mode in the browser and admin dashboard and will change according to the user's system preferences if names are kept the same.
+- **Colors**: Customize the color scheme by modifying the CSS variables in the `globals.scss` file. The palette names are purposely kept non-descriptive and will apply globally.
+- **Component/Layout Color Themes**: Some components and layout-blocks come with support for different color themes. You should update the labels and values in their config.ts or component.tsx files in accordance with your design requirements. These can be found in the `src/website/blocks/yourblock/` directory for layout blocks and `src/website/components/component.tsx` file for individual components.
