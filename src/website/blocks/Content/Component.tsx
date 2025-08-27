@@ -8,7 +8,7 @@ export const ContentBlock: React.FC<ContentBlockProps & { enableGutter?: boolean
   useColumns = false,
   richText,
   columns,
-  enableGutter = false,
+  enableGutter = true,
 }) => {
   // never allow null
   const safeColumns = columns ?? []
