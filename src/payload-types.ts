@@ -389,6 +389,13 @@ export interface User {
   hash?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
   password?: string | null;
 }
 /**
@@ -757,7 +764,7 @@ export interface TwoColumnBlock {
   backgroundColor?:
     | (
         | ''
-        | 'bg-primary'
+        | 'bg-primary text-base'
         | 'bg-secondary text-white'
         | 'bg-tertiary text-accent2'
         | 'bg-base'
@@ -1467,6 +1474,13 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1777,6 +1791,20 @@ export interface Footer {
         id?: string | null;
       }[]
     | null;
+  backgroundColor?:
+    | (
+        | ''
+        | 'bg-primary text-base '
+        | 'bg-secondary text-white'
+        | 'bg-tertiary text-accent2'
+        | 'bg-base'
+        | 'bg-highlight text-accent3'
+        | 'bg-highlight2 text-accent3'
+        | 'bg-accent text-secondary'
+        | 'bg-accent2 text-tertiary'
+        | 'bg-accent3 text-highlight2'
+      )
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1822,6 +1850,7 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  backgroundColor?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
