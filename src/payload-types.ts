@@ -792,7 +792,7 @@ export interface CardBlock {
   backgroundColor?:
     | (
         | ''
-        | 'bg-primary'
+        | 'bg-primary text-base'
         | 'bg-secondary text-white'
         | 'bg-tertiary text-accent2'
         | 'bg-base'
