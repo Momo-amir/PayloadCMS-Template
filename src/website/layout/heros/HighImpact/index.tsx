@@ -27,7 +27,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText,
         <div className="max-w-[36.5rem] hero-rich-text ">
           {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
           {Array.isArray(links) && links.length > 0 && (
-            <ul className="flex md:justify-center gap-4">
+            <ul className="flex gap-4">
               {links.map(({ link }, i) => (
                 <li key={i}>
                   <CMSLink {...link} />

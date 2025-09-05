@@ -10,11 +10,16 @@ import { Logo } from '@/cms/components/Logo/Logo'
 
 export async function Footer() {
   const footerData: Footer = await getCachedGlobal('footer', 1)()
-
   const navItems = footerData?.navItems || []
+  const backgroundColor = footerData?.backgroundColor || ''
+
+  // Always keep mt-auto, but allow dynamic backgroundColor and text color
+  const footerClass = ['mt-auto', backgroundColor || 'bg-secondary text-primary']
+    .filter(Boolean)
+    .join(' ')
 
   return (
-    <footer className="mt-auto  bg-secondary  text-white">
+    <footer className={footerClass}>
       <div
         className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between"
         data-theme="dark"

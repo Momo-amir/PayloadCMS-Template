@@ -16,7 +16,7 @@ export const CardBlock: Block = {
       defaultValue: '',
       options: [
         { label: 'None', value: '' },
-        { label: 'Primary', value: 'bg-primary' },
+        { label: 'Primary', value: 'bg-primary text-base' },
         { label: 'Dark Blue', value: 'bg-secondary text-white' },
         { label: 'Purple', value: 'bg-tertiary text-accent2' },
         { label: 'Base', value: 'bg-base' },
