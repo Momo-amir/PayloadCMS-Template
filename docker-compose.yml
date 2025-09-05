@@ -16,9 +16,7 @@ services:
       - -c
       - |
         apk add --no-cache tmux \
-        && npm install --global corepack@latest \
-        && corepack enable pnpm \
-        && corepack prepare pnpm@latest --activate \
+        && npm install pnpm -g \
         && pnpm install \
         && tmux new-session -d -s app 'pnpm dev' \
         && tmux a -t app \; set-option status off | grep -v '^[[:space:]]*$'
