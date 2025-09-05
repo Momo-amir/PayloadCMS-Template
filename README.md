@@ -89,7 +89,7 @@ npm run start
 # or
 yarn start
 ```
-
+ 
 ### Personalization
 
 You can personalize the template by modifying the following files:
