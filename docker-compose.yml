@@ -6,8 +6,8 @@ services:
     working_dir: /home/node/app
 
     ports:
-      - "8890:3000"  
-    
+      - "8890:3000"
+
     volumes:
       - .:/home/node/app
       - node_modules:/home/node/app/node_modules
@@ -28,8 +28,8 @@ services:
   postgres:
     image: postgres:latest
     restart: always
-    ports:
-      - "5432:5432"
+ #   ports:
+ #     - "5432:5432"
     environment:
       POSTGRES_USER:      ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD:-postgres}
