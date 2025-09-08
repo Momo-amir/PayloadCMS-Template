@@ -24,6 +24,8 @@ services:
       - postgres
     env_file:
       - .env
+    environment:
+      - PORT=8890
 
   postgres:
     image: postgres:latest

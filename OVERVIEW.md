@@ -123,7 +123,7 @@ To work with this template, follow these steps:
 2. **Run the Development Server**: Use docker or run `pnpm run dev` to start the development server.
    - If using Docker, run `docker compose up --build` to build the images and start the containers.
    - If running locally, ensure your local DB is running and configured in `.env`.
-3. **Access the Admin Panel**: Navigate to `http://localhost:3000/admin` to manage your content, first time you access the admin panel, you will need to create an admin user.
+3. **Access the Admin Panel**: Navigate to `http://localhost:8890/admin` to manage your content, first time you access the admin panel, you will need to create an admin user.
    - Use the credentials you set in your `.env` file for easy credentials management.
 4. **Configure Payload**: Update `src/payload.config.ts` to add or modify collections, globals, additionally add necessary branding like logos, icons, etc.
    - For more information a link to the official Payload documentation is provided in the root section of this document.

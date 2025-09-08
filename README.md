@@ -62,11 +62,11 @@ npm run dev
 yarn dev
 ```
 
-This will start the development server, and you can access the application at `http://localhost:3000`.
+This will start the development server, and you can access the application at `http://localhost:8890`.
 
 ### 4. Access the Admin Panel
 
-You can access the admin panel at `http://localhost:3000/admin`. First time you access the admin panel, you will need to create an admin user. Use the credentials you set in your `.env` file.
+You can access the admin panel at `http://localhost:8890/admin`. First time you access the admin panel, you will need to create an admin user. Use the credentials you set in your `.env` file.
 
 ### 5. Build for Production
 
