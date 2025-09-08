@@ -6,7 +6,7 @@ services:
     working_dir: /home/node/app
 
     ports:
-      - "8890:3000"
+      - "8890:8890"
 
     volumes:
       - .:/home/node/app
