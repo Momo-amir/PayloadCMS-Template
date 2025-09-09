@@ -13,7 +13,6 @@ export default function Graphics() {
         if (!res.ok) return
         const data = await res.json()
 
-        if (!cancelled && url) setSrc(url)
         const url =
           data?.faviconLight && typeof data.faviconLight === 'object' && data.faviconLight.filename
             ? `/media/${data.faviconLight.filename}`

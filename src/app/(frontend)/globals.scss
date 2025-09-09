@@ -11,8 +11,6 @@
   }
 }
 
-/* Theme variables are now dynamically generated in layout.tsx */
-
 @layer base {
   body {
     @apply bg-base text-primary min-h-screen flex flex-col;
