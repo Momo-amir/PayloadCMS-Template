@@ -1833,7 +1833,7 @@ export interface Branding {
        */
       primary?: string | null;
       /**
-       * Default: #1f2344
+       * Default: #231B67
        */
       secondary?: string | null;
       /**
@@ -1845,11 +1845,11 @@ export interface Branding {
        */
       base?: string | null;
       /**
-       * Default: #c4f5fa
+       * Default: #F3E9FF
        */
       accent1?: string | null;
       /**
-       * Default: #bca4ea
+       * Default: #c7bad9
        */
       accent2?: string | null;
       /**
@@ -1857,11 +1857,11 @@ export interface Branding {
        */
       accent3?: string | null;
       /**
-       * Default: #d9d9d9
+       * Default: #eee
        */
       border?: string | null;
       /**
-       * Default: #f5efe1
+       * Default: #eee
        */
       neutral?: string | null;
       /**
@@ -1869,7 +1869,7 @@ export interface Branding {
        */
       neutral2?: string | null;
       /**
-       * Default: #fcf1c3
+       * Default: #B00020
        */
       highlight?: string | null;
       /**
@@ -1883,11 +1883,11 @@ export interface Branding {
        */
       primary?: string | null;
       /**
-       * Default: #1f2344
+       * Default: #231B67
        */
       secondary?: string | null;
       /**
-       * Default: #35296b
+       * Default: #50477b
        */
       tertiary?: string | null;
       /**
@@ -1895,11 +1895,11 @@ export interface Branding {
        */
       base?: string | null;
       /**
-       * Default: #c4f5fa
+       * Default: #F3E9FF
        */
       accent1?: string | null;
       /**
-       * Default: #bca4ea
+       * Default: #352d6a
        */
       accent2?: string | null;
       /**
@@ -1907,11 +1907,11 @@ export interface Branding {
        */
       accent3?: string | null;
       /**
-       * Default: #d9d9d9
+       * Default: #eee
        */
       border?: string | null;
       /**
-       * Default: #f5efe1
+       * Default: #eee
        */
       neutral?: string | null;
       /**
@@ -1919,7 +1919,7 @@ export interface Branding {
        */
       neutral2?: string | null;
       /**
-       * Default: #fcf1c3
+       * Default: #CF6679
        */
       highlight?: string | null;
       /**
