@@ -1,19 +1,11 @@
 import type { Branding } from '@/payload-types'
+import {
+  defaultTheme,
+  paletteToCSSVars,
+  type ThemePalette,
+} from '@/providers/Theme/InitTheme/defaultTheme'
 
-type Palette = Partial<{
-  primary: string
-  secondary: string
-  tertiary: string
-  base: string
-  accent1: string
-  accent2: string
-  accent3: string
-  border: string
-  neutral: string
-  neutral2: string
-  highlight: string
-  highlight2: string
-}>
+type Palette = Partial<ThemePalette>
 
 const sanitize = (v: unknown): string | undefined => {
   if (typeof v !== 'string') return undefined
@@ -21,78 +13,61 @@ const sanitize = (v: unknown): string | undefined => {
   return /^[#a-zA-Z0-9(),.%\s-]+$/.test(v) ? v : undefined
 }
 
-const toDecls = (p?: Palette): string => {
-  if (!p) return ''
-  const map: Record<keyof Required<Palette>, string> = {
-    primary: '--primary',
-    secondary: '--secondary',
-    tertiary: '--tertiary',
-    base: '--base',
-    accent1: '--accent-1',
-    accent2: '--accent-2',
-    accent3: '--accent-3',
-    border: '--border',
-    neutral: '--neutral',
-    neutral2: '--neutral-2',
-    highlight: '--highlight',
-    highlight2: '--highlight-2',
-  }
-  return (Object.keys(map) as Array<keyof Palette>)
-    .map((k) => {
-      const varName = map[k as keyof Required<Palette>]
-      const val = sanitize(p[k])
-      return val ? `${varName}: ${val};` : ''
+const toDecls = (cssVars: Record<string, string>): string => {
+  return Object.entries(cssVars)
+    .map(([varName, value]) => {
+      const sanitizedValue = sanitize(value)
+      return sanitizedValue ? `  ${varName}: ${sanitizedValue};` : ''
     })
     .filter(Boolean)
     .join('\n')
 }
 
-export const buildBrandingThemeCSS = (branding: Branding | null | undefined): string => {
-  if (!branding || typeof branding !== 'object') return ''
-  const tc = 'themeColors' in branding ? branding.themeColors : undefined
+const mergeThemeValues = (defaults: ThemePalette, overrides: Palette | undefined): ThemePalette => {
+  if (!overrides) return defaults
 
-  // Define default values for fallback
-  const defaultLight: Palette = {
-    primary: '#09090d',
-    secondary: '#1f2344',
-    tertiary: '#35296b',
-    base: '#ffffff',
-    accent1: '#c4f5fa',
-    accent2: '#bca4ea',
-    accent3: '#fb823b',
-    border: '#d9d9d9',
-    neutral: '#f5efe1',
-    neutral2: '#f8d4a2',
-    highlight: '#fcf1c3',
-    highlight2: '#e5fcfb',
-  }
+  const merged = { ...defaults }
 
-  const defaultDark: Palette = {
-    primary: '#e8e8e8',
-    secondary: '#1f2344',
-    tertiary: '#35296b',
-    base: '#09090d',
-    accent1: '#c4f5fa',
-    accent2: '#bca4ea',
-    accent3: '#fb823b',
-    border: '#d9d9d9',
-    neutral: '#f5efe1',
-    neutral2: '#f8d4a2',
-    highlight: '#fcf1c3',
-    highlight2: '#e5fcfb',
-  }
+  // Only apply overrides that have actual values (not empty strings)
+  Object.entries(overrides).forEach(([key, value]) => {
+    if (value && value.trim() !== '') {
+      merged[key as keyof ThemePalette] = value
+    }
+  })
 
-  // Merge user values with defaults for fallback
-  const lightPalette = { ...defaultLight, ...((tc?.light as Palette) || {}) }
-  const darkPalette = { ...defaultDark, ...((tc?.dark as Palette) || {}) }
+  return merged
+}
 
-  const lightDecls = toDecls(lightPalette)
-  const darkDecls = toDecls(darkPalette) // Always generate dark mode styles
+export const generateThemeCSS = (branding: Branding | null | undefined): string => {
+  const tc =
+    branding && typeof branding === 'object' && 'themeColors' in branding
+      ? branding.themeColors
+      : undefined
 
-  return [
-    lightDecls ? `:root{${lightDecls}}` : '',
-    darkDecls ? `[data-theme='dark']{${darkDecls}}` : '',
-  ]
-    .filter(Boolean)
-    .join('\n')
+  // Get user overrides - completely separate for light and dark
+  const lightOverrides = tc?.light as Palette | undefined
+  const darkOverrides = tc?.dark as Palette | undefined
+
+  // Merge each theme independently - no cross-contamination
+  const lightPalette = mergeThemeValues(defaultTheme.light, lightOverrides)
+  const darkPalette = mergeThemeValues(defaultTheme.dark, darkOverrides)
+
+  // Convert to CSS custom properties
+  const lightCSSVars = paletteToCSSVars(lightPalette)
+  const darkCSSVars = paletteToCSSVars(darkPalette)
+
+  const lightDecls = toDecls(lightCSSVars)
+  const darkDecls = toDecls(darkCSSVars)
+
+  // Generate complete CSS with proper formatting
+  const css = `
+:root {
+${lightDecls}
+}
+
+[data-theme='dark'] {
+${darkDecls}
+}`.trim()
+
+  return css
 }

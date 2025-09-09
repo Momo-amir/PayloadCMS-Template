@@ -1,0 +1,102 @@
+// Default theme values - Single source of truth
+export const defaultTheme = {
+  light: {
+    primary: '#09090d',
+    secondary: '#1f2344',
+    tertiary: '#35296b',
+    base: '#ffffff',
+    accent1: '#c4f5fa',
+    accent2: '#bca4ea',
+    accent3: '#fb823b',
+    border: '#d9d9d9',
+    neutral: '#f5efe1',
+    neutral2: '#f8d4a2',
+    highlight: '#fcf1c3',
+    highlight2: '#e5fcfb',
+  },
+  dark: {
+    primary: '#e8e8e8',
+    secondary: '#1f2344',
+    tertiary: '#35296b',
+    base: '#121212',
+    accent1: '#c4f5fa',
+    accent2: '#bca4ea',
+    accent3: '#fb823b',
+    border: '#d9d9d9',
+    neutral: '#f5efe1',
+    neutral2: '#f8d4a2',
+    highlight: '#fcf1c3',
+    highlight2: '#e5fcfb',
+  },
+} as const
+
+export type ThemePalette = {
+  primary: string
+  secondary: string
+  tertiary: string
+  base: string
+  accent1: string
+  accent2: string
+  accent3: string
+  border: string
+  neutral: string
+  neutral2: string
+  highlight: string
+  highlight2: string
+}
+
+export type ThemeMode = keyof typeof defaultTheme
+
+// Helper to get a specific theme's values
+export const getThemeValues = (mode: ThemeMode): ThemePalette => {
+  return defaultTheme[mode]
+}
+
+// Helper to get all theme variable names
+export const getThemeVariableNames = (): (keyof ThemePalette)[] => {
+  return Object.keys(defaultTheme.light) as (keyof ThemePalette)[]
+}
+
+// Helper to merge theme values with user overrides
+export const mergeThemeValues = (
+  defaults: ThemePalette,
+  overrides: Partial<ThemePalette> | undefined,
+): ThemePalette => {
+  if (!overrides) return defaults
+
+  const merged = { ...defaults }
+
+  // Only apply overrides that have actual values (not empty strings)
+  Object.entries(overrides).forEach(([key, value]) => {
+    if (value && value.trim() !== '') {
+      merged[key as keyof ThemePalette] = value
+    }
+  })
+
+  return merged
+}
+
+// Helper to convert palette to CSS custom properties
+export const paletteToCSSVars = (palette: Partial<ThemePalette>): Record<string, string> => {
+  const cssVars: Record<string, string> = {}
+
+  Object.entries(palette).forEach(([key, value]) => {
+    if (value) {
+      const cssVarName =
+        key === 'accent1'
+          ? '--accent-1'
+          : key === 'accent2'
+            ? '--accent-2'
+            : key === 'accent3'
+              ? '--accent-3'
+              : key === 'neutral2'
+                ? '--neutral-2'
+                : key === 'highlight2'
+                  ? '--highlight-2'
+                  : `--${key}`
+      cssVars[cssVarName] = value
+    }
+  })
+
+  return cssVars
+}

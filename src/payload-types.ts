@@ -1820,7 +1820,7 @@ export interface Branding {
   faviconLight?: (number | null) | Media;
   faviconDark?: (number | null) | Media;
   /**
-   * Dark mode is always enabled. Toggle editing to customize colors for light and dark themes.
+   * Customize the theme colors for light and dark modes. You are able to change colors for both themes independently. Leaving a field empty will revert it to the default color.
    */
   themeColors?: {
     /**
@@ -1828,31 +1828,103 @@ export interface Branding {
      */
     enableCustomColors?: boolean | null;
     light?: {
+      /**
+       * Default: #09090d
+       */
       primary?: string | null;
+      /**
+       * Default: #1f2344
+       */
       secondary?: string | null;
+      /**
+       * Default: #35296b
+       */
       tertiary?: string | null;
+      /**
+       * Default: #ffffff
+       */
       base?: string | null;
+      /**
+       * Default: #c4f5fa
+       */
       accent1?: string | null;
+      /**
+       * Default: #bca4ea
+       */
       accent2?: string | null;
+      /**
+       * Default: #fb823b
+       */
       accent3?: string | null;
+      /**
+       * Default: #d9d9d9
+       */
       border?: string | null;
+      /**
+       * Default: #f5efe1
+       */
       neutral?: string | null;
+      /**
+       * Default: #f8d4a2
+       */
       neutral2?: string | null;
+      /**
+       * Default: #fcf1c3
+       */
       highlight?: string | null;
+      /**
+       * Default: #e5fcfb
+       */
       highlight2?: string | null;
     };
     dark?: {
+      /**
+       * Default: #e8e8e8
+       */
       primary?: string | null;
+      /**
+       * Default: #1f2344
+       */
       secondary?: string | null;
+      /**
+       * Default: #35296b
+       */
       tertiary?: string | null;
+      /**
+       * Default: #121212
+       */
       base?: string | null;
+      /**
+       * Default: #c4f5fa
+       */
       accent1?: string | null;
+      /**
+       * Default: #bca4ea
+       */
       accent2?: string | null;
+      /**
+       * Default: #fb823b
+       */
       accent3?: string | null;
+      /**
+       * Default: #d9d9d9
+       */
       border?: string | null;
+      /**
+       * Default: #f5efe1
+       */
       neutral?: string | null;
+      /**
+       * Default: #f8d4a2
+       */
       neutral2?: string | null;
+      /**
+       * Default: #fcf1c3
+       */
       highlight?: string | null;
+      /**
+       * Default: #e5fcfb
+       */
       highlight2?: string | null;
     };
   };
