@@ -103,10 +103,12 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    branding: Branding;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    branding: BrandingSelect<false> | BrandingSelect<true>;
   };
   locale: null;
   user: User & {
@@ -1792,17 +1794,31 @@ export interface Footer {
   backgroundColor?:
     | (
         | ''
-        | 'bg-primary text-base '
+        | 'bg-primary text-base'
         | 'bg-secondary text-white'
         | 'bg-tertiary text-accent2'
         | 'bg-base'
         | 'bg-highlight text-accent3'
         | 'bg-highlight2 text-accent3'
-        | 'bg-accent text-secondary'
-        | 'bg-accent2 text-tertiary'
-        | 'bg-accent3 text-highlight2'
+        | 'bg-accent text-secondary light-mode'
+        | 'bg-accent2 text-tertiary light-mode'
+        | 'bg-accent3 text-highlight2 light-mode'
       )
     | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "branding".
+ */
+export interface Branding {
+  id: number;
+  logoLight?: (number | null) | Media;
+  logoDark?: (number | null) | Media;
+  logoAlt?: string | null;
+  faviconLight?: (number | null) | Media;
+  faviconDark?: (number | null) | Media;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1849,6 +1865,20 @@ export interface FooterSelect<T extends boolean = true> {
         id?: T;
       };
   backgroundColor?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "branding_select".
+ */
+export interface BrandingSelect<T extends boolean = true> {
+  logoLight?: T;
+  logoDark?: T;
+  logoAlt?: T;
+  faviconLight?: T;
+  faviconDark?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
