@@ -15,39 +15,31 @@ import { draftMode } from 'next/headers'
 
 import './globals.scss'
 import { getServerSideURL } from '@/cms/utilities/getURL'
-import { getBranding, mediaToURL } from '@/cms/utilities/branding'
+import { getBranding, toFaviconProps } from '@/cms/utilities/branding'
 import { generateThemeCSS } from '@/cms/utilities/themeCSS'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
   const branding = await getBranding()
-  const lightFavicon =
-    branding?.faviconLight && typeof branding.faviconLight === 'object'
-      ? mediaToURL(branding.faviconLight)
-      : undefined
-  const darkFavicon =
-    branding?.faviconDark && typeof branding.faviconDark === 'object'
-      ? mediaToURL(branding.faviconDark)
-      : undefined
+  const { lightHref, darkHref } = toFaviconProps(branding)
   const themeCSS = generateThemeCSS(branding)
 
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
-        {/* Server-side CSS injection - available immediately */}
         <style id="theme-variables" dangerouslySetInnerHTML={{ __html: themeCSS }} />
         <link
-          href={darkFavicon || '/assets/favicon-darkmode.svg'}
-          type={darkFavicon?.endsWith('.png') ? 'image/png' : 'image/svg+xml'}
+          href={darkHref}
+          type={darkHref.endsWith('.png') ? 'image/png' : 'image/svg+xml'}
           rel="icon"
           media="(prefers-color-scheme: dark)"
           sizes="32x32"
         />
         <link
-          href={lightFavicon || '/assets/favicon-lightmode.svg'}
+          href={lightHref}
           rel="icon"
-          type={lightFavicon?.endsWith('.png') ? 'image/png' : 'image/svg+xml'}
+          type={lightHref.endsWith('.png') ? 'image/png' : 'image/svg+xml'}
           media="(prefers-color-scheme: light)"
         />
       </head>

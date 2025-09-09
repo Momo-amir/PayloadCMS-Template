@@ -39,3 +39,18 @@ export const toLogoProps = (branding: Branding | null) => {
     alt: branding?.logoAlt ?? undefined,
   }
 }
+
+export const toFaviconProps = (
+  branding: Branding | null,
+): { lightHref: string; darkHref: string } => {
+  return {
+    lightHref:
+      (branding?.faviconLight && typeof branding.faviconLight === 'object'
+        ? mediaToURL(branding.faviconLight)
+        : null) || '/assets/favicon-lightmode.svg',
+    darkHref:
+      (branding?.faviconDark && typeof branding.faviconDark === 'object'
+        ? mediaToURL(branding.faviconDark)
+        : null) || '/assets/favicon-darkmode.svg',
+  }
+}

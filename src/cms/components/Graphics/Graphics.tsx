@@ -2,15 +2,6 @@
 import Image from 'next/image'
 import React from 'react'
 
-type MediaRef = number | { filename?: string } | null | undefined
-
-const mediaToURL = (m: MediaRef): string | undefined => {
-  if (!m) return undefined
-  if (typeof m === 'number') return undefined
-  if (m.filename) return `/media/${m.filename}`
-  return undefined
-}
-
 export default function Graphics() {
   const [src, setSrc] = React.useState<string>('/assets/favicon-lightmode.svg')
 
@@ -21,10 +12,17 @@ export default function Graphics() {
         const res = await fetch('/api/globals/branding?depth=1', { cache: 'no-store' })
         if (!res.ok) return
         const data = await res.json()
-        const url = mediaToURL(data?.faviconLight)
+
         if (!cancelled && url) setSrc(url)
+        const url =
+          data?.faviconLight && typeof data.faviconLight === 'object' && data.faviconLight.filename
+            ? `/media/${data.faviconLight.filename}`
+            : '/assets/favicon-lightmode.svg'
+
+        if (!cancelled) setSrc(url)
       } catch {
-        // ignore and keep fallback
+        // Keep fallback on error
+        if (!cancelled) setSrc('/assets/favicon-lightmode.svg')
       }
     }
     run()
