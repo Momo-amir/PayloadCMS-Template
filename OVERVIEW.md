@@ -92,6 +92,8 @@ Contains CMS-specific logic and Payload plugins:
   Helpers (e.g., `src/cms/utilities/getURL.ts`, `ui.ts`).
 - **endpoints/**  
   API endpoints for the admin panel (`src/cms/endpoints/...`). Here the API endpoints are defined for the admin panel, allowing for custom data fetching and manipulation. If you for example need to seed the database with initial data, you would create an endpoint here to handle that logic.
+- **globals/**
+  - `Branding` (`src/cms/endpoints/globals/Branding.ts`) - This is where the logic for the branding global is handled. It is used to customize the look and feel of the public site and some parts of the admin panel.
 
 ## src/app
 
@@ -134,3 +136,12 @@ To work with this template, follow these steps:
 8. **Test Changes**: Use the development server to test changes in real-time.
 9. **Remove unused code**: As this is a template, you will likely want to remove unused code and components that are not relevant to your project. This can include unused blocks, components, or even entire collections in Payload.
 10. **Build for Production**: When ready, use docker or run `pnpm run build` to build the application for production.
+
+## Theming & Personalization
+
+The template comes with a default light/dark theme setup that can be easily customized. The theming is handled using CSS variables defined in `src/providers/Theme/InitTheme/defaultTheme.ts` and applied globally via `src/providers/Theme/InitTheme/InitTheme.tsx`.
+You can personalize the template by modifying logos and colors in the Admin dashboard - There is a global "Branding" singleton that allows you to upload logos and favicons for light and dark mode. The theme tab allows you to change all the colors used in the template.
+
+For more granular control, you can modify the CSS variables in `src/providers/Theme/InitTheme/defaultTheme.ts` to change the color scheme. The palette names are purposely kept non-descriptive and will apply globally.
+Remove any unused colors in the theme file to keep it clean.
+The components and layout-blocks come with support for different color themes. You should update the labels and values in their config.ts or component.tsx files in accordance with your design requirements. These can be found in the `src/website/blocks/yourblock/` directory for layout blocks and `src/website/components/component.tsx` file for individual components.
