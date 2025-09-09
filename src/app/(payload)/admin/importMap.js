@@ -21,6 +21,7 @@ import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloa
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { RowLabel as RowLabel_7373a88fa654e3a8434219cb2baf21de } from '@/website/layout/Header/RowLabel'
 import { RowLabel as RowLabel_4a97e2b05ef1b763469c9aa243cbe4d9 } from '@/website/layout/Footer/RowLabel'
+import { ResetThemeColorsButton as ResetThemeColorsButton_676cc2f6c25bebb93f91248e6c51c081 } from '@/cms/globals/Branding/components/ResetThemeColorsButton'
 import { default as default_3af3571728f21df855b44977ccb0b582 } from '@/cms/components/Graphics/Graphics.tsx'
 import { default as default_0838309cc1ae884029dee868a8434bf6 } from '@/cms/components/Graphics/Logo.tsx'
 
@@ -48,6 +49,7 @@ export const importMap = {
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   "@/website/layout/Header/RowLabel#RowLabel": RowLabel_7373a88fa654e3a8434219cb2baf21de,
   "@/website/layout/Footer/RowLabel#RowLabel": RowLabel_4a97e2b05ef1b763469c9aa243cbe4d9,
+  "@/cms/globals/Branding/components/ResetThemeColorsButton#ResetThemeColorsButton": ResetThemeColorsButton_676cc2f6c25bebb93f91248e6c51c081,
   "@/cms/components/Graphics/Graphics.tsx#default": default_3af3571728f21df855b44977ccb0b582,
   "@/cms/components/Graphics/Logo.tsx#default": default_0838309cc1ae884029dee868a8434bf6
 }

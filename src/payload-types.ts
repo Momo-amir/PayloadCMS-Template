@@ -1819,6 +1819,43 @@ export interface Branding {
   logoAlt?: string | null;
   faviconLight?: (number | null) | Media;
   faviconDark?: (number | null) | Media;
+  /**
+   * Dark mode is always enabled. Toggle editing to customize colors for light and dark themes.
+   */
+  themeColors?: {
+    /**
+     * Enable this to show color editing fields for light and dark themes.
+     */
+    enableCustomColors?: boolean | null;
+    light?: {
+      primary?: string | null;
+      secondary?: string | null;
+      tertiary?: string | null;
+      base?: string | null;
+      accent1?: string | null;
+      accent2?: string | null;
+      accent3?: string | null;
+      border?: string | null;
+      neutral?: string | null;
+      neutral2?: string | null;
+      highlight?: string | null;
+      highlight2?: string | null;
+    };
+    dark?: {
+      primary?: string | null;
+      secondary?: string | null;
+      tertiary?: string | null;
+      base?: string | null;
+      accent1?: string | null;
+      accent2?: string | null;
+      accent3?: string | null;
+      border?: string | null;
+      neutral?: string | null;
+      neutral2?: string | null;
+      highlight?: string | null;
+      highlight2?: string | null;
+    };
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1879,6 +1916,43 @@ export interface BrandingSelect<T extends boolean = true> {
   logoAlt?: T;
   faviconLight?: T;
   faviconDark?: T;
+  themeColors?:
+    | T
+    | {
+        enableCustomColors?: T;
+        light?:
+          | T
+          | {
+              primary?: T;
+              secondary?: T;
+              tertiary?: T;
+              base?: T;
+              accent1?: T;
+              accent2?: T;
+              accent3?: T;
+              border?: T;
+              neutral?: T;
+              neutral2?: T;
+              highlight?: T;
+              highlight2?: T;
+            };
+        dark?:
+          | T
+          | {
+              primary?: T;
+              secondary?: T;
+              tertiary?: T;
+              base?: T;
+              accent1?: T;
+              accent2?: T;
+              accent3?: T;
+              border?: T;
+              neutral?: T;
+              neutral2?: T;
+              highlight?: T;
+              highlight2?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

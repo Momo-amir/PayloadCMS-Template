@@ -16,6 +16,7 @@ import { draftMode } from 'next/headers'
 import './globals.scss'
 import { getServerSideURL } from '@/cms/utilities/getURL'
 import { getBranding, mediaToURL } from '@/cms/utilities/branding'
+import { buildBrandingThemeCSS } from '@/cms/utilities/themeCSS'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
@@ -28,11 +29,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     branding?.faviconDark && typeof branding.faviconDark === 'object'
       ? mediaToURL(branding.faviconDark)
       : undefined
+  const themeCSS = buildBrandingThemeCSS(branding)
 
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
+        {themeCSS && (
+          <style id="branding-theme-vars" dangerouslySetInnerHTML={{ __html: themeCSS }} />
+        )}
         <link
           href={darkFavicon || '/assets/favicon-darkmode.svg'}
           type={darkFavicon?.endsWith('.png') ? 'image/png' : 'image/svg+xml'}
