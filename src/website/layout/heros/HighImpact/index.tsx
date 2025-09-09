@@ -14,7 +14,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText,
   const heroRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setHeaderTheme(theme)
+    setHeaderTheme(theme === 'dark' ? 'dark' : 'light')
   })
 
   return (

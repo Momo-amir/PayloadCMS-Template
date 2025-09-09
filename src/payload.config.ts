@@ -13,6 +13,7 @@ import { Users } from './cms/collections/Users'
 import { Footer } from './website/layout/Footer/config'
 import { Header } from './website/layout/Header/config'
 import { plugins } from './cms/plugins'
+import { BrandingGlobal } from './cms/globals/Branding/config'
 import { defaultLexical } from '@/cms/fields/defaultLexical'
 import { getServerSideURL } from './cms/utilities/getURL'
 
@@ -21,7 +22,6 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
-    theme: 'light',
     meta: {
       icons: [
         {
@@ -83,7 +83,7 @@ export default buildConfig({
 
   collections: [Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer],
+  globals: [Header, Footer, BrandingGlobal],
   plugins: [
     ...plugins,
     // storage-adapter-placeholder

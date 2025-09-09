@@ -10,7 +10,7 @@ export const Users: CollectionConfig = {
     depth: 0,
   },
   admin: {
-    useAsTitle: 'firstName',
+    useAsTitle: 'name',
   },
   hooks: {
     afterOperation: [
@@ -30,7 +30,6 @@ export const Users: CollectionConfig = {
     ],
   },
   access: {
-    // Allow public self‑registration; role will default to 'user'.
     create: () => true,
     // Read: admins + editors can read all; others only themselves.
     read: ({ req }) => {
@@ -51,21 +50,17 @@ export const Users: CollectionConfig = {
   },
   fields: [
     {
-      name: 'firstName',
+      name: 'name',
       type: 'text',
       required: true,
     },
-    {
-      name: 'lastName',
-      type: 'text',
-      required: true,
-    },
+
     {
       name: 'roles',
       saveToJWT: true,
       type: 'select',
       hasMany: true,
-      defaultValue: ['user'],
+      defaultValue: ['admin'],
       admin: {
         description: 'User roles. Only admins can edit roles (not their own).',
       },

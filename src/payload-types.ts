@@ -103,10 +103,12 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    branding: Branding;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    branding: BrandingSelect<false> | BrandingSelect<true>;
   };
   locale: null;
   user: User & {
@@ -150,7 +152,7 @@ export interface Page {
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
-    theme: 'light' | 'dark';
+    theme?: ('light' | 'dark') | null;
     richText?: {
       root: {
         type: string;
@@ -374,8 +376,7 @@ export interface Category {
  */
 export interface User {
   id: number;
-  firstName: string;
-  lastName: string;
+  name: string;
   /**
    * User roles. Only admins can edit roles (not their own).
    */
@@ -1462,8 +1463,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  firstName?: T;
-  lastName?: T;
+  name?: T;
   roles?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1794,17 +1794,140 @@ export interface Footer {
   backgroundColor?:
     | (
         | ''
-        | 'bg-primary text-base '
+        | 'bg-primary text-base'
         | 'bg-secondary text-white'
         | 'bg-tertiary text-accent2'
         | 'bg-base'
         | 'bg-highlight text-accent3'
         | 'bg-highlight2 text-accent3'
-        | 'bg-accent text-secondary'
-        | 'bg-accent2 text-tertiary'
-        | 'bg-accent3 text-highlight2'
+        | 'bg-accent text-secondary light-mode'
+        | 'bg-accent2 text-tertiary light-mode'
+        | 'bg-accent3 text-highlight2 light-mode'
       )
     | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "branding".
+ */
+export interface Branding {
+  id: number;
+  logoLight?: (number | null) | Media;
+  logoDark?: (number | null) | Media;
+  logoAlt?: string | null;
+  faviconLight?: (number | null) | Media;
+  faviconDark?: (number | null) | Media;
+  /**
+   * Customize the theme colors for light and dark modes. You are able to change colors for both themes independently. Leaving a field empty will revert it to the default color.
+   */
+  themeColors?: {
+    /**
+     * Enable this to show color editing fields for light and dark themes.
+     */
+    enableCustomColors?: boolean | null;
+    light?: {
+      /**
+       * Default: #09090d
+       */
+      primary?: string | null;
+      /**
+       * Default: #231B67
+       */
+      secondary?: string | null;
+      /**
+       * Default: #35296b
+       */
+      tertiary?: string | null;
+      /**
+       * Default: #ffffff
+       */
+      base?: string | null;
+      /**
+       * Default: #F3E9FF
+       */
+      accent1?: string | null;
+      /**
+       * Default: #c7bad9
+       */
+      accent2?: string | null;
+      /**
+       * Default: #fb823b
+       */
+      accent3?: string | null;
+      /**
+       * Default: #eee
+       */
+      border?: string | null;
+      /**
+       * Default: #eee
+       */
+      neutral?: string | null;
+      /**
+       * Default: #f8d4a2
+       */
+      neutral2?: string | null;
+      /**
+       * Default: #B00020
+       */
+      highlight?: string | null;
+      /**
+       * Default: #e5fcfb
+       */
+      highlight2?: string | null;
+    };
+    dark?: {
+      /**
+       * Default: #e8e8e8
+       */
+      primary?: string | null;
+      /**
+       * Default: #231B67
+       */
+      secondary?: string | null;
+      /**
+       * Default: #50477b
+       */
+      tertiary?: string | null;
+      /**
+       * Default: #121212
+       */
+      base?: string | null;
+      /**
+       * Default: #F3E9FF
+       */
+      accent1?: string | null;
+      /**
+       * Default: #352d6a
+       */
+      accent2?: string | null;
+      /**
+       * Default: #fb823b
+       */
+      accent3?: string | null;
+      /**
+       * Default: #eee
+       */
+      border?: string | null;
+      /**
+       * Default: #eee
+       */
+      neutral?: string | null;
+      /**
+       * Default: #f8d4a2
+       */
+      neutral2?: string | null;
+      /**
+       * Default: #CF6679
+       */
+      highlight?: string | null;
+      /**
+       * Default: #e5fcfb
+       */
+      highlight2?: string | null;
+    };
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1851,6 +1974,57 @@ export interface FooterSelect<T extends boolean = true> {
         id?: T;
       };
   backgroundColor?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "branding_select".
+ */
+export interface BrandingSelect<T extends boolean = true> {
+  logoLight?: T;
+  logoDark?: T;
+  logoAlt?: T;
+  faviconLight?: T;
+  faviconDark?: T;
+  themeColors?:
+    | T
+    | {
+        enableCustomColors?: T;
+        light?:
+          | T
+          | {
+              primary?: T;
+              secondary?: T;
+              tertiary?: T;
+              base?: T;
+              accent1?: T;
+              accent2?: T;
+              accent3?: T;
+              border?: T;
+              neutral?: T;
+              neutral2?: T;
+              highlight?: T;
+              highlight2?: T;
+            };
+        dark?:
+          | T
+          | {
+              primary?: T;
+              secondary?: T;
+              tertiary?: T;
+              base?: T;
+              accent1?: T;
+              accent2?: T;
+              accent3?: T;
+              border?: T;
+              neutral?: T;
+              neutral2?: T;
+              highlight?: T;
+              highlight2?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
