@@ -374,8 +374,7 @@ export interface Category {
  */
 export interface User {
   id: number;
-  firstName: string;
-  lastName: string;
+  name: string;
   /**
    * User roles. Only admins can edit roles (not their own).
    */
@@ -1462,8 +1461,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  firstName?: T;
-  lastName?: T;
+  name?: T;
   roles?: T;
   updatedAt?: T;
   createdAt?: T;

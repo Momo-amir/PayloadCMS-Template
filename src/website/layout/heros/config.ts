@@ -52,6 +52,9 @@ export const hero: Field = {
           value: 'dark',
         },
       ],
+      admin: {
+        condition: (_, { type } = {}) => ['highImpact'].includes(type),
+      },
       required: true,
     },
     {

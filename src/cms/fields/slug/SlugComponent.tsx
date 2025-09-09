@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { TextFieldClientProps } from 'payload'
 
 import { useField, Button, TextInput, FieldLabel, useFormFields, useForm } from '@payloadcms/ui'
@@ -40,15 +40,22 @@ export const SlugComponent: React.FC<SlugComponentProps> = ({
     return fields[fieldToUse]?.value as string
   })
 
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
   useEffect(() => {
-    if (checkboxValue) {
+    if (!checkboxValue) return
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+
+    debounceRef.current = setTimeout(() => {
       if (targetFieldValue) {
         const formattedSlug = formatSlug(targetFieldValue)
-
         if (value !== formattedSlug) setValue(formattedSlug)
-      } else {
-        if (value !== '') setValue('')
+      } else if (value !== '') {
+        setValue('')
       }
+    }, 1000)
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
     }
   }, [targetFieldValue, checkboxValue, setValue, value])
 
@@ -72,8 +79,12 @@ export const SlugComponent: React.FC<SlugComponentProps> = ({
       <div className="label-wrapper">
         <FieldLabel htmlFor={`field-${path}`} label={label} />
 
-        <Button className="lock-button" buttonStyle="none" onClick={handleLock}>
-          {checkboxValue ? 'Unlock' : 'Lock'}
+        <Button
+          className="lock-button hover:text-underline"
+          buttonStyle="none"
+          onClick={handleLock}
+        >
+          {checkboxValue ? 'Unlock from title' : 'Lock to title'}
         </Button>
       </div>
 
