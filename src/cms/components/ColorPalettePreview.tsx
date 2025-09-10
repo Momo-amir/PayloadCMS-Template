@@ -87,7 +87,7 @@ const ColorPalettePreview: React.FC = () => {
         <strong style={{ fontSize: '12px' }}>Color Combination Preview</strong>
       </div>
 
-      <div className="flex">
+      <div style={{ display: 'flex' }}>
         {/* Light theme preview */}
         <div
           style={{
@@ -121,14 +121,21 @@ const ColorPalettePreview: React.FC = () => {
 
       {/* Button preview section - separate from color backgrounds */}
       {enableHover && (hoverBgColorData || hoverTextColorData) && (
-        <div className="p-4 border-t border-gray-300 bg-gray-50">
-          <div className="text-xs font-bold mb-2 text-gray-700">Hover Effect Demo:</div>
-          <div className="flex gap-3 items-center">
+        <div style={{ padding: '16px', borderTop: '1px solid #ddd', backgroundColor: '#fafafa' }}>
+          <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', color: '#333' }}>
+            Hover Effect Demo:
+          </div>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <button
-              className="px-4 py-2 border-none rounded text-sm cursor-pointer transition-all duration-200"
               style={{
+                padding: '8px 16px',
                 backgroundColor: bgColorData.color,
                 color: textColorData.color,
+                border: 'none',
+                borderRadius: '4px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
               }}
               onClick={(e) => e.preventDefault()}
               onMouseEnter={(e) => {
@@ -146,16 +153,22 @@ const ColorPalettePreview: React.FC = () => {
             >
               Light Theme
             </button>
-            <span className="text-xs text-gray-600">← Hover for light theme colors</span>
+            <span style={{ fontSize: '12px', color: '#666' }}>← Hover for light theme colors</span>
 
             {/* Dark mode hover button */}
             {bgColorDark && textColorDark && _hoverBgColorDark && _hoverTextColorDark && (
               <>
                 <button
-                  className="px-4 py-2 border-none rounded text-sm cursor-pointer transition-all duration-200 ml-5"
                   style={{
+                    padding: '8px 16px',
                     backgroundColor: bgColorDark.color,
                     color: textColorDark.color,
+                    border: 'none',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    marginLeft: '20px',
                   }}
                   onClick={(e) => e.preventDefault()}
                   onMouseEnter={(e) => {
@@ -173,14 +186,16 @@ const ColorPalettePreview: React.FC = () => {
                 >
                   Dark Theme
                 </button>
-                <span className="text-xs text-gray-600">← Hover for dark theme colors</span>
+                <span style={{ fontSize: '12px', color: '#666' }}>
+                  ← Hover for dark theme colors
+                </span>
               </>
             )}
           </div>
         </div>
       )}
 
-      <div className="p-2 text-xs text-gray-600 bg-gray-50">
+      <div style={{ padding: '8px', fontSize: '11px', color: '#666', backgroundColor: '#f9f9f9' }}>
         <strong>Generated classes:</strong>{' '}
         <code>
           bg-{backgroundColor} text-{textColor}
