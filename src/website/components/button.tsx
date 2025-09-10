@@ -20,7 +20,7 @@ const buttonVariants = cva(
       },
       variant: {
         default: 'bg-primary border border-primary text-base hover:bg-base hover:text-primary',
-        accent: 'bg-accent2 text-tertiary hover:bg-tertiary hover:text-accent2',
+        accent: 'bg-accent text-primary hover:bg-accent3 hover:text-primary',
         ghost: 'hover:bg-border hover:text-accent',
         link: 'text-primary items-start justify-start underline-offset-4 hover:underline',
         outline: 'border border-primary bg-base hover:bg-primary hover:text-base',
