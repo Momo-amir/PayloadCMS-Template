@@ -1,5 +1,6 @@
 import type { Block } from 'payload'
 import { link } from '@/cms/fields/link'
+import { createColorPaletteField } from '@/cms/fields/colorPalette'
 
 export const CardBlock: Block = {
   slug: 'cardBlock',
@@ -9,27 +10,10 @@ export const CardBlock: Block = {
     plural: 'Card Layout',
   },
   fields: [
-    {
-      name: 'backgroundColor',
-      type: 'select',
-      label: 'Color Palette',
-      options: [
-        { label: 'Default ', value: '' },
-        { label: 'Primary', value: 'bg-primary text-base' },
-        { label: 'Secondary', value: 'bg-secondary text-primary' },
-        { label: 'Tertiary', value: 'bg-tertiary text-accent2' },
-        { label: 'Base', value: 'bg-base text-primary' },
-        { label: 'Neutral', value: 'bg-neutral text-primary' },
-        { label: 'Accent', value: 'bg-accent text-primary' },
-        { label: 'Accent 2', value: 'bg-accent2 text-primary' },
-        { label: 'Accent 3', value: 'bg-accent3 text-base' },
-      ],
-      admin: {
-        isClearable: false,
-        condition: (data) => !data?.colorMode || data?.colorMode === 'block',
-        description: 'Applied to every card when mode is Single color.',
-      },
-    },
+    createColorPaletteField({
+      description: 'Applied to every card when mode is Single color.',
+      condition: (data) => !data?.colorMode || data?.colorMode === 'block',
+    }),
     {
       name: 'colorMode',
       type: 'select',

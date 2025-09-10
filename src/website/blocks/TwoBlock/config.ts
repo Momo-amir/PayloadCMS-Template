@@ -4,6 +4,7 @@ import { CallToAction } from '../CallToAction/config'
 import { Content } from '../Content/config'
 import { FormBlock } from '../Form/config'
 import { MediaBlock } from '../MediaBlock/config'
+import { createColorPaletteField } from '@/cms/fields/colorPalette'
 
 export const TwoBlock: Block = {
   slug: 'twoBlock',
@@ -13,26 +14,7 @@ export const TwoBlock: Block = {
     plural: 'Two-Column Layouts',
   },
   fields: [
-    {
-      name: 'backgroundColor',
-      type: 'select',
-      label: 'Color Palette',
-      defaultValue: '',
-      options: [
-        { label: 'None', value: '' },
-        { label: 'Primary', value: 'bg-primary text-base' },
-        { label: 'Secondary', value: 'bg-secondary text-primary' },
-        { label: 'Tertiary', value: 'bg-tertiary text-accent2' },
-        { label: 'Base', value: 'bg-base text-primary' },
-        { label: 'Neutral', value: 'bg-neutral text-primary' },
-        { label: 'Accent', value: 'bg-accent text-primary' },
-        { label: 'Accent 2', value: 'bg-accent2 text-primary' },
-        { label: 'Accent 3', value: 'bg-accent3 text-base' },
-      ],
-      admin: {
-        isClearable: false,
-      },
-    },
+    createColorPaletteField(),
     {
       name: 'left',
       type: 'blocks',

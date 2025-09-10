@@ -1,7 +1,7 @@
 import type { GlobalConfig } from 'payload'
-
 import { link } from '@/cms/fields/link'
 import { revalidateFooter } from './hooks/revalidateFooter'
+import { createColorPaletteField } from '@/cms/fields/colorPalette'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
@@ -25,22 +25,9 @@ export const Footer: GlobalConfig = {
         },
       },
     },
-    {
-      name: 'backgroundColor',
-      type: 'select',
-      label: 'Color Palette',
-      options: [
-        { label: 'Default', value: '' },
-        { label: 'Dark', value: 'bg-base text-primary' },
-        { label: 'Secondary', value: 'bg-secondary text-primary' },
-        { label: 'Tertiary', value: 'bg-tertiary text-accent2' },
-        { label: 'White', value: 'bg-base text-primary light' },
-        { label: 'Neutral', value: 'bg-neutral text-primary' },
-        { label: 'Accent', value: 'bg-accent text-primary' },
-        { label: 'Accent 2', value: 'bg-accent2 text-primary' },
-        { label: 'Accent 3', value: 'bg-accent3 text-base' },
-      ],
-    },
+    createColorPaletteField({
+      description: 'Choose the color theme for the footer background and text',
+    }),
   ],
   hooks: {
     afterChange: [revalidateFooter],
