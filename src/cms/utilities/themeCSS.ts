@@ -61,7 +61,7 @@ export const generateThemeCSS = (branding: Branding | null | undefined): string 
 
   // Generate complete CSS with proper formatting
   const css = `
-:root {
+:root, [data-theme='light'] {
 ${lightDecls}
 }
 

@@ -766,14 +766,13 @@ export interface TwoColumnBlock {
     | (
         | ''
         | 'bg-primary text-base'
-        | 'bg-secondary text-white'
+        | 'bg-secondary text-primary'
         | 'bg-tertiary text-accent2'
-        | 'bg-base'
-        | 'bg-highlight text-accent3'
-        | 'bg-highlight2 text-accent3'
-        | 'bg-accent text-secondary'
-        | 'bg-accent2 text-tertiary'
-        | 'bg-accent3 text-highlight2'
+        | 'bg-base text-primary'
+        | 'bg-neutral text-primary'
+        | 'bg-accent text-primary'
+        | 'bg-accent2 text-primary'
+        | 'bg-accent3 text-base'
       )
     | null;
   left?: (ArchiveBlock | CallToActionBlock | ContentBlock | FormBlock | MediaBlock)[] | null;
@@ -794,14 +793,13 @@ export interface CardBlock {
     | (
         | ''
         | 'bg-primary text-base'
-        | 'bg-secondary text-white'
+        | 'bg-secondary text-primary'
         | 'bg-tertiary text-accent2'
-        | 'bg-base'
-        | 'bg-highlight text-accent3'
-        | 'bg-highlight2 text-accent3'
-        | 'bg-accent text-secondary'
-        | 'bg-accent2 text-tertiary'
-        | 'bg-accent3 text-highlight2'
+        | 'bg-base text-primary'
+        | 'bg-neutral text-primary'
+        | 'bg-accent text-primary'
+        | 'bg-accent2 text-primary'
+        | 'bg-accent3 text-base'
       )
     | null;
   /**
@@ -841,15 +839,14 @@ export interface CardBlock {
     cardBackgroundColor?:
       | (
           | ''
-          | 'bg-primary'
-          | 'bg-secondary text-white'
+          | 'bg-primary text-base'
+          | 'bg-secondary text-primary'
           | 'bg-tertiary text-accent2'
-          | 'bg-base'
-          | 'bg-highlight text-accent3'
-          | 'bg-highlight2 text-accent3'
-          | 'bg-accent text-secondary'
-          | 'bg-accent2 text-tertiary'
-          | 'bg-accent3 text-highlight2'
+          | 'bg-base text-primary'
+          | 'bg-neutral text-primary'
+          | 'bg-accent text-primary'
+          | 'bg-accent2 text-primary'
+          | 'bg-accent3 text-base'
         )
       | null;
     id?: string | null;
@@ -1794,15 +1791,14 @@ export interface Footer {
   backgroundColor?:
     | (
         | ''
-        | 'bg-primary text-base'
-        | 'bg-secondary text-white'
+        | 'bg-base text-primary'
+        | 'bg-secondary text-primary'
         | 'bg-tertiary text-accent2'
-        | 'bg-base'
-        | 'bg-highlight text-accent3'
-        | 'bg-highlight2 text-accent3'
-        | 'bg-accent text-secondary light-mode'
-        | 'bg-accent2 text-tertiary light-mode'
-        | 'bg-accent3 text-highlight2 light-mode'
+        | 'bg-base text-primary light'
+        | 'bg-neutral text-primary'
+        | 'bg-accent text-primary'
+        | 'bg-accent2 text-primary'
+        | 'bg-accent3 text-base'
       )
     | null;
   updatedAt?: string | null;

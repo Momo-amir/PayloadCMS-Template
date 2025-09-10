@@ -15,7 +15,7 @@ export async function Footer() {
   const logoProps = toLogoProps(branding)
   const navItems = footerData?.navItems || []
   const backgroundColor = footerData?.backgroundColor || ''
-  const theme = backgroundColor.includes('light-mode') ? 'light' : 'dark'
+  const theme = backgroundColor.includes('light') ? 'light' : 'dark'
 
   // Always keep mt-auto, but allow dynamic backgroundColor and text color
   const footerClass = ['mt-auto', backgroundColor || 'bg-secondary text-primary']
