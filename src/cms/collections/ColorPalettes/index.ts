@@ -10,6 +10,8 @@ export const ColorPalettes: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     description: 'Create reusable color combinations using your branding colors',
+    defaultColumns: ['name', 'value', 'backgroundColor', 'textColor', 'enableHover'],
+    listSearchableFields: ['name', 'description'],
   },
   access: {
     read: () => true,
@@ -53,7 +55,7 @@ export const ColorPalettes: CollectionConfig = {
         {
           name: 'textColor',
           type: 'text',
-          label: '📝 Text Color',
+          label: 'Text Color',
           required: true,
           admin: {
             width: '50%',
@@ -68,7 +70,7 @@ export const ColorPalettes: CollectionConfig = {
     {
       name: 'enableHover',
       type: 'checkbox',
-      label: 'Enable Hover Colors',
+      label: 'Hover',
       defaultValue: false,
       admin: {
         description: 'Add hover state colors for interactive elements like buttons',
@@ -145,13 +147,11 @@ export const ColorPalettes: CollectionConfig = {
     ],
     afterChange: [
       () => {
-        // Clear cache when palettes change
         clearColorPalettesCache()
       },
     ],
     afterDelete: [
       () => {
-        // Clear cache when palettes are deleted
         clearColorPalettesCache()
       },
     ],

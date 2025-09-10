@@ -6,7 +6,7 @@ import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './cms/collections/Categories'
-import { ColorPalettes } from './cms/collections/ColorPalettes/config'
+import { ColorPalettes } from './cms/collections/ColorPalettes'
 import { Media } from './cms/collections/Media'
 import { Pages } from './cms/collections/Pages'
 import { Posts } from './cms/collections/Posts'

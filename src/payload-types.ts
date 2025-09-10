@@ -1848,255 +1848,108 @@ export interface Branding {
   faviconLight?: (number | null) | Media;
   faviconDark?: (number | null) | Media;
   /**
-   * Customize the theme colors for light and dark modes. You are able to change colors for both themes independently. Leaving a field empty will revert it to the default color.
+   * Customize colors for light and dark themes.
    */
   themeColors?: {
-    /**
-     * Enable this to show color editing fields for light and dark themes.
-     */
     enableCustomColors?: boolean | null;
     light?: {
       primary?: {
-        /**
-         * Default: #09090d. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       secondary?: {
-        /**
-         * Default: #231B67. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       tertiary?: {
-        /**
-         * Default: #35296b. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       base?: {
-        /**
-         * Default: #ffffff. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       accent1?: {
-        /**
-         * Default: #F3E9FF. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       accent2?: {
-        /**
-         * Default: #c7bad9. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       accent3?: {
-        /**
-         * Default: #fb823b. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       border?: {
-        /**
-         * Default: #eee. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       neutral?: {
-        /**
-         * Default: #eee. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       neutral2?: {
-        /**
-         * Default: #f8d4a2. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       highlight?: {
-        /**
-         * Default: #B00020. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       highlight2?: {
-        /**
-         * Default: #e5fcfb. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
     };
     dark?: {
       primary?: {
-        /**
-         * Default: #e8e8e8. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       secondary?: {
-        /**
-         * Default: #231B67. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       tertiary?: {
-        /**
-         * Default: #50477b. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       base?: {
-        /**
-         * Default: #121212. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       accent1?: {
-        /**
-         * Default: #F3E9FF. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       accent2?: {
-        /**
-         * Default: #352d6a. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       accent3?: {
-        /**
-         * Default: #fb823b. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       border?: {
-        /**
-         * Default: #eee. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       neutral?: {
-        /**
-         * Default: #eee. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       neutral2?: {
-        /**
-         * Default: #f8d4a2. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       highlight?: {
-        /**
-         * Default: #CF6679. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
       highlight2?: {
-        /**
-         * Default: #e5fcfb. Accepts hex, rgb, hsl, or CSS color names.
-         */
-        color?: string | null;
-        /**
-         * Optional friendly name for this color (for your reference only)
-         */
         label?: string | null;
+        color?: string | null;
       };
     };
   };
@@ -2170,74 +2023,74 @@ export interface BrandingSelect<T extends boolean = true> {
               primary?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               secondary?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               tertiary?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               base?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               accent1?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               accent2?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               accent3?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               border?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               neutral?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               neutral2?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               highlight?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               highlight2?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
             };
         dark?:
@@ -2246,74 +2099,74 @@ export interface BrandingSelect<T extends boolean = true> {
               primary?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               secondary?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               tertiary?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               base?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               accent1?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               accent2?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               accent3?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               border?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               neutral?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               neutral2?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               highlight?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
               highlight2?:
                 | T
                 | {
-                    color?: T;
                     label?: T;
+                    color?: T;
                   };
             };
       };
