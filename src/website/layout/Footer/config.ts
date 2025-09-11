@@ -26,8 +26,24 @@ export const Footer: GlobalConfig = {
       },
     },
     createColorPaletteField({
+      name: 'backgroundColor',
+      label: 'Background Color Theme',
       description: 'Choose the color theme for the footer background and text',
     }),
+    {
+      name: 'themeMode',
+      type: 'select',
+      label: 'Force Light or Dark Mode',
+      defaultValue: 'dark',
+      options: [
+        { label: 'Light', value: 'light' },
+        { label: 'Dark', value: 'dark' },
+      ],
+      admin: {
+        description: 'By default the footer is using dark mode, but you can override that here.',
+        width: '50%',
+      },
+    },
   ],
   hooks: {
     afterChange: [revalidateFooter],

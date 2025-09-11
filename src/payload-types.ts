@@ -187,11 +187,15 @@ export interface Page {
             url?: string | null;
             label: string;
             /**
+             * Enable this to use a custom color palette instead of appearance options.
+             */
+            useCustomColorTheme?: boolean | null;
+            /**
              * Choose how the link should be rendered.
              */
             appearance?: ('default' | 'outline') | null;
             /**
-             * Choose a color theme for this link/button
+             * Choose a color theme for this link/button.
              */
             colorPalette?: string | null;
           };
@@ -442,11 +446,15 @@ export interface CallToActionBlock {
           url?: string | null;
           label: string;
           /**
+           * Enable this to use a custom color palette instead of appearance options.
+           */
+          useCustomColorTheme?: boolean | null;
+          /**
            * Choose how the link should be rendered.
            */
-          appearance?: ('default' | 'outline' | 'accent' | 'link' | 'secondary') | null;
+          appearance?: ('default' | 'outline' | 'link') | null;
           /**
-           * Choose a color theme for this link/button
+           * Choose a color theme for this link/button.
            */
           colorPalette?: string | null;
         };
@@ -511,11 +519,15 @@ export interface ContentBlock {
           url?: string | null;
           label: string;
           /**
+           * Enable this to use a custom color palette instead of appearance options.
+           */
+          useCustomColorTheme?: boolean | null;
+          /**
            * Choose how the link should be rendered.
            */
           appearance?: ('default' | 'outline') | null;
           /**
-           * Choose a color theme for this link/button
+           * Choose a color theme for this link/button.
            */
           colorPalette?: string | null;
         };
@@ -791,7 +803,7 @@ export interface CardBlock {
   /**
    * Applied to every card when mode is Single color.
    */
-  backgroundColor?: string | null;
+  cardBackgroundColor?: string | null;
   /**
    * Choose whether to use one color for all cards or set colors individually.
    */
@@ -815,11 +827,15 @@ export interface CardBlock {
       url?: string | null;
       label: string;
       /**
+       * Enable this to use a custom color palette instead of appearance options.
+       */
+      useCustomColorTheme?: boolean | null;
+      /**
        * Choose how the link should be rendered.
        */
-      appearance?: ('default' | 'link' | 'secondary' | 'outline') | null;
+      appearance?: ('default' | 'link' | 'outline') | null;
       /**
-       * Choose a color theme for this link/button
+       * Choose a color theme for this link/button.
        */
       colorPalette?: string | null;
     };
@@ -1165,6 +1181,7 @@ export interface PagesSelect<T extends boolean = true> {
                     reference?: T;
                     url?: T;
                     label?: T;
+                    useCustomColorTheme?: T;
                     appearance?: T;
                     colorPalette?: T;
                   };
@@ -1214,6 +1231,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
+              useCustomColorTheme?: T;
               appearance?: T;
               colorPalette?: T;
             };
@@ -1242,6 +1260,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
+              useCustomColorTheme?: T;
               appearance?: T;
               colorPalette?: T;
             };
@@ -1317,7 +1336,7 @@ export interface TwoColumnBlockSelect<T extends boolean = true> {
  * via the `definition` "CardBlock_select".
  */
 export interface CardBlockSelect<T extends boolean = true> {
-  backgroundColor?: T;
+  cardBackgroundColor?: T;
   colorMode?: T;
   heading?: T;
   cards?:
@@ -1333,6 +1352,7 @@ export interface CardBlockSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
+              useCustomColorTheme?: T;
               appearance?: T;
               colorPalette?: T;
             };
@@ -1804,10 +1824,6 @@ export interface Header {
               } | null);
           url?: string | null;
           label: string;
-          /**
-           * Choose a color theme for this link/button
-           */
-          colorPalette?: string | null;
         };
         id?: string | null;
       }[]
@@ -1837,10 +1853,6 @@ export interface Footer {
               } | null);
           url?: string | null;
           label: string;
-          /**
-           * Choose a color theme for this link/button
-           */
-          colorPalette?: string | null;
         };
         id?: string | null;
       }[]
@@ -1849,6 +1861,10 @@ export interface Footer {
    * Choose the color theme for the footer background and text
    */
   backgroundColor?: string | null;
+  /**
+   * By default the footer is using dark mode, but you can override that here.
+   */
+  themeMode?: ('light' | 'dark') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2135,7 +2151,6 @@ export interface HeaderSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
-              colorPalette?: T;
             };
         id?: T;
       };
@@ -2159,11 +2174,11 @@ export interface FooterSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
-              colorPalette?: T;
             };
         id?: T;
       };
   backgroundColor?: T;
+  themeMode?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

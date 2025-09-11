@@ -11,6 +11,8 @@ export const CardBlock: Block = {
   },
   fields: [
     createColorPaletteField({
+      name: 'cardBackgroundColor',
+      label: 'Card Background Color',
       description: 'Applied to every card when mode is Single color.',
       condition: (data) => !data?.colorMode || data?.colorMode === 'block',
     }),
