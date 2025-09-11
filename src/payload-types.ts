@@ -2008,6 +2008,26 @@ export interface Branding {
          */
         color?: string | null;
       };
+      white?: {
+        /**
+         * Optional friendly name for this color (for your reference only)
+         */
+        label?: string | null;
+        /**
+         * Default: #ffffff. Accepts hex, rgb, hsl, or CSS color names.
+         */
+        color?: string | null;
+      };
+      black?: {
+        /**
+         * Optional friendly name for this color (for your reference only)
+         */
+        label?: string | null;
+        /**
+         * Default: #000000. Accepts hex, rgb, hsl, or CSS color names.
+         */
+        color?: string | null;
+      };
     };
     dark?: {
       primary?: {
@@ -2127,6 +2147,26 @@ export interface Branding {
         label?: string | null;
         /**
          * Default: #e5fcfb. Accepts hex, rgb, hsl, or CSS color names.
+         */
+        color?: string | null;
+      };
+      white?: {
+        /**
+         * Optional friendly name for this color (for your reference only)
+         */
+        label?: string | null;
+        /**
+         * Default: #e8e8e8. Accepts hex, rgb, hsl, or CSS color names.
+         */
+        color?: string | null;
+      };
+      black?: {
+        /**
+         * Optional friendly name for this color (for your reference only)
+         */
+        label?: string | null;
+        /**
+         * Default: #000000. Accepts hex, rgb, hsl, or CSS color names.
          */
         color?: string | null;
       };
@@ -2272,6 +2312,18 @@ export interface BrandingSelect<T extends boolean = true> {
                     label?: T;
                     color?: T;
                   };
+              white?:
+                | T
+                | {
+                    label?: T;
+                    color?: T;
+                  };
+              black?:
+                | T
+                | {
+                    label?: T;
+                    color?: T;
+                  };
             };
         dark?:
           | T
@@ -2343,6 +2395,18 @@ export interface BrandingSelect<T extends boolean = true> {
                     color?: T;
                   };
               highlight2?:
+                | T
+                | {
+                    label?: T;
+                    color?: T;
+                  };
+              white?:
+                | T
+                | {
+                    label?: T;
+                    color?: T;
+                  };
+              black?:
                 | T
                 | {
                     label?: T;

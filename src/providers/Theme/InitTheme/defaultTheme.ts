@@ -13,6 +13,8 @@ export const defaultTheme = {
     neutral2: '#f8d4a2',
     highlight: '#B00020',
     highlight2: '#e5fcfb',
+    white: '#ffffff',
+    black: '#000000',
   },
   dark: {
     primary: '#e8e8e8',
@@ -27,6 +29,8 @@ export const defaultTheme = {
     neutral2: '#f8d4a2',
     highlight: '#CF6679',
     highlight2: '#e5fcfb',
+    white: '#e8e8e8',
+    black: '#000000',
   },
 } as const
 
@@ -43,6 +47,8 @@ export type ThemePalette = {
   neutral2: string
   highlight: string
   highlight2: string
+  white: string
+  black: string
 }
 
 export type ThemeMode = keyof typeof defaultTheme
