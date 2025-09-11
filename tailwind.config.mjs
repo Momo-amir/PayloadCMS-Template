@@ -58,7 +58,7 @@ const config = {
         base: 'var(--base)',
         highlight: 'var(--highlight)',
         highlight2: 'var(--highlight-2)',
-        accent: 'var(--accent-1)',
+        accent1: 'var(--accent-1)',
         accent2: 'var(--accent-2)',
         accent3: 'var(--accent-3)',
         border: 'var(--border)',
