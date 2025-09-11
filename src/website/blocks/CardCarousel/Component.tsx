@@ -132,8 +132,8 @@ export const CardCarouselBlock: React.FC<Props> = ({
                     {card.description && <CardDescription>{card.description}</CardDescription>}
                   </CardHeader>
                   {card.link && card.link.label && href && (
-                    <CardContent className="pt-0 text-sm font-medium underline underline-offset-4">
-                      {card.link.label}
+                    <CardContent className="pt-0 text-sm ">
+                      <div className="flex items-center"><span className="text-lg font-semibold pr-2">{card.link.label}</span> <IconArrowRight size={24} /></div>
                     </CardContent>
                   )}
                 </Card>
