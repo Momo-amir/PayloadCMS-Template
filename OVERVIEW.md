@@ -144,4 +144,10 @@ You can personalize the template by modifying logos and colors in the Admin dash
 
 For more granular control, you can modify the CSS variables in `src/providers/Theme/InitTheme/defaultTheme.ts` to change the color scheme. The palette names are purposely kept non-descriptive and will apply globally.
 Remove any unused colors in the theme file to keep it clean.
-The components and layout-blocks come with support for different color themes. You should update the labels and values in their config.ts or component.tsx files in accordance with your design requirements. These can be found in the `src/website/blocks/yourblock/` directory for layout blocks and `src/website/components/component.tsx` file for individual components.
+The components and layout-blocks come with support for different color themes. Through the Color Palettes collection in the dashboard you can combine different colors to create new palettes that can be applied to blocks and components. This allows for a high degree of customization and personalization
+
+The blocks and components that support color themes will have a "Color Palette" select field that allows you to choose from the defined palettes in the CMS. This should give good control without hardcoding colors. At the time of this writing, the following blocks support color themes: TwoBlock, Links/Buttons, Card block, Footer
+
+They way it works is that the colors correspond to a css variable that is applied to the block or component. For example, if you select "Primary" + Base and apply the palette to a button, it will use the `--color-primary` & `--color-base` variables that then will be applied as Tailwind classes.
+
+Support for hover colors are also available when creating a palette, this means you likely will have multiple palettes with and without hovers
