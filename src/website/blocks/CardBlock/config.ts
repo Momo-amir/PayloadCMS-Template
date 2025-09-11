@@ -55,7 +55,7 @@ export const CardBlock: Block = {
           required: false,
         },
         // Include 'default' because the shared link field sets defaultValue: 'default'
-        link({ appearances: ['default', 'link', 'secondary', 'outline'] }),
+        link({ appearances: ['default', 'link', 'outline'] }),
         {
           name: 'media',
           type: 'upload',
@@ -65,27 +65,12 @@ export const CardBlock: Block = {
             description: 'Optional media (image or video) to show at top of card',
           },
         },
-        {
+
+        createColorPaletteField({
           name: 'cardBackgroundColor',
-          type: 'select',
-          label: 'Card Color',
-          admin: {
-            // Always show to avoid conditional rendering glitches; explain usage.
-            description: 'Used when Color Mode = Individual per card. Ignored otherwise.',
-          },
-          options: [
-            { label: 'None', value: '' },
-            { label: 'Primary', value: 'bg-primary text-base' },
-            { label: 'Secondary', value: 'bg-secondary text-primary' },
-            { label: 'Tertiary', value: 'bg-tertiary text-accent2' },
-            { label: 'Base', value: 'bg-base text-primary' },
-            { label: 'Neutral', value: 'bg-neutral text-primary' },
-            { label: 'Accent', value: 'bg-accent text-primary' },
-            { label: 'Accent 2', value: 'bg-accent2 text-primary' },
-            { label: 'Accent 3', value: 'bg-accent3 text-base' },
-          ],
-          defaultValue: '',
-        },
+          description: 'Applied to every card when mode is Single color.',
+          condition: (data) => data?.colorMode === 'per-card',
+        }),
       ],
     },
     {

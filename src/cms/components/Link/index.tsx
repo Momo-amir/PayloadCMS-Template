@@ -9,6 +9,7 @@ type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
   children?: React.ReactNode
   className?: string
+  colorPalette?: string | null
   label?: string | null
   newTab?: boolean | null
   reference?: {
@@ -26,6 +27,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     appearance = 'inline',
     children,
     className,
+    colorPalette,
     label,
     newTab,
     reference,
@@ -45,10 +47,13 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
+  // Combine className with color palette
+  const linkClassName = cn(className, colorPalette || '')
+
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <Link className={linkClassName} href={href || url || ''} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>
@@ -56,8 +61,8 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   }
 
   return (
-    <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+    <Button asChild className={linkClassName} size={size} variant={appearance}>
+      <Link href={href || url || ''} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>

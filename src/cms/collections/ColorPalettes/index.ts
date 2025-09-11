@@ -47,7 +47,7 @@ export const ColorPalettes: CollectionConfig = {
           admin: {
             width: '50%',
             components: {
-              Field: '@/cms/components/BrandingColorPickerField',
+              Field: '@/cms/components/BrandingColorSelect',
             },
             description: 'Choose from your branding colors',
           },
@@ -60,7 +60,7 @@ export const ColorPalettes: CollectionConfig = {
           admin: {
             width: '50%',
             components: {
-              Field: '@/cms/components/BrandingColorPickerField',
+              Field: '@/cms/components/BrandingColorSelect',
             },
             description: 'Choose from your branding colors',
           },
@@ -89,7 +89,7 @@ export const ColorPalettes: CollectionConfig = {
           admin: {
             width: '50%',
             components: {
-              Field: '@/cms/components/BrandingColorPickerField',
+              Field: '@/cms/components/BrandingColorSelect',
             },
             description: 'Background color on hover',
           },
@@ -101,7 +101,7 @@ export const ColorPalettes: CollectionConfig = {
           admin: {
             width: '50%',
             components: {
-              Field: '@/cms/components/BrandingColorPickerField',
+              Field: '@/cms/components/BrandingColorSelect',
             },
             description: 'Text color on hover',
           },

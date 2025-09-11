@@ -25,7 +25,7 @@ type ColorOption = {
   darkColor?: string
 }
 
-export const BrandingColorPickerField: React.FC<SelectFieldClientProps> = (props) => {
+export const BrandingColorSelect: React.FC<SelectFieldClientProps> = (props) => {
   const { path, field } = props
   const { value, setValue } = useField<string>({ path })
   const [options, setOptions] = useState<ColorOption[]>([])
@@ -96,17 +96,6 @@ export const BrandingColorPickerField: React.FC<SelectFieldClientProps> = (props
       setOptions(colorOptions)
     } catch (error) {
       console.error('Error fetching branding colors:', error)
-      // Fallback to basic theme variables
-      setOptions([
-        { label: 'Primary', value: 'primary', lightColor: '#000000', darkColor: '#ffffff' },
-        { label: 'Secondary', value: 'secondary', lightColor: '#231B67', darkColor: '#231B67' },
-        { label: 'Tertiary', value: 'tertiary', lightColor: '#35296b', darkColor: '#50477b' },
-        { label: 'Base', value: 'base', lightColor: '#ffffff', darkColor: '#121212' },
-        { label: 'Neutral', value: 'neutral', lightColor: '#eee', darkColor: '#eee' },
-        { label: 'Accent', value: 'accent', lightColor: '#F3E9FF', darkColor: '#F3E9FF' },
-        { label: 'Accent 2', value: 'accent2', lightColor: '#c7bad9', darkColor: '#352d6a' },
-        { label: 'Accent 3', value: 'accent3', lightColor: '#fb823b', darkColor: '#fb823b' },
-      ])
     } finally {
       setLoading(false)
     }
@@ -328,4 +317,4 @@ export const BrandingColorPickerField: React.FC<SelectFieldClientProps> = (props
     </div>
   )
 }
-export default BrandingColorPickerField
+export default BrandingColorSelect

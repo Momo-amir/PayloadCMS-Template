@@ -1,8 +1,9 @@
 import type { Field, GroupField } from 'payload'
 
 import deepMerge from '@/cms/utilities/deepMerge'
+import { createColorPaletteField } from './colorPalette'
 
-export type LinkAppearances = 'default' | 'outline' | 'accent' | 'link' | 'secondary'
+export type LinkAppearances = 'default' | 'outline' | 'link'
 
 export const appearanceOptions: Record<LinkAppearances, { label: string; value: string }> = {
   default: {
@@ -13,17 +14,10 @@ export const appearanceOptions: Record<LinkAppearances, { label: string; value: 
     label: 'Outline',
     value: 'outline',
   },
-  accent: {
-    label: 'Accent',
-    value: 'accent',
-  },
+
   link: {
     label: 'Link',
     value: 'link',
-  },
-  secondary: {
-    label: 'Secondary',
-    value: 'secondary',
   },
 }
 
@@ -146,6 +140,15 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       options: appearanceOptionsToUse,
     })
   }
+
+  // Add color palette field for styling links/buttons
+  linkResult.fields.push(
+    createColorPaletteField({
+      name: 'colorPalette',
+      label: 'Color Theme',
+      description: 'Choose a color theme for this link/button',
+    }),
+  )
 
   return deepMerge(linkResult, overrides)
 }

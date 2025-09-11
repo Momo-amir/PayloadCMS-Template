@@ -44,23 +44,10 @@ export async function getColorPaletteOptions() {
 
   const options = [
     { label: 'Default', value: '' }, // Keep default option
-
-    // Static theme colors (from your CSS variables)
-    { label: '--- Theme Colors ---', value: 'theme-separator', disabled: true },
-    { label: 'Primary', value: 'bg-primary text-base' },
-    { label: 'Secondary', value: 'bg-secondary text-primary' },
-    { label: 'Tertiary', value: 'bg-tertiary text-accent2' },
-    { label: 'Base', value: 'bg-base text-primary' },
-    { label: 'Neutral', value: 'bg-neutral text-primary' },
-    { label: 'Accent', value: 'bg-accent text-primary' },
-    { label: 'Accent 2', value: 'bg-accent2 text-primary' },
-    { label: 'Accent 3', value: 'bg-accent3 text-base' },
   ]
 
   // Add custom palettes from the collection
   if (palettes.length > 0) {
-    options.push({ label: '--- Custom Palettes ---', value: 'custom-separator', disabled: true })
-
     palettes.forEach((palette) => {
       if (palette.value) {
         options.push({
