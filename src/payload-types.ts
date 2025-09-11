@@ -204,7 +204,16 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | TwoColumnBlock | CardBlock)[];
+  layout: (
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | TwoColumnBlock
+    | CardBlock
+    | CardCarouselBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -858,6 +867,69 @@ export interface CardBlock {
   blockType: 'cardBlock';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardCarouselBlock".
+ */
+export interface CardCarouselBlock {
+  /**
+   * Applied to every card when mode is Single color.
+   */
+  cardBackgroundColor?: string | null;
+  /**
+   * Choose whether to use one color for all cards or set colors individually.
+   */
+  colorMode?: ('block' | 'per-card') | null;
+  heading?: string | null;
+  description?: string | null;
+  cards: {
+    title: string;
+    description?: string | null;
+    link: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+      label: string;
+      /**
+       * Enable this to use a custom color palette instead of appearance options.
+       */
+      useCustomColorTheme?: boolean | null;
+      /**
+       * Choose how the link should be rendered.
+       */
+      appearance?: ('default' | 'link' | 'outline') | null;
+      /**
+       * Choose a color theme for this link/button.
+       */
+      colorPalette?: string | null;
+    };
+    /**
+     * Optional media (image or video) to show at top of card
+     */
+    media?: (number | null) | Media;
+    /**
+     * Applied to every card when mode is Single color.
+     */
+    cardBackgroundColor?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Number of columns on large screens.
+   */
+  columns?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cardCarouselBlock';
+}
+/**
  * Create reusable color combinations using your branding colors
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1199,6 +1271,7 @@ export interface PagesSelect<T extends boolean = true> {
         formBlock?: T | FormBlockSelect<T>;
         twoBlock?: T | TwoColumnBlockSelect<T>;
         cardBlock?: T | CardBlockSelect<T>;
+        cardCarouselBlock?: T | CardCarouselBlockSelect<T>;
       };
   meta?:
     | T
@@ -1339,6 +1412,40 @@ export interface CardBlockSelect<T extends boolean = true> {
   cardBackgroundColor?: T;
   colorMode?: T;
   heading?: T;
+  cards?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              useCustomColorTheme?: T;
+              appearance?: T;
+              colorPalette?: T;
+            };
+        media?: T;
+        cardBackgroundColor?: T;
+        id?: T;
+      };
+  columns?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardCarouselBlock_select".
+ */
+export interface CardCarouselBlockSelect<T extends boolean = true> {
+  cardBackgroundColor?: T;
+  colorMode?: T;
+  heading?: T;
+  description?: T;
   cards?:
     | T
     | {

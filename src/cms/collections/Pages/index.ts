@@ -14,6 +14,7 @@ import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
 import { TwoBlock } from '@/website/blocks/TwoBlock/config'
 import { CardBlock } from '@/website/blocks/CardBlock/config'
+import { CardCarouselBlock } from '@/website/blocks/CardCarousel/config'
 
 import {
   MetaDescriptionField,
@@ -77,7 +78,7 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock, TwoBlock, CardBlock],
+              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock, TwoBlock, CardBlock, CardCarouselBlock],
               required: true,
               admin: {
                 initCollapsed: true,

@@ -9,6 +9,7 @@ import { FormBlock } from '@/website/blocks/Form/Component'
 import { MediaBlock } from '@/website/blocks/MediaBlock/Component'
 import { TwoBlock } from './TwoBlock/Component'
 import { CardBlock } from './CardBlock/Component'
+import { CardCarouselBlock } from './CardCarousel/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -18,6 +19,7 @@ const blockComponents = {
   mediaBlock: MediaBlock,
   twoBlock: TwoBlock,
   cardBlock: CardBlock,
+  cardCarouselBlock: CardCarouselBlock
 }
 
 export const RenderBlocks: React.FC<{
