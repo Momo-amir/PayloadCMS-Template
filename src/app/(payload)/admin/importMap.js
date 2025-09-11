@@ -9,6 +9,7 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { default as default_afbf2a816b1beed5b2e0d24dc91ddb34 } from '@/cms/components/DynamicColorSelect'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -17,10 +18,13 @@ import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 }
 import { SlugComponent as SlugComponent_c016569e15933a342e6df616791e6f95 } from '@/cms/fields/slug/SlugComponent'
 import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { default as default_753190915c81f4aac92ed4f48703b036 } from '@/cms/components/BrandingColorSelect'
+import { default as default_04ceed6524edfa2e14433190c2d990e5 } from '@/cms/components/ColorPalettePreview'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { RowLabel as RowLabel_7373a88fa654e3a8434219cb2baf21de } from '@/website/layout/Header/RowLabel'
 import { RowLabel as RowLabel_4a97e2b05ef1b763469c9aa243cbe4d9 } from '@/website/layout/Footer/RowLabel'
+import { default as default_0e4ba2578c2a2965a0dca15e9c380571 } from '@/cms/components/ColorPickerInput'
 import { default as default_3af3571728f21df855b44977ccb0b582 } from '@/cms/components/Graphics/Graphics.tsx'
 import { default as default_0838309cc1ae884029dee868a8434bf6 } from '@/cms/components/Graphics/Logo.tsx'
 
@@ -36,6 +40,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#LinkFeatureClient": LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/cms/components/DynamicColorSelect#default": default_afbf2a816b1beed5b2e0d24dc91ddb34,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaImageComponent": MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860,
@@ -44,10 +49,13 @@ export const importMap = {
   "@/cms/fields/slug/SlugComponent#SlugComponent": SlugComponent_c016569e15933a342e6df616791e6f95,
   "@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient": HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/cms/components/BrandingColorSelect#default": default_753190915c81f4aac92ed4f48703b036,
+  "@/cms/components/ColorPalettePreview#default": default_04ceed6524edfa2e14433190c2d990e5,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   "@/website/layout/Header/RowLabel#RowLabel": RowLabel_7373a88fa654e3a8434219cb2baf21de,
   "@/website/layout/Footer/RowLabel#RowLabel": RowLabel_4a97e2b05ef1b763469c9aa243cbe4d9,
+  "@/cms/components/ColorPickerInput#default": default_0e4ba2578c2a2965a0dca15e9c380571,
   "@/cms/components/Graphics/Graphics.tsx#default": default_3af3571728f21df855b44977ccb0b582,
   "@/cms/components/Graphics/Logo.tsx#default": default_0838309cc1ae884029dee868a8434bf6
 }

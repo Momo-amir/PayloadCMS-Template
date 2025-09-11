@@ -13,13 +13,39 @@ export const createThemeColorFields = (mode: ThemeMode): Field[] => {
   return variableNames.map(
     (key): Field => ({
       name: key,
+      type: 'group',
       label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1'),
-      type: 'text',
-      defaultValue: themeValues[key],
+
       admin: {
         width: '50%',
-        description: `Default: ${themeValues[key]}`,
+        className: 'theme-color-group',
       },
+      fields: [
+        {
+          name: 'label',
+          type: 'text',
+          label: 'Display Name',
+          admin: {
+            width: '50%',
+            placeholder: `e.g., "Brand Blue", "Call to Action"`,
+            description: 'Optional friendly name for this color (for your reference only)',
+          },
+        },
+
+        {
+          name: 'color',
+          type: 'text',
+          label: 'Color Value',
+          defaultValue: themeValues[key],
+          admin: {
+            width: '50%',
+            description: `Default: ${themeValues[key]}. Accepts hex, rgb, hsl, or CSS color names.`,
+            components: {
+              Field: '@/cms/components/ColorPickerInput',
+            },
+          },
+        },
+      ],
     }),
   )
 }
@@ -50,7 +76,7 @@ export const createThemeColorsGroup = (): Field => ({
           label: 'Light Palette',
           type: 'group',
           admin: {
-            width: '50%',
+            width: '40%',
             condition: (data) => data?.themeColors?.enableCustomColors === true,
           },
           fields: createThemeColorFields('light'),
@@ -60,7 +86,7 @@ export const createThemeColorsGroup = (): Field => ({
           label: 'Dark Palette',
           type: 'group',
           admin: {
-            width: '50%',
+            width: '40%',
             condition: (data) => data?.themeColors?.enableCustomColors === true,
           },
           fields: createThemeColorFields('dark'),

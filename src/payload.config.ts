@@ -6,6 +6,7 @@ import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './cms/collections/Categories'
+import { ColorPalettes } from './cms/collections/ColorPalettes'
 import { Media } from './cms/collections/Media'
 import { Pages } from './cms/collections/Pages'
 import { Posts } from './cms/collections/Posts'
@@ -81,7 +82,7 @@ export default buildConfig({
     },
   }),
 
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections: [Pages, Posts, Media, Categories, Users, ColorPalettes],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer, BrandingGlobal],
   plugins: [

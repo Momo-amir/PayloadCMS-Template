@@ -9,6 +9,7 @@ type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
   children?: React.ReactNode
   className?: string
+  colorPalette?: string | null
   label?: string | null
   newTab?: boolean | null
   reference?: {
@@ -18,6 +19,7 @@ type CMSLinkType = {
   size?: ButtonProps['size'] | null
   type?: 'custom' | 'reference' | null
   url?: string | null
+  useCustomColorTheme?: boolean | null
 }
 
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
@@ -26,11 +28,13 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     appearance = 'inline',
     children,
     className,
+    colorPalette,
     label,
     newTab,
     reference,
     size: sizeFromProps,
     url,
+    useCustomColorTheme,
   } = props
 
   const href =
@@ -45,10 +49,17 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
+  // Only apply colorPalette when useCustomColorTheme is true AND colorPalette has a value
+  const hasColorPalette = useCustomColorTheme === true && colorPalette && colorPalette.trim() !== ''
+  const effectiveAppearance = hasColorPalette ? 'default' : appearance
+
+  // Combine className with color palette only when custom theme is enabled
+  const linkClassName = cn(className, hasColorPalette ? colorPalette : '')
+
   /* Ensure we don't break any styles set by richText */
-  if (appearance === 'inline') {
+  if (effectiveAppearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <Link className={linkClassName} href={href || url || ''} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>
@@ -56,8 +67,8 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   }
 
   return (
-    <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+    <Button asChild className={linkClassName} size={size} variant={effectiveAppearance}>
+      <Link href={href || url || ''} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>

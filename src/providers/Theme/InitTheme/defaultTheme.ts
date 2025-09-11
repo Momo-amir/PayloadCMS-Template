@@ -82,18 +82,11 @@ export const paletteToCSSVars = (palette: Partial<ThemePalette>): Record<string,
 
   Object.entries(palette).forEach(([key, value]) => {
     if (value) {
-      const cssVarName =
-        key === 'accent1'
-          ? '--accent-1'
-          : key === 'accent2'
-            ? '--accent-2'
-            : key === 'accent3'
-              ? '--accent-3'
-              : key === 'neutral2'
-                ? '--neutral-2'
-                : key === 'highlight2'
-                  ? '--highlight-2'
-                  : `--${key}`
+      // Convert camelCase or mixed keys to kebab-case and add leading '--'
+      const cssVarName = `--${key
+        .replace(/([a-z])([0-9])/g, '$1-$2')
+        .replace(/([a-z])([A-Z])/g, '$1-$2')
+        .toLowerCase()}`
       cssVars[cssVarName] = value
     }
   })

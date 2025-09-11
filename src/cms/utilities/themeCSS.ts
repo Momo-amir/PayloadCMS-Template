@@ -5,7 +5,13 @@ import {
   type ThemePalette,
 } from '@/providers/Theme/InitTheme/defaultTheme'
 
-type Palette = Partial<ThemePalette>
+// Updated to handle new nested structure with color and label
+type PaletteWithLabels = Partial<{
+  [K in keyof ThemePalette]: {
+    color?: string
+    label?: string
+  }
+}>
 
 const sanitize = (v: unknown): string | undefined => {
   if (typeof v !== 'string') return undefined
@@ -23,15 +29,24 @@ const toDecls = (cssVars: Record<string, string>): string => {
     .join('\n')
 }
 
-const mergeThemeValues = (defaults: ThemePalette, overrides: Palette | undefined): ThemePalette => {
+const mergeThemeValues = (
+  defaults: ThemePalette,
+  overrides: PaletteWithLabels | undefined,
+): ThemePalette => {
   if (!overrides) return defaults
 
   const merged = { ...defaults }
 
-  // Only apply overrides that have actual values (not empty strings)
+  // Only apply overrides that have actual color values (not empty strings)
   Object.entries(overrides).forEach(([key, value]) => {
-    if (value && value.trim() !== '') {
-      merged[key as keyof ThemePalette] = value
+    if (
+      value &&
+      typeof value === 'object' &&
+      'color' in value &&
+      value.color &&
+      value.color.trim() !== ''
+    ) {
+      merged[key as keyof ThemePalette] = value.color
     }
   })
 
@@ -44,9 +59,9 @@ export const generateThemeCSS = (branding: Branding | null | undefined): string 
       ? branding.themeColors
       : undefined
 
-  // Get user overrides - completely separate for light and dark
-  const lightOverrides = tc?.light as Palette | undefined
-  const darkOverrides = tc?.dark as Palette | undefined
+  // Get user overrides with new structure
+  const lightOverrides = tc?.light as PaletteWithLabels | undefined
+  const darkOverrides = tc?.dark as PaletteWithLabels | undefined
 
   // Merge each theme independently - no cross-contamination
   const lightPalette = mergeThemeValues(defaultTheme.light, lightOverrides)
