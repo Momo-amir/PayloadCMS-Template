@@ -26,7 +26,7 @@ services:
       - .env
     environment:
       - PORT=8890
-    # prevent crash from taking it down
+    # prevent crash from taking it down 
     restart: unless-stopped
 
   postgres:
