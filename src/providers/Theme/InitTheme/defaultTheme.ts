@@ -5,14 +5,14 @@ export const defaultTheme = {
     secondary: '#231B67',
     tertiary: '#35296b',
     base: '#ffffff',
-    accent1: '#F3E9FF',
-    accent2: '#c7bad9',
-    accent3: '#fb823b',
+    accent: '#F3E9FF',
+    accenttwo: '#c7bad9',
+    accentthree: '#fb823b',
     border: '#eee',
     neutral: '#eee',
-    neutral2: '#f8d4a2',
+    neutraltwo: '#f8d4a2',
     highlight: '#B00020',
-    highlight2: '#e5fcfb',
+    highlighttwo: '#e5fcfb',
     white: '#ffffff',
     black: '#000000',
   },
@@ -21,14 +21,14 @@ export const defaultTheme = {
     secondary: '#231B67',
     tertiary: '#50477b',
     base: '#121212',
-    accent1: '#F3E9FF',
-    accent2: '#352d6a',
-    accent3: '#fb823b',
+    accent: '#F3E9FF',
+    accenttwo: '#352d6a',
+    accentthree: '#fb823b',
     border: '#eee',
     neutral: '#eee',
-    neutral2: '#f8d4a2',
+    neutraltwo: '#f8d4a2',
     highlight: '#CF6679',
-    highlight2: '#e5fcfb',
+    highlighttwo: '#e5fcfb',
     white: '#e8e8e8',
     black: '#000000',
   },
@@ -39,14 +39,14 @@ export type ThemePalette = {
   secondary: string
   tertiary: string
   base: string
-  accent1: string
-  accent2: string
-  accent3: string
+  accent: string
+  accenttwo: string
+  accentthree: string
   border: string
   neutral: string
-  neutral2: string
+  neutraltwo: string
   highlight: string
-  highlight2: string
+  highlighttwo: string
   white: string
   black: string
 }
@@ -88,11 +88,8 @@ export const paletteToCSSVars = (palette: Partial<ThemePalette>): Record<string,
 
   Object.entries(palette).forEach(([key, value]) => {
     if (value) {
-      // Convert camelCase or mixed keys to kebab-case and add leading '--'
-      const cssVarName = `--${key
-        .replace(/([a-z])([0-9])/g, '$1-$2')
-        .replace(/([a-z])([A-Z])/g, '$1-$2')
-        .toLowerCase()}`
+      // Use the key as-is, just add the CSS variable prefix
+      const cssVarName = `--${key}`
       cssVars[cssVarName] = value
     }
   })

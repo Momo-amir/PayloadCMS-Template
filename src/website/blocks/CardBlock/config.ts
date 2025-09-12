@@ -12,24 +12,9 @@ export const CardBlock: Block = {
   fields: [
     createColorPaletteField({
       name: 'cardBackgroundColor',
-      label: 'Card Background Color',
-      description: 'Applied to every card when mode is Single color.',
-      condition: (data) => !data?.colorMode || data?.colorMode === 'block',
+      label: 'Default Card Background Color',
+      description: 'Applied to all cards unless individually overridden.',
     }),
-    {
-      name: 'colorMode',
-      type: 'select',
-      label: 'Color Mode',
-      defaultValue: 'block',
-      options: [
-        { label: 'Single color (all cards)', value: 'block' },
-        { label: 'Individual per card', value: 'per-card' },
-      ],
-      admin: {
-        description: 'Choose whether to use one color for all cards or set colors individually.',
-        width: '50%',
-      },
-    },
     {
       name: 'heading',
       type: 'text',
@@ -47,6 +32,21 @@ export const CardBlock: Block = {
       },
       fields: [
         {
+          name: 'overrideColor',
+          type: 'checkbox',
+          label: 'Override Default Color',
+          defaultValue: false,
+          admin: {
+            description: 'Check to use a custom color palette for this specific card.',
+          },
+        },
+        createColorPaletteField({
+          name: 'cardBackgroundColor',
+          label: 'Custom Card Background Color',
+          description: 'Color palette for this individual card.',
+          condition: (siblingData) => siblingData?.overrideColor === true,
+        }),
+        {
           name: 'title',
           type: 'text',
           required: true,
@@ -57,7 +57,6 @@ export const CardBlock: Block = {
           required: false,
         },
         // Include 'default' because the shared link field sets defaultValue: 'default'
-        link({ appearances: ['default', 'link', 'outline'] }),
         {
           name: 'media',
           type: 'upload',
@@ -67,24 +66,8 @@ export const CardBlock: Block = {
             description: 'Optional media (image or video) to show at top of card',
           },
         },
-
-        createColorPaletteField({
-          name: 'cardBackgroundColor',
-          description: 'Applied to every card when mode is Single color.',
-          condition: (data) => data?.colorMode === 'per-card',
-        }),
+        link({ appearances: ['default', 'link', 'outline'] }),
       ],
-    },
-    {
-      name: 'columns',
-      type: 'number',
-      label: 'Columns (desktop)',
-      defaultValue: 3,
-      min: 1,
-      max: 4,
-      admin: {
-        description: 'Number of columns on large screens.',
-      },
     },
   ],
 }
