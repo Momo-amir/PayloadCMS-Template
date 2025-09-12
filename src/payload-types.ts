@@ -212,6 +212,7 @@ export interface Page {
     | FormBlock
     | TwoColumnBlock
     | CardBlock
+    | AccordionBlock
     | CardCarouselBlock
   )[];
   meta?: {
@@ -409,13 +410,6 @@ export interface User {
   hash?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
   password?: string | null;
 }
 /**
@@ -868,6 +862,42 @@ export interface CardBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AccordionBlock".
+ */
+export interface AccordionBlock {
+  backgroundColor?: string | null;
+  items?: AccordionItemBlock[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'accordion';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AccordionItemBlock".
+ */
+export interface AccordionItemBlock {
+  title?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'accordion';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CardCarouselBlock".
  */
 export interface CardCarouselBlock {
@@ -1271,6 +1301,7 @@ export interface PagesSelect<T extends boolean = true> {
         formBlock?: T | FormBlockSelect<T>;
         twoBlock?: T | TwoColumnBlockSelect<T>;
         cardBlock?: T | CardBlockSelect<T>;
+        accordion?: T | AccordionBlockSelect<T>;
         cardCarouselBlock?: T | CardCarouselBlockSelect<T>;
       };
   meta?:
@@ -1434,6 +1465,30 @@ export interface CardBlockSelect<T extends boolean = true> {
         id?: T;
       };
   columns?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AccordionBlock_select".
+ */
+export interface AccordionBlockSelect<T extends boolean = true> {
+  backgroundColor?: T;
+  items?:
+    | T
+    | {
+        accordion?: T | AccordionItemBlockSelect<T>;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AccordionItemBlock_select".
+ */
+export interface AccordionItemBlockSelect<T extends boolean = true> {
+  title?: T;
+  content?: T;
   id?: T;
   blockName?: T;
 }
@@ -1631,13 +1686,6 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
-  sessions?:
-    | T
-    | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
-      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

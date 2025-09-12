@@ -18,3 +18,6 @@ public/sitemap*.xml
 # pnpm
 .pnpm-store
 node_modules/
+
+# Payload auto-generated types
+src/payload-types.ts
