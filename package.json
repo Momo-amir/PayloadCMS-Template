@@ -21,7 +21,8 @@
     "ci": "pnpm payload migrate && pnpm build",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "docker-dev": "docker compose up"
+    "docker-dev": "docker compose up",
+    "cli": "tsx .cli/lib/core.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.53.0",
@@ -75,6 +76,7 @@
     "prettier": "^3.6.2",
     "sass": "^1.91.0",
     "tailwindcss": "^4.1.12",
+    "tsx": "^4.20.5",
     "typescript": "5.8.3"
   },
   "packageManager": "pnpm@10.15.0",

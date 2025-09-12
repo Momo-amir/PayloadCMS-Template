@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { ComponentBlock } from "../types/ComponentBlock";
 import { Content } from "./Content/config";
 import { TwoBlockBlock } from "./TwoBlock/config";
@@ -17,6 +16,6 @@ export default {
     FormBlock,
     CardCarouselBlock,
     CardBlock,
-    CallToAction,
+    CallToAction
   ] satisfies ComponentBlock[]),
 }
