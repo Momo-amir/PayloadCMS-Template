@@ -1,26 +1,15 @@
 import React, { Fragment } from 'react'
 
 import type { Page } from '@/payload-types'
+import blockExports from './exports'
 
-import { ArchiveBlock } from '@/website/blocks/ArchiveBlock/Component'
-import { CallToActionBlock } from '@/website/blocks/CallToAction/Component'
-import { ContentBlock } from '@/website/blocks/Content/Component'
-import { FormBlock } from '@/website/blocks/Form/Component'
-import { MediaBlock } from '@/website/blocks/MediaBlock/Component'
-import { TwoBlock } from './TwoBlock/Component'
-import { CardBlock } from './CardBlock/Component'
-import { CardCarouselBlock } from './CardCarousel/Component'
+const blockComponents: Record<string, React.FC<any>> = { };
 
-const blockComponents = {
-  archive: ArchiveBlock,
-  content: ContentBlock,
-  cta: CallToActionBlock,
-  formBlock: FormBlock,
-  mediaBlock: MediaBlock,
-  twoBlock: TwoBlock,
-  cardBlock: CardBlock,
-  cardCarouselBlock: CardCarouselBlock
-}
+blockExports.blocks.forEach((block) => {
+  if (block.component) {
+    blockComponents[block.slug] = block.component;
+  }
+});
 
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
@@ -41,7 +30,6 @@ export const RenderBlocks: React.FC<{
             if (Block) {
               return (
                 <div className="my-16" key={index}>
-                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
                   <Block {...block} disableInnerContainer />
                 </div>
               )

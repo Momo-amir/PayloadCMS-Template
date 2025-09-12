@@ -5,9 +5,12 @@ import { Content } from '../Content/config'
 import { FormBlock } from '../Form/config'
 import { MediaBlock } from '../MediaBlock/config'
 import { createColorPaletteField } from '@/cms/fields/colorPalette'
+import { ComponentBlock } from '@/website/types/ComponentBlock'
+import { TwoBlock } from './Component'
 
-export const TwoBlock: Block = {
+export const TwoBlockBlock: ComponentBlock = {
   slug: 'twoBlock',
+  component: TwoBlock,
   interfaceName: 'TwoColumnBlock',
   labels: {
     singular: 'Two-Column Layout',
