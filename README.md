@@ -15,8 +15,8 @@ This setup uses Docker to run the application, including PostgreSQL and the Payl
 ```bash
 git clone git@bitbucket.org:it-kartellet/kollab-payload-template.git kollab-payload-template
 cd kollab-payload-template
-run pnpm install or npm install
-# or yarn install
+run yarn install or npm install
+# or pnpm install
 cp [.env.example](http://_vscodecontentref_/1) .env
 # adjust POSTGRES_* in .env if desired
 
@@ -34,7 +34,7 @@ docker compose down
 
 Prerequisites
 Node.js ≥ 18
-pnpm (or npm/yarn)
+yarn (or npm/pnpm)
 PostgreSQL ≥ 14
 remove output="standalone" from next.config.js
 
@@ -44,7 +44,7 @@ remove output="standalone" from next.config.js
 git clone git@bitbucket.org:it-kartellet/kollab-payload-template.git kollab-payload-template
 cd kollab-payload-template
 cp .env.example .env
-pnpm install
+yarn install
 # or npm install
 ```
 
@@ -55,11 +55,11 @@ Use the `.env.example` file as a reference to set up your environment variables 
 ### 3. Start the Development Server
 
 ```bash
-pnpm dev
+yarn dev
 # or
 npm run dev
 # or
-yarn dev
+pnpm dev
 ```
 
 This will start the development server, and you can access the application at `http://localhost:8890`.
@@ -71,11 +71,11 @@ You can access the admin panel at `http://localhost:8890/admin`. First time you 
 ### 5. Build for Production
 
 ```bash
-pnpm build
+yarn build
 # or
 npm run build
 # or
-yarn build
+pnpm build
 ```
 
 This will create an optimized production build of your application.
@@ -83,11 +83,11 @@ This will create an optimized production build of your application.
 ### 6 . Start the Production Server
 
 ```bash
-pnpm start
+yarn start
 # or
 npm run start
 # or
-yarn start
+pnpm start
 ```
 
 ### Personalization

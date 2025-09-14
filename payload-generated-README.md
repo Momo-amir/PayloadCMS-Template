@@ -21,8 +21,8 @@ Core features:
 
 1. First [clone the repo](#clone) if you have not done so already
 1. `cd my-project && cp .env.example .env` to copy the example environment variables
-1. `pnpm install && pnpm dev` to install dependencies and start the dev server
-1. open `http://localhost:3000` to open the app in your browser
+1. `yarn install && yarn dev` to install dependencies and start the dev server
+1. open `http://localhost:8890` to open the app in your browser
 
 That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
 
@@ -177,15 +177,15 @@ If your database is pointed to production you will want to set `push: false` oth
 Locally create a migration
 
 ```bash
-pnpm payload migrate:create
+yarn payload migrate:create
 ```
 
 This creates the migration files you will need to push alongside with your new configuration.
 
-On the server after building and before running `pnpm start` you will want to run your migrations
+On the server after building and before running `yarn start` you will want to run your migrations
 
 ```bash
-pnpm payload migrate
+yarn payload migrate
 ```
 
 This command will check for any migrations that have not yet been run and try to run them and it will keep a record of migrations that have been run in the database.

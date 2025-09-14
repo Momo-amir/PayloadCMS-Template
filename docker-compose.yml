@@ -2,7 +2,9 @@ services:
   payload:
     tty: true
     stdin_open: true
-    image: node:22.18.0-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     working_dir: /home/node/app
 
     ports:
@@ -11,21 +13,26 @@ services:
     volumes:
       - .:/home/node/app
       - node_modules:/home/node/app/node_modules
+      - yarn_cache:/home/node/.yarn/berry/cache
     command:
       - sh
       - -c
       - |
-        apk add --no-cache tmux \
-        && npm install pnpm -g \
-        && pnpm install \
-        && tmux new-session -d -s app 'pnpm dev' \
-        && tmux a -t app \; set-option status off | grep -v '^[[:space:]]*$'
+        set -e
+        yarn config set nodeLinker node-modules
+        yarn install --immutable
+        tmux new-session -d -s app 'yarn dev'
+        tmux a -t app \; set-option status off | grep -v '^[[:space:]]*$'
+
+
     depends_on:
       - postgres
     env_file:
       - .env
     environment:
       - PORT=8890
+      - COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+      - YARN_CACHE_FOLDER=/home/node/.yarn/berry/cache
     # prevent crash from taking it down
     restart: unless-stopped
 
@@ -44,3 +51,4 @@ services:
 volumes:
   pgdata:
   node_modules:
+  yarn_cache:

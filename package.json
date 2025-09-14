@@ -10,20 +10,29 @@
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -p ${PORT:-8890}",
-    "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build && pnpm start",
+    "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && yarn build && yarn start",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
-    "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
+    "ii": "cross-env NODE_OPTIONS=--no-deprecation yarn install",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation next lint --fix",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
-    "dev:migrate": "pnpm payload migrate && pnpm dev",
-    "ci": "pnpm payload migrate && pnpm build",
-    "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
+    "dev:migrate": "yarn payload migrate && yarn dev",
+    "ci": "yarn payload migrate && yarn build",
+    "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm yarn.lock && yarn install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "docker-dev": "docker compose up"
+    "docker-dev": "docker compose up",
+    "docker-prod": "docker compose -f docker-compose.prod.yml up",
+    "docker-prod:build": "docker compose -f docker-compose.prod.yml up --build",
+    "docker-prod:down": "docker compose -f docker-compose.prod.yml down",
+    "docker-prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
+    "deploy-prod": "./deploy-production.sh"
   },
   "dependencies": {
+    "@faceless-ui/modal": "^3.0.0-beta.2",
+    "@faceless-ui/scroll-info": "^2.0.0",
+    "@lexical/react": "^0.35.0",
+    "@monaco-editor/react": "npm:4.7.0",
     "@payloadcms/db-postgres": "^3.53.0",
     "@payloadcms/live-preview-react": "latest",
     "@payloadcms/next": "latest",
@@ -46,6 +55,7 @@
     "geist": "^1.4.2",
     "graphql": "^16.11.0",
     "lucide-react": "^0.515.0",
+    "monaco-editor": "^0.53.0",
     "next": "^15.5.2",
     "next-sitemap": "^4.2.3",
     "payload": "^3.53.0",
@@ -56,7 +66,8 @@
     "react-hook-form": "7.57.0",
     "sharp": "0.34.2",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "yjs": "^13.6.27"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
@@ -65,10 +76,10 @@
     "@types/escape-html": "^1.0.4",
     "@types/node": "24.0.1",
     "@types/react": "19.1.8",
-    "@types/react-dom": "19.1.6",
+    "@types/react-dom": "npm:19.1.9",
     "autoprefixer": "^10.4.21",
     "copyfiles": "^2.4.1",
-    "eslint": "^9.34.0",
+    "eslint": "^9.35.0",
     "eslint-config-next": "15.3.3",
     "npm-check-updates": "^18.0.3",
     "postcss": "^8.5.6",
@@ -77,13 +88,11 @@
     "tailwindcss": "^4.1.12",
     "typescript": "5.8.3"
   },
-  "packageManager": "pnpm@10.15.0",
+  "packageManager": "yarn@4.9.4",
   "engines": {
     "node": "^18.20.2 || >=20.9.0"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp"
-    ]
+  "resolutions": {
+    "sharp": "0.34.2"
   }
 }
