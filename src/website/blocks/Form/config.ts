@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { FormBlock as FormBlockComponent } from './Component'
 
 import {
   FixedToolbarFeature,
@@ -6,9 +7,11 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+import { ComponentBlock } from '@/website/types/ComponentBlock'
 
-export const FormBlock: Block = {
+export const FormBlock: ComponentBlock = {
   slug: 'formBlock',
+  component: FormBlockComponent,
   interfaceName: 'FormBlock',
   fields: [
     {

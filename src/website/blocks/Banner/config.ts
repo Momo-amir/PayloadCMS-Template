@@ -1,13 +1,15 @@
-import type { Block } from 'payload'
-
 import {
   FixedToolbarFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+import { ComponentBlock } from '@/website/types/ComponentBlock'
+import { BannerBlock } from './Component'
 
-export const Banner: Block = {
+export const Banner: ComponentBlock = {
   slug: 'banner',
+  component: BannerBlock,
+  showOnPage: false,
   fields: [
     {
       name: 'style',

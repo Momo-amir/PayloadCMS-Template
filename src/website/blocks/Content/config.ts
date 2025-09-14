@@ -6,6 +6,8 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { link } from '@/cms/fields/link'
+import { ComponentBlock } from '@/website/types/ComponentBlock'
+import { ContentBlock } from './Component'
 
 const columnFields: Field[] = [
   {
@@ -59,9 +61,11 @@ const columnFields: Field[] = [
   }),
 ]
 
-export const Content: Block = {
+export const Content: ComponentBlock = {
   slug: 'content',
+  component: ContentBlock,
   interfaceName: 'ContentBlock',
+  showOnPage: true,
   fields: [
     {
       name: 'richText',

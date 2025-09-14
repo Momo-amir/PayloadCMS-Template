@@ -1,7 +1,9 @@
-import type { Block } from 'payload'
+import { ComponentBlock } from '@/website/types/ComponentBlock'
+import { CodeBlock } from './Component'
 
-export const Code: Block = {
+export const Code: ComponentBlock = {
   slug: 'code',
+  component: CodeBlock,
   interfaceName: 'CodeBlock',
   fields: [
     {
