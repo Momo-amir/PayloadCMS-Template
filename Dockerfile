@@ -15,10 +15,27 @@ RUN corepack enable
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
+  if [ -f yarn.lock ]; then \
+    echo "Using yarn for dependency installation..." && \
+    yarn config set nodeLinker node-modules && \
+    yarn --frozen-lockfile && \
+    echo "Yarn installation completed" && \
+    ls -la /app/ && \
+    test -d /app/node_modules && echo "node_modules directory exists" || (echo "node_modules directory missing!" && exit 1); \
+  elif [ -f package-lock.json ]; then \
+    echo "Using npm for dependency installation..." && \
+    npm ci && \
+    echo "NPM installation completed" && \
+    ls -la /app/ && \
+    test -d /app/node_modules && echo "node_modules directory exists" || (echo "node_modules directory missing!" && exit 1); \
+  elif [ -f pnpm-lock.yaml ]; then \
+    echo "Using pnpm for dependency installation..." && \
+    corepack enable pnpm && pnpm i --frozen-lockfile && \
+    echo "PNPM installation completed" && \
+    ls -la /app/ && \
+    test -d /app/node_modules && echo "node_modules directory exists" || (echo "node_modules directory missing!" && exit 1); \
+  else \
+    echo "Lockfile not found." && exit 1; \
   fi
 
 
@@ -30,6 +47,9 @@ WORKDIR /app
 RUN corepack enable
 
 COPY --from=deps /app/node_modules ./node_modules
+# Verify node_modules was copied successfully
+RUN ls -la /app/node_modules && echo "node_modules copied successfully"
+
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
