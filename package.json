@@ -21,6 +21,7 @@
     "ci": "yarn payload migrate && yarn build",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm yarn.lock && yarn install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "cli": "tsx .cli/lib/core.ts"
     "docker-dev": "docker compose up",
     "docker-prod": "docker compose -f docker-compose.prod.yml up",
     "docker-prod:build": "docker compose -f docker-compose.prod.yml up --build",
@@ -86,6 +87,7 @@
     "prettier": "^3.6.2",
     "sass": "^1.91.0",
     "tailwindcss": "^4.1.12",
+    "tsx": "^4.20.5",
     "typescript": "5.8.3"
   },
   "packageManager": "yarn@4.9.4",

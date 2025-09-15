@@ -8,9 +8,12 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { linkGroup } from '@/cms/fields/linkGroup'
+import { ComponentBlock } from '@/website/types/ComponentBlock'
+import { CallToActionBlock } from './Component'
 
-export const CallToAction: Block = {
+export const CallToAction: ComponentBlock = {
   slug: 'cta',
+  component: CallToActionBlock,
   interfaceName: 'CallToActionBlock',
   fields: [
     {

@@ -3,18 +3,13 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Archive } from '@/website/blocks/ArchiveBlock/config'
-import { CallToAction } from '../../../website/blocks/CallToAction/config'
-import { Content } from '../../../website/blocks/Content/config'
-import { FormBlock } from '../../../website/blocks/Form/config'
-import { MediaBlock } from '../../../website/blocks/MediaBlock/config'
 import { hero } from '@/website/layout/heros/config'
 import { slugField } from '@/cms/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
-import { TwoBlock } from '@/website/blocks/TwoBlock/config'
-import { CardBlock } from '@/website/blocks/CardBlock/config'
-import { CardCarouselBlock } from '@/website/blocks/CardCarousel/config'
+
+import blockExports from '@site/blocks/exports'
 
 import {
   MetaDescriptionField,
@@ -23,6 +18,14 @@ import {
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
+
+const layoutBlocks = [
+  Archive
+];
+
+blockExports.blocks.forEach((block) => {
+  if (block.showOnPage !== false) layoutBlocks.push(block);
+});
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
@@ -78,7 +81,7 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock, TwoBlock, CardBlock, CardCarouselBlock],
+              blocks: layoutBlocks,
               required: true,
               admin: {
                 initCollapsed: true,
@@ -133,7 +136,7 @@ export const Pages: CollectionConfig<'pages'> = {
   versions: {
     drafts: {
       autosave: {
-        interval: 100, // We set this interval for optimal live preview
+        interval: 800, // We set this interval for optimal live preview
       },
       schedulePublish: true,
     },

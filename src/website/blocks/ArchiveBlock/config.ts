@@ -1,14 +1,15 @@
-import type { Block } from 'payload'
-
 import {
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+import { ArchiveBlock } from './Component'
+import { ComponentBlock } from '@/website/types/ComponentBlock'
 
-export const Archive: Block = {
+export const Archive: ComponentBlock = {
   slug: 'archive',
+  component: ArchiveBlock,
   interfaceName: 'ArchiveBlock',
   fields: [
     {

@@ -1,9 +1,11 @@
-import type { Block } from 'payload'
 import { link } from '@/cms/fields/link'
 import { createColorPaletteField } from '@/cms/fields/colorPalette'
+import { ComponentBlock } from '@/website/types/ComponentBlock'
+import { CardBlock as CardBlockComponent } from './Component'
 
-export const CardBlock: Block = {
+export const CardBlock: ComponentBlock = {
   slug: 'cardBlock',
+  component: CardBlockComponent,
   interfaceName: 'CardBlock',
   labels: {
     singular: 'Card Layout',
