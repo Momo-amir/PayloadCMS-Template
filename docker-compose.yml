@@ -19,8 +19,7 @@ services:
       - -c
       - |
         set -e
-        yarn config set nodeLinker node-modules
-        yarn install --immutable
+        yarn install    
         tmux new-session -d -s app 'yarn dev'
         tmux a -t app \; set-option status off | grep -v '^[[:space:]]*$'
 

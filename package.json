@@ -58,7 +58,7 @@
     "graphql": "^16.11.0",
     "lucide-react": "^0.544.0",
     "monaco-editor": "^0.53.0",
-    "next": "^15.5.3",
+    "next": "15.4.4",
     "next-sitemap": "^4.2.3",
     "payload": "3.55.1",
     "payload-admin-bar": "^1.0.7",
@@ -93,7 +93,6 @@
     "tsx": "^4.20.5",
     "typescript": "5.8.3"
   },
-  "packageManager": "yarn@4.9.4",
   "engines": {
     "node": "^18.20.2 || >=20.9.0"
   }

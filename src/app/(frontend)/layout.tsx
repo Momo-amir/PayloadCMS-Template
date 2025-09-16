@@ -13,7 +13,7 @@ import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/cms/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 
-import './globals.scss'
+import './globals.css'
 import { getServerSideURL } from '@/cms/utilities/getURL'
 import { getBranding, toFaviconProps } from '@/cms/utilities/branding'
 import { generateThemeCSS } from '@/cms/utilities/themeCSS'
