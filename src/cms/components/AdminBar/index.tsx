@@ -8,7 +8,7 @@ import { PayloadAdminBar } from 'payload-admin-bar'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import './index.scss'
+import './index.css'
 
 import { getClientSideURL } from '@/cms/utilities/getURL'
 
