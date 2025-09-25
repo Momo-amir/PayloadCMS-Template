@@ -4,7 +4,7 @@ import sharp from 'sharp' // sharp-import
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
-import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+// import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 import { Categories } from './cms/collections/Categories'
 import { ColorPalettes } from './cms/collections/ColorPalettes'
@@ -42,8 +42,8 @@ export default buildConfig({
     },
     components: {
       graphics: {
-        Icon: '@/cms/components/Graphics/Graphics.tsx',
-        Logo: '@/cms/components/Graphics/Logo.tsx',
+        Icon: '@/cms/components/DashboardGraphics/DashboardIcon.tsx',
+        Logo: '@/cms/components/DashboardGraphics/DashboardLogo.tsx',
       },
     },
     importMap: {
