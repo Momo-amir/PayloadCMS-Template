@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import React from 'react'
-import logoWhite from '/public/assets/logo-on-dark.svg'
-import logo from '/public/assets/logo-on-light.svg'
+import logoWhite from '@public/assets/logo-on-dark.svg'
+import logo from '@public/assets/logo-on-light.svg'
 
 export interface LogoProps {
   className?: string

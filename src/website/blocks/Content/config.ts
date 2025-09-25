@@ -48,17 +48,6 @@ const columnFields: Field[] = [
     }),
     label: false,
   },
-  {
-    name: 'enableLink',
-    type: 'checkbox',
-  },
-  link({
-    overrides: {
-      admin: {
-        condition: (_, { enableLink }) => Boolean(enableLink),
-      },
-    },
-  }),
 ]
 
 export const Content: ComponentBlock = {
@@ -92,6 +81,17 @@ export const Content: ComponentBlock = {
       },
       fields: columnFields,
     },
+    {
+      name: 'enableLink',
+      type: 'checkbox',
+    },
+    link({
+      overrides: {
+        admin: {
+          condition: (_, { enableLink }) => Boolean(enableLink),
+        },
+      },
+    }),
     {
       name: 'useColumns',
       type: 'checkbox',

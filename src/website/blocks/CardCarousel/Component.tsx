@@ -1,7 +1,7 @@
 'use client'
 
-import React, {useEffect, useRef, useState} from 'react'
-import type { CardCarouselBlock } from '@/payload-types'
+import React, { useEffect, useRef, useState } from 'react'
+import type { CardCarouselBlock as CardCarouselBlockType } from '@/payload-types'
 import {
   Card,
   CardContent,
@@ -12,28 +12,14 @@ import {
 import Link from 'next/link'
 import Image from 'next/image'
 import { cn } from '@/cms/utilities/ui'
-import {IconArrowLeft, IconArrowRight} from "@tabler/icons-react";
+import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
 
-type Props = CardCarouselBlock & { className?: string }
+type Props = CardCarouselBlockType & { className?: string }
 
-const columnClass = (cols?: number | null) => {
-  switch (cols) {
-    case 2:
-      return 'md:grid-cols-2'
-    case 4:
-      return 'md:grid-cols-4'
-    case 1:
-      return 'md:grid-cols-1'
-    case 3:
-    default:
-      return 'md:grid-cols-3'
-  }
-}
-
-function resolveHref(card: CardCarouselBlock['cards'][0]): string | undefined {
-  const l: any = card.link
+function resolveHref(card: CardCarouselBlockType['cards'][0]): string | undefined {
+  const l = card.link
   if (!l) return undefined
-  if (l.type === 'custom') return l.url
+  if (l.type === 'custom') return l.url || undefined
   if (l.type === 'reference' && l.reference) {
     // Relationship field returns { relationTo, value }
     const ref = l.reference
@@ -53,14 +39,12 @@ export const CardCarouselBlock: React.FC<Props> = ({
   description,
   cards = [],
   columns,
-  backgroundColor,
+  cardBackgroundColor,
   colorMode,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [containerWidth, setContainerWidth] = useState(0)
   const [currentIndex, setCurrentIndex] = useState(0)
-
-  if (!cards.length) return null
 
   const perView = Math.max(1, Math.min(cards.length, columns ?? 1))
   const pageCount = Math.ceil(cards.length / perView)
@@ -76,6 +60,8 @@ export const CardCarouselBlock: React.FC<Props> = ({
     return () => window.removeEventListener('resize', measure)
   }, [])
 
+  if (!cards.length) return null
+
   const goToPage = (page: number) => {
     const clamped = Math.max(0, Math.min(page, pageCount - 1))
     setCurrentIndex(clamped)
@@ -84,14 +70,18 @@ export const CardCarouselBlock: React.FC<Props> = ({
   const prev = () => goToPage(currentIndex - 1)
   const next = () => goToPage(currentIndex + 1)
 
-  const slideWidth = (containerWidth / perView)
+  const slideWidth = containerWidth / perView
   const trackWidth = slideWidth * cards.length
   const offset = -(currentIndex * containerWidth)
 
   return (
     <section className={cn('container relative')}>
       {heading && <h1 className="text-5xl text-center font-semibold mb-10">{heading}</h1>}
-      {description && <div className="w-1/2 mx-auto"><p className="text-center mb-16">{description}</p></div>}
+      {description && (
+        <div className="w-1/2 mx-auto">
+          <p className="text-center mb-16">{description}</p>
+        </div>
+      )}
 
       <div ref={containerRef} className="overflow-hidden w-full">
         <div
@@ -105,23 +95,21 @@ export const CardCarouselBlock: React.FC<Props> = ({
             const href = resolveHref(card)
             const media = card.media
             const appliedBg =
-              colorMode === 'per-card'
-                ? card.cardBackgroundColor || ''
-                : backgroundColor
+              colorMode === 'per-card' ? card.cardBackgroundColor || '' : cardBackgroundColor
 
             const cardInner = (
               <div className="slide px-2" style={{ width: slideWidth }}>
                 <Card
                   className={cn(
                     'flex-shrink-0 h-full flex flex-col transition hover:shadow-md',
-                    appliedBg
+                    appliedBg,
                   )}
                 >
                   {media && typeof media === 'object' && 'url' in media && (
                     <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
                       <Image
-                        src={(media as any).url}
-                        alt={(media as any).alt || card.title}
+                        src={media.url || ''}
+                        alt={media.alt || card.title}
                         fill
                         className="object-cover"
                       />
@@ -133,7 +121,10 @@ export const CardCarouselBlock: React.FC<Props> = ({
                   </CardHeader>
                   {card.link && card.link.label && href && (
                     <CardContent className="pt-0 text-sm ">
-                      <div className="flex items-center"><span className="text-lg font-semibold pr-2">{card.link.label}</span> <IconArrowRight size={24} /></div>
+                      <div className="flex items-center">
+                        <span className="text-lg font-semibold pr-2">{card.link.label}</span>{' '}
+                        <IconArrowRight size={24} />
+                      </div>
                     </CardContent>
                   )}
                 </Card>
@@ -157,7 +148,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
           disabled={currentIndex === 0}
           className="cursor-pointer pointer-events-auto -ml-14 w-[48px] h-[48px] rounded-full bg-black text-white shadow disabled:opacity-30"
         >
-          <IconArrowLeft size={36} className="mx-auto"/>
+          <IconArrowLeft size={36} className="mx-auto" />
         </button>
         <button
           onClick={next}
@@ -175,7 +166,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
             onClick={() => goToPage(p)}
             className={cn(
               'w-[15px] h-[15px] rounded-full cursor-pointer',
-              p === currentIndex ? 'bg-gray-800' : 'bg-gray-200'
+              p === currentIndex ? 'bg-gray-800' : 'bg-gray-200',
             )}
           />
         ))}
@@ -183,6 +174,3 @@ export const CardCarouselBlock: React.FC<Props> = ({
     </section>
   )
 }
-
-
-

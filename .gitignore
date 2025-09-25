@@ -21,3 +21,4 @@ node_modules/
 
 # Payload auto-generated types
 src/payload-types.ts
+.env.production

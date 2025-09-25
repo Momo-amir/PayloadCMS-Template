@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+@config '../../../tailwind.config.mjs';
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--border, currentcolor);
+  }
+  body {
+    @apply bg-base text-primary min-h-screen flex flex-col;
+  }
+}
+
+.hero-rich-text,
+h1 {
+  @apply text-h1 lg:text-display;
+}
+
+html {
+  opacity: 0;
+}
+html[data-theme='dark'],
+html[data-theme='light'] {
+  opacity: initial;
+}
+
+.two-background-spacing {
+  border-radius: 0.8rem;
+}
+
+.two-background-spacing .content-block {
+  padding: 1.5rem;
+}
+
+.two-background-spacing .two-column-right .media-block {
+  border-radius: 0 0.8rem 0.8rem 0;
+}
+
+.two-background-spacing .two-column-left .media-block {
+  border-radius: 0.8rem 0 0 0.8rem;
+}

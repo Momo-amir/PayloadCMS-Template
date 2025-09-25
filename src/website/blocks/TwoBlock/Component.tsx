@@ -8,9 +8,9 @@ export const TwoBlock: React.FC<{
 }> = ({ left = [], right = [], backgroundColor }) => {
   const hasBg = Boolean(backgroundColor)
   const gridClasses = [
-    'grid grid-cols-1 md:grid-cols-2 gap-x-8 items-center',
+    'grid grid-cols-1 md:grid-cols-2 items-center',
     backgroundColor,
-    hasBg ? 'two-background-spacing' : '',
+    hasBg ? 'two-background-spacing' : 'gap-x-8',
   ]
     .filter(Boolean)
     .join(' ')

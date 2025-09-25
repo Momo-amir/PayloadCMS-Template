@@ -7,7 +7,8 @@ EXPOSE 8890
 
 ENV PORT=8890
 
-RUN npm install -g pnpm@10.15.0
-RUN pnpm install
+RUN corepack enable
 
-ENTRYPOINT [ "pnpm", "dev" ]
+# Don't run yarn install here - it will be done in docker-compose with mounted volumes
+
+CMD [ "sh" ]

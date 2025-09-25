@@ -3,13 +3,13 @@ import React, { Fragment } from 'react'
 import type { Page } from '@/payload-types'
 import blockExports from './exports'
 
-const blockComponents: Record<string, React.FC<any>> = { };
+const blockComponents: Record<string, React.FC<any>> = {}
 
 blockExports.blocks.forEach((block) => {
   if (block.component) {
-    blockComponents[block.slug] = block.component;
+    blockComponents[block.slug] = block.component
   }
-});
+})
 
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
