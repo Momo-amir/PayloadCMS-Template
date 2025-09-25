@@ -193,7 +193,9 @@
 .dynamic-color-select-field .custom-select-menu {
   background-color: var(--theme-input-bg);
   border-radius: var(--style-radius-s);
-  box-shadow: 0 0 0 1px rgba(68, 68, 68, 0.11), 0 4px 11px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 0 0 1px rgba(68, 68, 68, 0.11),
+    0 4px 11px rgba(0, 0, 0, 0.1);
   margin-bottom: 8px;
   margin-top: 8px;
   position: absolute;
@@ -218,22 +220,26 @@
   font-size: inherit;
   width: 100%;
   -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  user-select: none;
   padding: 8px 12px;
   box-sizing: border-box;
 }
 .dynamic-color-select-field .custom-select-option:hover:not(.custom-select-option--is-disabled) {
   background-color: var(--theme-elevation-100);
 }
-.dynamic-color-select-field .custom-select-option.custom-select-option--is-highlighted:not(.custom-select-option--is-disabled) {
+.dynamic-color-select-field
+  .custom-select-option.custom-select-option--is-highlighted:not(
+    .custom-select-option--is-disabled
+  ) {
   background-color: var(--theme-elevation-150);
 }
 .dynamic-color-select-field .custom-select-option.custom-select-option--is-selected {
   background-color: var(--theme-success-100);
   color: var(--theme-success-800);
 }
-.dynamic-color-select-field .custom-select-option.custom-select-option--is-selected.custom-select-option--is-highlighted {
+.dynamic-color-select-field
+  .custom-select-option.custom-select-option--is-selected.custom-select-option--is-highlighted {
   background-color: var(--theme-success-200);
 }
 .dynamic-color-select-field .custom-select-option.custom-select-option--is-disabled {
@@ -242,7 +248,10 @@
   cursor: not-allowed;
   background-color: var(--theme-elevation-50);
 }
-.dynamic-color-select-field .custom-select-option.custom-select-option--is-disabled[data-value=theme-separator], .dynamic-color-select-field .custom-select-option.custom-select-option--is-disabled[data-value=custom-separator] {
+.dynamic-color-select-field
+  .custom-select-option.custom-select-option--is-disabled[data-value='theme-separator'],
+.dynamic-color-select-field
+  .custom-select-option.custom-select-option--is-disabled[data-value='custom-separator'] {
   font-weight: 500;
   text-align: center;
   border-top: 1px solid var(--theme-elevation-200);
@@ -294,7 +303,7 @@
   gap: 0.5rem;
 }
 .dynamic-color-select-field .loading-state::before {
-  content: "⟳";
+  content: '⟳';
   animation: spin 1s linear infinite;
 }
 .dynamic-color-select-field .field-description {
@@ -311,4 +320,4 @@
   to {
     transform: rotate(360deg);
   }
-}/*# sourceMappingURL=custom.css.map */
+} /*# sourceMappingURL=custom.css.map */

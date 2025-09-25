@@ -1,5 +1,0 @@
-@import '@payloadcms/ui/scss';
-
-.admin-bar @media (max-width: 768px) {
-  display: none;
-}

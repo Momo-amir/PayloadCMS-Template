@@ -5,8 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "attach": "clear && echo !!! Press 'Ctrl+B' then 'D' to detach! Ctrl+C will terminate the session !!! && sleep 5 && npm run attach:now",
-    "attach:now": "docker compose exec -it payload tmux a",
+    "attach": "docker attach $(docker compose ps -q payload)",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -p ${PORT:-8890}",
@@ -22,7 +21,7 @@
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm yarn.lock && yarn install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "cli": "tsx .cli/lib/core.ts",
-    "docker-dev": "docker compose up",
+    "docker-dev": "docker compose up payload",
     "docker-prod": "docker compose -f docker-compose.prod.yml up",
     "docker-prod:build": "docker compose -f docker-compose.prod.yml up --build",
     "docker-prod:down": "docker compose -f docker-compose.prod.yml down",
@@ -86,7 +85,7 @@
     "npm-check-updates": "^18.0.3",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
-    "sass": "^1.92.1",
+    "sass": "1.62.1",
     "tailwindcss": "^4.1.13",
     "tsx": "^4.20.5",
     "typescript": "5.9.2"

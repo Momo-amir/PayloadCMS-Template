@@ -19,11 +19,9 @@ services:
       - -c
       - |
         set -e
-        yarn install    
-        tmux new-session -d -s app 'yarn dev'
-        tmux a -t app \; set-option status off | grep -v '^[[:space:]]*$'
-
-
+        yarn install
+        yarn dev
+        
     depends_on:
       - postgres
     env_file:
