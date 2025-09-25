@@ -1,4 +1,19 @@
+// Adds custom styles to Payload's admin panel
+
+/* Define layers for Tailwind imports */
+@layer theme, base, components, utilities;
+
+/* Import the Tailwind theme styles */
+@import 'tailwindcss/theme.css' layer(theme);
+
+/* Skip the preflight reset to avoid conflicts with Payload's admin styles */
+/* @import 'tailwindcss/preflight.css' layer(base); */
+
+/* Import Tailwind utilities */
+@import 'tailwindcss/utilities.css' layer(utilities);
+
 /* Color Picker Field Styles */
+
 .color-picker-field {
   width: 100%;
 }
@@ -350,4 +365,24 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.logo-light,
+.favicon-light {
+  display: block;
+}
+
+.logo-dark,
+.favicon-dark {
+  display: none;
+}
+
+[data-theme='dark'] .logo-light,
+[data-theme='dark'] .favicon-light {
+  display: none;
+}
+
+[data-theme='dark'] .logo-dark,
+[data-theme='dark'] .favicon-dark {
+  display: block;
 }

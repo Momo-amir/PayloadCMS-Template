@@ -25,8 +25,8 @@ import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from 
 import { RowLabel as RowLabel_7373a88fa654e3a8434219cb2baf21de } from '@/website/layout/Header/RowLabel'
 import { RowLabel as RowLabel_4a97e2b05ef1b763469c9aa243cbe4d9 } from '@/website/layout/Footer/RowLabel'
 import { default as default_0e4ba2578c2a2965a0dca15e9c380571 } from '@/cms/components/ColorPickerInput'
-import { default as default_3af3571728f21df855b44977ccb0b582 } from '@/cms/components/Graphics/Graphics.tsx'
-import { default as default_0838309cc1ae884029dee868a8434bf6 } from '@/cms/components/Graphics/Logo.tsx'
+import { default as default_f35af700d9bc2f6ea0d0bb55cff83959 } from '@/cms/components/DashboardGraphics/DashboardIcon.tsx'
+import { default as default_9816f1c9af89c198c60ebc88ed9c0d24 } from '@/cms/components/DashboardGraphics/DashboardLogo.tsx'
 
 export const importMap = {
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -56,6 +56,6 @@ export const importMap = {
   "@/website/layout/Header/RowLabel#RowLabel": RowLabel_7373a88fa654e3a8434219cb2baf21de,
   "@/website/layout/Footer/RowLabel#RowLabel": RowLabel_4a97e2b05ef1b763469c9aa243cbe4d9,
   "@/cms/components/ColorPickerInput#default": default_0e4ba2578c2a2965a0dca15e9c380571,
-  "@/cms/components/Graphics/Graphics.tsx#default": default_3af3571728f21df855b44977ccb0b582,
-  "@/cms/components/Graphics/Logo.tsx#default": default_0838309cc1ae884029dee868a8434bf6
+  "@/cms/components/DashboardGraphics/DashboardIcon.tsx#default": default_f35af700d9bc2f6ea0d0bb55cff83959,
+  "@/cms/components/DashboardGraphics/DashboardLogo.tsx#default": default_9816f1c9af89c198c60ebc88ed9c0d24
 }
