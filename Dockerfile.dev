@@ -1,13 +1,9 @@
 FROM node:22-alpine
 
-RUN apk add --no-cache tmux
-
 WORKDIR /home/node/app
 EXPOSE 8890
 
 ENV PORT=8890
-
-RUN corepack enable
 
 # Don't run yarn install here - it will be done in docker-compose with mounted volumes
 
