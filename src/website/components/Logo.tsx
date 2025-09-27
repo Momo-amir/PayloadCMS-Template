@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import React from 'react'
 import logoWhite from '@public/assets/logo-on-dark.svg'
 import logo from '@public/assets/logo-on-light.svg'
+import NextImage from 'next/image'
 
 export interface LogoProps {
   className?: string
@@ -14,7 +15,7 @@ export interface LogoProps {
   width?: number
   height?: number
   // Force a specific theme for this logo only
-  forceTheme?: 'light' | 'dark'
+  forceTheme?: 'light' | 'dark' | null
 }
 
 export const Logo = (props: LogoProps) => {
@@ -53,9 +54,8 @@ export const Logo = (props: LogoProps) => {
     : clsx('max-w-[9.375rem] w-full hidden dark:block h-[34px]', className)
 
   return (
-    /* eslint-disable @next/next/no-img-element */
     <div>
-      <img
+      <NextImage
         alt={alt || 'Logo'}
         width={w}
         height={h}
@@ -66,7 +66,7 @@ export const Logo = (props: LogoProps) => {
         src={lightSrc || logo.src}
       />
 
-      <img
+      <NextImage
         src={darkSrc || logoWhite.src}
         alt={(alt || 'Logo') + '-darkmode'}
         width={w}
