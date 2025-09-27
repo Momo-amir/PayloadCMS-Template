@@ -1,4 +1,4 @@
-import type { Block, Field } from 'payload'
+import type { Field } from 'payload'
 import {
   FixedToolbarFeature,
   HeadingFeature,
@@ -13,7 +13,7 @@ const columnFields: Field[] = [
   {
     name: 'size',
     type: 'select',
-    defaultValue: 'oneThird',
+    defaultValue: 'full',
     options: [
       {
         label: 'One Third',
@@ -48,55 +48,34 @@ const columnFields: Field[] = [
     }),
     label: false,
   },
+  {
+    name: 'enableLink',
+    type: 'checkbox',
+  },
+  link({
+    overrides: {
+      admin: {
+        condition: (_data, siblingData) => {
+          return Boolean(siblingData?.enableLink)
+        },
+      },
+    },
+  }),
 ]
 
 export const Content: ComponentBlock = {
   slug: 'content',
   component: ContentBlock,
   interfaceName: 'ContentBlock',
-  showOnPage: true,
   fields: [
     {
-      name: 'richText',
-      type: 'richText',
-      label: 'Body',
-      admin: {
-        condition: (_data, { useColumns }) => !useColumns,
-      },
-      editor: lexicalEditor({
-        features: ({ rootFeatures }) => [
-          ...rootFeatures,
-          HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
-          FixedToolbarFeature(),
-          InlineToolbarFeature(),
-        ],
-      }),
-    },
-    {
-      name: 'columns',
+      name: 'section',
+      label: 'Content Section',
       type: 'array',
       admin: {
-        initCollapsed: true,
-        condition: (_data, { useColumns }) => useColumns,
+        initCollapsed: false,
       },
       fields: columnFields,
-    },
-    {
-      name: 'enableLink',
-      type: 'checkbox',
-    },
-    link({
-      overrides: {
-        admin: {
-          condition: (_, { enableLink }) => Boolean(enableLink),
-        },
-      },
-    }),
-    {
-      name: 'useColumns',
-      type: 'checkbox',
-      label: 'Use Columns Layout',
-      defaultValue: false,
     },
   ],
 }
