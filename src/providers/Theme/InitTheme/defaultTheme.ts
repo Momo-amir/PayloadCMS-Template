@@ -1,36 +1,36 @@
 // Default theme values - Single source of truth
 export const defaultTheme = {
   light: {
-    primary: '#09090d',
-    secondary: '#231B67',
-    tertiary: '#35296b',
+    primary: '#060513',
+    secondary: '#0E0E9A',
+    tertiary: '#9ECDE4',
     base: '#ffffff',
-    accent: '#F3E9FF',
-    accenttwo: '#c7bad9',
-    accentthree: '#fb823b',
+    accent: '#6A37C0',
+    accenttwo: '#C5A4E9',
+    accentthree: '#E7D8FA',
     border: '#eee',
     neutral: '#eee',
-    neutraltwo: '#f8d4a2',
-    highlight: '#B00020',
-    highlighttwo: '#e5fcfb',
+    neutraltwo: '#A5A5AA',
+    error: '#B00020',
+    success: '#198754',
     white: '#ffffff',
-    black: '#000000',
+    black: '#060513',
   },
   dark: {
     primary: '#e8e8e8',
-    secondary: '#231B67',
-    tertiary: '#50477b',
+    secondary: '#0E0E9A',
+    tertiary: '#9ECDE4',
     base: '#121212',
-    accent: '#F3E9FF',
-    accenttwo: '#352d6a',
-    accentthree: '#fb823b',
+    accent: '#6A37C0',
+    accenttwo: '#C5A4E9',
+    accentthree: '#E7D8FA',
     border: '#eee',
     neutral: '#eee',
-    neutraltwo: '#f8d4a2',
-    highlight: '#CF6679',
-    highlighttwo: '#e5fcfb',
+    neutraltwo: '#A5A5AA',
+    error: '#CF6679',
+    success: '#5cb85c',
     white: '#e8e8e8',
-    black: '#000000',
+    black: '#060513',
   },
 } as const
 
@@ -45,8 +45,8 @@ export type ThemePalette = {
   border: string
   neutral: string
   neutraltwo: string
-  highlight: string
-  highlighttwo: string
+  error: string
+  success: string
   white: string
   black: string
 }

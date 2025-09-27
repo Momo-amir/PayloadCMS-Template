@@ -36,8 +36,8 @@ const config = {
     'bg-border',
     'bg-neutral',
     'bg-neutraltwo',
-    'bg-highlight',
-    'bg-highlighttwo',
+    'bg-error',
+    'bg-success',
     // Text colors
     'text-primary',
     'text-secondary',
@@ -49,8 +49,8 @@ const config = {
     'text-border',
     'text-neutral',
     'text-neutraltwo',
-    'text-highlight',
-    'text-highlighttwo',
+    'text-error',
+    'text-success',
     // Border colors
     'border-primary',
     'border-secondary',
@@ -61,8 +61,8 @@ const config = {
     'border-accentthree',
     'border-neutral',
     'border-neutraltwo',
-    'border-highlight',
-    'border-highlighttwo',
+    'border-error',
+    'border-success',
     // Hover background colors
     'hover:bg-primary',
     'hover:bg-secondary',
@@ -74,8 +74,8 @@ const config = {
     'hover:bg-border',
     'hover:bg-neutral',
     'hover:bg-neutraltwo',
-    'hover:bg-highlight',
-    'hover:bg-highlighttwo',
+    'hover:bg-error',
+    'hover:bg-success',
     // Hover text colors
     'hover:text-primary',
     'hover:text-secondary',
@@ -87,8 +87,8 @@ const config = {
     'hover:text-border',
     'hover:text-neutral',
     'hover:text-neutraltwo',
-    'hover:text-highlight',
-    'hover:text-highlighttwo',
+    'hover:text-error',
+    'hover:text-success',
     // Hover border colors
     'hover:border-primary',
     'hover:border-secondary',
@@ -99,8 +99,8 @@ const config = {
     'hover:border-accentthree',
     'hover:border-neutral',
     'hover:border-neutraltwo',
-    'hover:border-highlight',
-    'hover:border-highlighttwo',
+    'hover:border-error',
+    'hover:border-success',
   ],
   theme: {
     container: {
@@ -132,8 +132,8 @@ const config = {
         secondary: 'var(--secondary)',
         tertiary: 'var(--tertiary)',
         base: 'var(--base)',
-        highlight: 'var(--highlight)',
-        highlighttwo: 'var(--highlighttwo)',
+        error: 'var(--error)',
+        success: 'var(--success)',
         accent: 'var(--accent)',
         accenttwo: 'var(--accenttwo)',
         accentthree: 'var(--accentthree)',
@@ -180,8 +180,8 @@ const config = {
         DEFAULT: {
           css: [
             {
-              '--tw-prose-body': 'var(--text)',
-              '--tw-prose-headings': 'var(--text)',
+              '--tw-prose-body': 'var(--primary)',
+              '--tw-prose-headings': 'var(--primary)',
               h1: {
                 fontWeight: 'normal',
                 marginBottom: '0.25em',
