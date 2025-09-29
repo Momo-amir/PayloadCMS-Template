@@ -6,7 +6,7 @@ import type { Footer } from '@/payload-types'
 
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/cms/components/Link'
-import { Logo } from '@/cms/components/Logo/Logo'
+import { Logo } from '@/website/components/Logo'
 import { getBranding, toLogoProps } from '@/cms/utilities/branding'
 
 export async function Footer() {

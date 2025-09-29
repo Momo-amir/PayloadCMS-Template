@@ -14,8 +14,7 @@
   }
 }
 
-.hero-rich-text,
-h1 {
+.hero-rich-text h1 {
   @apply text-h1 lg:text-display;
 }
 

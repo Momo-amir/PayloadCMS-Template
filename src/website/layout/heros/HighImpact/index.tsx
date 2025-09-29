@@ -41,13 +41,10 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText,
         {media &&
           typeof media === 'object' &&
           (media.mimeType && media.mimeType.includes('video') ? (
-            <video
+            <Media
               className="absolute inset-0 w-full h-full object-cover "
-              autoPlay
-              muted
-              loop
-              playsInline
-              src={`/media/${media.filename}`}
+              priority
+              resource={media}
             />
           ) : (
             <Media fill imgClassName="-z-10 object-cover" priority resource={media} />
