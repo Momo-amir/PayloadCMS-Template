@@ -1,5 +1,121 @@
 @import 'tailwindcss';
-@config '../../../tailwind.config.mjs';
+@custom-variant dark (&:is([data-theme=dark], [data-theme=dark] &));
+@custom-variant light (&:is([data-theme=light], [data-theme=light] &));
+
+/* Color - theme static is to make sure colors are always available  */
+@theme static {
+  /* Colors */
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+  --color-base: var(--base);
+  --color-error: var(--error);
+  --color-success: var(--success);
+  --color-accent: var(--accent);
+  --color-accenttwo: var(--accenttwo);
+  --color-accentthree: var(--accentthree);
+  --color-border: var(--border);
+  --color-neutral: var(--neutral);
+  --color-neutraltwo: var(--neutraltwo);
+}
+
+@theme {
+  /* Container */
+  --container-padding: 1rem;
+  --container-padding-sm: 1rem;
+  --container-padding-md: 2rem;
+  --container-padding-lg: 2rem;
+  --container-padding-xl: 2rem;
+  --container-padding-2xl: 2rem;
+
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 86rem;
+
+  /* Fonts */
+  --font-sans: Montserrat, sans-serif;
+
+  /* Font sizes */
+  --text-display: 4.375rem;
+  --leading-display: normal;
+  --font-weight-display: 700;
+  --text-transform-display: uppercase;
+
+  --text-h1: 3.125rem;
+  --leading-h1: normal;
+  --font-weight-h1: 700;
+  --text-transform-h1: uppercase;
+
+  --text-h2: 2.1875rem;
+  --leading-h2: normal;
+  --font-weight-h2: 700;
+  --text-transform-h2: uppercase;
+
+  --text-h3: 1.375rem;
+  --leading-h3: normal;
+  --font-weight-h3: 400;
+
+  --text-h3-hover: 1.375rem;
+  --leading-h3-hover: normal;
+  --font-weight-h3-hover: 400;
+  --text-decoration-h3-hover: underline;
+
+  --text-h4: 1.125rem;
+  --leading-h4: normal;
+  --font-weight-h4: 600;
+
+  --text-body: 1rem;
+  --leading-body: 1.5rem;
+  --font-weight-body: 400;
+
+  --text-body-semibold: 1rem;
+  --leading-body-semibold: normal;
+  --font-weight-body-semibold: 600;
+
+  --text-body-underline: 1rem;
+  --leading-body-underline: 1.375rem;
+  --font-weight-body-underline: 600;
+  --text-decoration-body-underline: underline;
+
+  --text-helper: 0.875rem;
+  --leading-helper: normal;
+  --font-weight-helper: 400;
+
+  --text-button: 1.125rem;
+  --leading-button: normal;
+  --font-weight-button: 700;
+
+  /* Animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+html {
+  opacity: 0;
+}
+html[data-theme='dark'],
+html[data-theme='light'] {
+  opacity: initial;
+}
 
 @layer base {
   *,
@@ -10,20 +126,12 @@
     border-color: var(--border, currentcolor);
   }
   body {
-    @apply bg-base text-primary min-h-screen flex flex-col;
+    @apply bg-base min-h-screen flex flex-col text-primary;
   }
 }
 
 .hero-rich-text h1 {
   @apply text-h1 lg:text-display;
-}
-
-html {
-  opacity: 0;
-}
-html[data-theme='dark'],
-html[data-theme='light'] {
-  opacity: initial;
 }
 
 .two-background-spacing {
@@ -40,4 +148,83 @@ html[data-theme='light'] {
 
 .two-background-spacing .two-column-left .media-block {
   border-radius: 0.8rem 0 0 0.8rem;
+}
+/* Container mimics tailwindcss3 container behavior */
+@layer base {
+  .container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 40rem) {
+    .container {
+      max-width: 40rem;
+      padding-inline: 1rem;
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .container {
+      max-width: 48rem;
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .container {
+      max-width: 64rem;
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .container {
+      max-width: 80rem;
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 86rem) {
+    .container {
+      max-width: 86rem;
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 96rem) {
+    .container {
+      max-width: 96rem;
+    }
+  }
+}
+/* Typography */
+@layer base {
+  h1 {
+    @apply text-h1 leading-h1 font-h1;
+  }
+
+  h2 {
+    @apply text-h2 leading-h2 font-h2;
+  }
+
+  h3 {
+    @apply text-h3 leading-h3 font-h3;
+  }
+
+  h4 {
+    @apply text-h4 leading-h4 font-h4;
+  }
+
+  p {
+    @apply text-body leading-body font-body;
+  }
+
+  strong {
+    @apply font-bold;
+  }
+
+  a {
+    @apply text-primary;
+  }
 }
