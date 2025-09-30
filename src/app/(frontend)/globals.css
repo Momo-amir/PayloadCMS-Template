@@ -230,9 +230,9 @@ html[data-theme='light'] {
 }
 
 .two-background-spacing .two-column-right .media-block {
-  @apply rounded-r-lg rounded-l-none;
+  @apply rounded-b-none lg:rounded-r-lg lg:rounded-l-none;
 }
 
 .two-background-spacing .two-column-left .media-block {
-  @apply rounded-l-lg rounded-r-none;
+  @apply rounded-b-none lg:rounded-l-lg lg:rounded-r-none;
 }

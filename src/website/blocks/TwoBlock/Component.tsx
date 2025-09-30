@@ -10,6 +10,7 @@ export const TwoBlock: React.FC<{
   backgroundColor?: string
 }> = ({ left = [], right = [], backgroundColor }) => {
   const hasBg = Boolean(backgroundColor)
+  const rightHasMedia = right.some((field) => field.blockType === 'mediaBlock')
   const gridClasses = cn(
     'grid grid-cols-1 md:grid-cols-2 items-center',
     backgroundColor,
@@ -24,6 +25,7 @@ export const TwoBlock: React.FC<{
             'two-column-layout flex flex-col',
             colIdx === 0 ? 'two-column-left' : 'two-column-right',
             !hasBg && 'gap-6',
+            colIdx === 1 && rightHasMedia && 'order-first md:order-none',
           )
 
           return (
@@ -33,9 +35,10 @@ export const TwoBlock: React.FC<{
                 const isMediaBlock = field.blockType === 'mediaBlock'
                 const child = renderChildField(field, key, true)
 
-                const wrapperClasses = cn({
-                  'p-6': hasBg && !isMediaBlock,
-                })
+                const wrapperClasses = cn(
+                  hasBg && !isMediaBlock && 'p-6',
+                  colIdx === 1 && isMediaBlock && 'order-first md:order-none',
+                )
 
                 return (
                   <div key={key} className={wrapperClasses}>
