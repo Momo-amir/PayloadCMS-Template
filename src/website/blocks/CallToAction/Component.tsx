@@ -12,7 +12,7 @@ export const CallToActionBlock: React.FC<CTABlockProps & { enableGutter?: boolea
   enableGutter = true,
 }) => {
   return (
-    <div className={cn({ container: enableGutter })}>
+    <div className={cn({ 'my-16': enableGutter, container: enableGutter })}>
       <div className=" rounded  border p-4 flex flex-col gap-8 md:flex-row md:justify-between md:items-center">
         <div className="max-w-[48rem] flex items-center">
           {richText && <RichText className="mb-0" data={richText} enableGutter={false} />}
