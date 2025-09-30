@@ -139,24 +139,6 @@ html[data-theme='light'] {
   @apply text-h1 lg:text-display;
 }
 
-.two-background-spacing {
-  border-radius: 0.8rem;
-}
-
-.two-background-spacing {
-  padding: 1.5rem;
-}
-.two-background-spacing .media-block {
-  padding: 0;
-}
-
-.two-background-spacing .two-column-right .media-block {
-  border-radius: 0 0.8rem 0.8rem 0;
-}
-
-.two-background-spacing .two-column-left .media-block {
-  border-radius: 0.8rem 0 0 0.8rem;
-}
 /* Container mimics tailwindcss3 container behavior */
 @layer base {
   .container {
@@ -240,20 +222,17 @@ html[data-theme='light'] {
 /*WEBSITE STYLES*/
 
 .two-background-spacing {
-  border-radius: 0.8rem;
+  @apply rounded-[0.8rem];
 }
 
-.two-background-spacing {
-  padding: 1.5rem;
-}
 .two-background-spacing .media-block {
-  padding: 0;
+  @apply p-0;
 }
 
 .two-background-spacing .two-column-right .media-block {
-  border-radius: 0 0.8rem 0.8rem 0;
+  @apply rounded-r-lg rounded-l-none;
 }
 
 .two-background-spacing .two-column-left .media-block {
-  border-radius: 0.8rem 0 0 0.8rem;
+  @apply rounded-l-lg rounded-r-none;
 }
