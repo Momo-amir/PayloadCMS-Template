@@ -29,6 +29,22 @@ const toDecls = (cssVars: Record<string, string>): string => {
     .join('\n')
 }
 
+const withColorAliases = (cssVars: Record<string, string>): Record<string, string> => {
+  const result: Record<string, string> = { ...cssVars }
+
+  Object.keys(cssVars).forEach((varName) => {
+    if (!varName.startsWith('--')) return
+
+    const aliasName = `--color-${varName.slice(2)}`
+
+    if (aliasName in result) return
+
+    result[aliasName] = `var(${varName})`
+  })
+
+  return result
+}
+
 const mergeThemeValues = (
   defaults: ThemePalette,
   overrides: PaletteWithLabels | undefined,
@@ -71,12 +87,12 @@ export const generateThemeCSS = (branding: Branding | null | undefined): string 
   const lightCSSVars = paletteToCSSVars(lightPalette)
   const darkCSSVars = paletteToCSSVars(darkPalette)
 
-  const lightDecls = toDecls(lightCSSVars)
-  const darkDecls = toDecls(darkCSSVars)
+  const lightDecls = toDecls(withColorAliases(lightCSSVars))
+  const darkDecls = toDecls(withColorAliases(darkCSSVars))
 
   // Generate complete CSS with proper formatting
   const css = `
-:root, [data-theme='light'] {
+[data-theme='light'] {
 ${lightDecls}
 }
 

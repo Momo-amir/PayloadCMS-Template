@@ -1,4 +1,3 @@
-import type { Block } from 'payload'
 import { Archive } from '../ArchiveBlock/config'
 import { CallToAction } from '../CallToAction/config'
 import { Content } from '../Content/config'

@@ -3,7 +3,8 @@ import { cn } from '@/cms/utilities/ui'
 import RichText from '@/cms/components/RichText'
 import { CMSLink } from '@/cms/components/Link'
 import type { ContentBlock as ContentBlockProps } from '@/payload-types'
-export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
+export const ContentBlock: React.FC<ContentBlockProps & { enableGutter?: boolean }> = (props) => {
+  const enableGutter = props.enableGutter ?? true
   const { section } = props
 
   const colsSpanClasses = {
@@ -14,8 +15,8 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
   }
 
   return (
-    <div className="container my-16">
-      <div className="grid grid-cols-4 lg:grid-cols-12 gap-y-8 gap-x-16">
+    <div className={cn({ 'my-16': enableGutter, container: enableGutter })}>
+      <div className={cn('grid grid-cols-4 lg:grid-cols-12 gap-y-8', { 'gap-x-16': enableGutter })}>
         {section &&
           section.length > 0 &&
           section.map((col, index) => {
