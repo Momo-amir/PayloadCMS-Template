@@ -77,7 +77,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) =
       )}
       {...(theme ? { 'data-theme': theme } : {})}
     >
-      <div className="container flex justify-between py-6 lg:py-8">
+      <div className="container flex justify-between py-6">
         <Link href="/">
           <Logo
             loading="eager"
