@@ -22,12 +22,14 @@ export const TwoBlockBlock: ComponentBlock = {
       type: 'blocks',
       blocks: [Archive, CallToAction, Content, FormBlock, MediaBlock],
       label: 'Left Column',
+      maxRows: 1,
     },
     {
       name: 'right',
       type: 'blocks',
       blocks: [Archive, CallToAction, Content, FormBlock, MediaBlock],
       label: 'Right Column',
+      maxRows: 1,
     },
   ],
 }

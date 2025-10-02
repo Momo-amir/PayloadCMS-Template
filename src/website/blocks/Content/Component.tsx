@@ -16,7 +16,7 @@ export const ContentBlock: React.FC<ContentBlockProps & { enableGutter?: boolean
 
   return (
     <div className={cn({ 'my-16': enableGutter, container: enableGutter })}>
-      <div className={cn('grid grid-cols-4 lg:grid-cols-12 gap-y-8', { 'gap-x-16': enableGutter })}>
+      <div className={cn('grid grid-cols-4 lg:grid-cols-12 gap-y-8', { 'gap-x-12': enableGutter })}>
         {section &&
           section.length > 0 &&
           section.map((col, index) => {
