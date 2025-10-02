@@ -31,7 +31,7 @@ export const ContentBlock: React.FC<ContentBlockProps & { enableGutter?: boolean
               >
                 {richText && <RichText data={richText} enableGutter={false} />}
 
-                {enableLink && <CMSLink {...link} />}
+                {enableLink && <CMSLink {...link} className="min-w-full md:min-w-0" />}
               </div>
             )
           })}

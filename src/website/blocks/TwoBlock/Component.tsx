@@ -12,7 +12,7 @@ export const TwoBlock: React.FC<{
   const hasBg = Boolean(backgroundColor)
   const rightHasMedia = right.some((field) => field.blockType === 'mediaBlock')
   const gridClasses = cn(
-    'grid grid-cols-1 md:grid-cols-2 items-center',
+    'grid grid-cols-1 md:grid-cols-2 items-center gap-y-4',
     backgroundColor,
     hasBg ? 'two-background-spacing' : 'gap-x-8',
   )
