@@ -1,4 +1,4 @@
-import RichText from '@/cms/components/RichText'
+import RichText from '@/website/components/RichText'
 import React from 'react'
 
 import { Width } from '../Width'

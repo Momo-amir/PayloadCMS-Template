@@ -1,7 +1,6 @@
 import type { GlobalConfig } from 'payload'
 import { link } from '@/cms/fields/link'
 import { revalidateFooter } from './hooks/revalidateFooter'
-import { createColorPaletteField } from '@/cms/fields/colorPalette'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
@@ -25,11 +24,25 @@ export const Footer: GlobalConfig = {
         },
       },
     },
-    createColorPaletteField({
-      name: 'backgroundColor',
-      label: 'Background Color Theme',
-      description: 'Choose the color theme for the footer background and text',
-    }),
+
+    {
+      name: 'socialLinks',
+      type: 'array',
+      label: 'Social Links',
+      fields: [
+        link({
+          appearances: false,
+        }),
+      ],
+      maxRows: 6,
+      admin: {
+        initCollapsed: true,
+        components: {
+          RowLabel: '@/website/layout/Footer/RowLabel#RowLabel',
+        },
+      },
+    },
+
     {
       name: 'themeMode',
       type: 'select',

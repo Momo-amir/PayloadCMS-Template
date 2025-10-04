@@ -6,11 +6,11 @@ import React, { Fragment } from 'react'
 
 import type { Post } from '@/payload-types'
 
-import { Media } from '@/cms/components/Media'
+import { Media } from '@/website/components/Media'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
 
-export const Card: React.FC<{
+export const PostCard: React.FC<{
   alignItems?: 'center'
   className?: string
   doc?: CardPostData

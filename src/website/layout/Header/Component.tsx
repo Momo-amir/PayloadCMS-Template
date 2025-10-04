@@ -9,6 +9,5 @@ export async function Header() {
   const headerData: Header = await getCachedGlobal('header', 1)()
   const branding = await getBranding()
   const logoProps = toLogoProps(branding)
-  
   return <HeaderClient data={headerData} logoProps={logoProps} />
 }

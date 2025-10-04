@@ -7,7 +7,6 @@ import { fileURLToPath } from 'url'
 // import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 import { Categories } from './cms/collections/Categories'
-import { ColorPalettes } from './cms/collections/ColorPalettes'
 import { Media } from './cms/collections/Media'
 import { Pages } from './cms/collections/Pages'
 import { Posts } from './cms/collections/Posts'
@@ -83,7 +82,7 @@ export default buildConfig({
     },
   }),
 
-  collections: [Pages, Posts, Media, Categories, Users, ColorPalettes],
+  collections: [Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer, BrandingGlobal],
   plugins: [

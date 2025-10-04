@@ -1,16 +1,16 @@
 'use client'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
+import { useLocalTheme } from '@/providers/Theme/LocalTheme/LocalTheme'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import { useTheme } from '@/providers/Theme'
 
 import canUseDOM from '@/cms/utilities/canUseDOM'
 import { cn } from '@/cms/utilities/ui'
 
 import type { Header } from '@/payload-types'
 
-import { Logo } from '@/website/components/Logo'
-import type { LogoProps } from '@/website/components/Logo'
+import { Logo } from '@/website/components/ui/Logo'
+import type { LogoProps } from '@/website/components/ui/Logo'
 import { HeaderNav } from './Nav'
 
 interface HeaderClientProps {
@@ -20,10 +20,10 @@ interface HeaderClientProps {
 
 export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) => {
   /* Storing the value in a useState to avoid hydration errors */
-  const [theme, setTheme] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
-  const { headerTheme, setHeaderTheme } = useHeaderTheme()
-  const pathname = usePathname()
+  const { override: headerTheme } = useLocalTheme('header')
+  const { theme: rootTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     if (!canUseDOM) return
@@ -60,14 +60,8 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) =
   }, [])
 
   useEffect(() => {
-    setHeaderTheme(null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname])
-
-  useEffect(() => {
-    if (headerTheme && headerTheme !== theme) setTheme(headerTheme)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [headerTheme])
+    setMounted(true)
+  }, [])
 
   return (
     <header
@@ -75,16 +69,16 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) =
         'sticky top-0 z-30 transition-colors ease-out duration-200  border-b border-transparent',
         isScrolled ? 'bg-base' : 'bg-transparent',
       )}
-      {...(theme ? { 'data-theme': theme } : {})}
+      data-theme={headerTheme ?? undefined}
     >
       <div className="container flex justify-between py-6">
         <Link href="/">
           <Logo
+            theme={mounted ? (headerTheme ?? rootTheme ?? null) : null}
             loading="eager"
             priority="high"
             className=""
             {...logoProps}
-            forceTheme={theme === 'dark' || theme === 'light' ? theme : null}
           />
         </Link>
         <HeaderNav data={data} />

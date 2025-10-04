@@ -72,12 +72,12 @@ const mergeThemeValues = (
 export const generateThemeCSS = (branding: Branding | null | undefined): string => {
   const tc =
     branding && typeof branding === 'object' && 'themeColors' in branding
-      ? branding.themeColors
+      ? (branding as any).themeColors
       : undefined
 
   // Get user overrides with new structure
-  const lightOverrides = tc?.light as PaletteWithLabels | undefined
-  const darkOverrides = tc?.dark as PaletteWithLabels | undefined
+  const lightOverrides = (tc as any)?.light as PaletteWithLabels | undefined
+  const darkOverrides = (tc as any)?.dark as PaletteWithLabels | undefined
 
   // Merge each theme independently - no cross-contamination
   const lightPalette = mergeThemeValues(defaultTheme.light, lightOverrides)

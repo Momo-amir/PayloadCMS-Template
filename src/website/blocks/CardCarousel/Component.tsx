@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/website/components/card'
+} from '@/website/components/ui/card'
 import Link from 'next/link'
 import Image from 'next/image'
 import { cn } from '@/cms/utilities/ui'
@@ -94,16 +94,18 @@ export const CardCarouselBlock: React.FC<Props> = ({
           {cards.map((card, i) => {
             const href = resolveHref(card)
             const media = card.media
-            const appliedBg =
-              colorMode === 'per-card' ? card.cardBackgroundColor || '' : cardBackgroundColor
+            const variantRaw =
+              colorMode === 'per-card' ? card.cardBackgroundColor : cardBackgroundColor
+            const variant =
+              typeof variantRaw === 'string' && variantRaw !== ''
+                ? (variantRaw as 'default' | 'light' | 'dark' | 'primary' | 'secondary')
+                : 'default'
 
             const cardInner = (
               <div className="slide px-2" style={{ width: slideWidth }}>
                 <Card
-                  className={cn(
-                    'flex-shrink-0 h-full flex flex-col transition hover:shadow-md',
-                    appliedBg,
-                  )}
+                  className={cn('flex-shrink-0 h-full flex flex-col transition hover:shadow-md')}
+                  variant={variant}
                 >
                   {media && typeof media === 'object' && 'url' in media && (
                     <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">

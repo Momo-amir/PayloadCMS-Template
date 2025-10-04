@@ -1,14 +1,30 @@
 import { cn } from '@/cms/utilities/ui'
+import { type VariantProps, cva } from 'class-variance-authority'
 import * as React from 'react'
 
+const cardVariants = cva('rounded-lg border shadow-sm', {
+  defaultVariants: {
+    variant: 'default',
+  },
+  variants: {
+    variant: {
+      default: 'bg-card',
+      light: 'bg-base',
+      dark: 'bg-accent',
+      primary: 'bg-primary border-primary',
+      secondary: 'bg-secondary border-secondary',
+    },
+  },
+})
+
+export type CardVariant = VariantProps<typeof cardVariants>['variant']
+
 const Card: React.FC<
-  { ref?: React.Ref<HTMLDivElement> } & React.HTMLAttributes<HTMLDivElement>
-> = ({ className, ref, ...props }) => (
-  <div
-    className={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
-    ref={ref}
-    {...props}
-  />
+  { ref?: React.Ref<HTMLDivElement> } &
+    React.HTMLAttributes<HTMLDivElement> &
+    VariantProps<typeof cardVariants>
+> = ({ className, ref, variant, ...props }) => (
+  <div className={cn(cardVariants({ className, variant }))} ref={ref} {...props} />
 )
 
 const CardHeader: React.FC<
@@ -30,7 +46,7 @@ const CardTitle: React.FC<
 const CardDescription: React.FC<
   { ref?: React.Ref<HTMLParagraphElement> } & React.HTMLAttributes<HTMLParagraphElement>
 > = ({ className, ref, ...props }) => (
-  <p className={cn('text-sm text-muted-foreground', className)} ref={ref} {...props} />
+  <p className={cn('text-sm ', className)} ref={ref} {...props} />
 )
 
 const CardContent: React.FC<
@@ -45,4 +61,4 @@ const CardFooter: React.FC<
   <div className={cn('flex items-center p-6 pt-0', className)} ref={ref} {...props} />
 )
 
-export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, cardVariants }
