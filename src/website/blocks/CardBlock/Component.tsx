@@ -1,7 +1,6 @@
 import React from 'react'
 import type { CardBlock as CardBlockType } from '@/payload-types'
 import Card from '@/website/components/Card/CustomCard'
-import type { CardVariant } from '@/website/components/ui/card'
 import { cn } from '@/cms/utilities/ui'
 
 type Props = CardBlockType & { className?: string }
@@ -22,7 +21,9 @@ const columnClass = (cardCount: number) => {
 
 export const CardBlock: React.FC<Props> = ({ heading, cards = [], cardBackgroundColor }) => {
   if (!cards.length) return null
-  const variant = (cardBackgroundColor ? cardBackgroundColor : 'default') as unknown as CardVariant
+  const variant = (cardBackgroundColor && cardBackgroundColor !== ''
+    ? cardBackgroundColor
+    : 'default') as 'default' | 'light' | 'dark' | 'primary' | 'secondary'
   return (
     <section className={cn('container')}>
       {heading && <h2 className="text-3xl font-semibold mb-8">{heading}</h2>}

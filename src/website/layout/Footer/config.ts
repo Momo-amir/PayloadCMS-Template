@@ -9,6 +9,35 @@ export const Footer: GlobalConfig = {
   },
   fields: [
     {
+      type: 'row',
+      fields: [
+        {
+          name: 'cvr',
+          type: 'text',
+          label: 'CVR Number',
+          admin: {
+            width: '33%',
+          },
+        },
+        {
+          name: 'tel',
+          type: 'text',
+          label: 'Phone Number',
+          admin: {
+            width: '33%',
+          },
+        },
+        {
+          name: 'contact',
+          type: 'email',
+          label: 'Email Address',
+          admin: {
+            width: '33%',
+          },
+        },
+      ],
+    },
+    {
       name: 'navItems',
       type: 'array',
       fields: [
@@ -30,16 +59,48 @@ export const Footer: GlobalConfig = {
       type: 'array',
       label: 'Social Links',
       fields: [
-        link({
-          appearances: false,
-        }),
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'platform',
+              type: 'select',
+              label: 'Social Platform',
+              required: true,
+              options: [
+                { label: 'Facebook', value: 'facebook' },
+                { label: 'Twitter/X', value: 'twitter' },
+                { label: 'Instagram', value: 'instagram' },
+                { label: 'LinkedIn', value: 'linkedin' },
+                { label: 'YouTube', value: 'youtube' },
+                { label: 'GitHub', value: 'github' },
+                { label: 'TikTok', value: 'tiktok' },
+              ],
+              admin: {
+                width: '50%',
+              },
+            },
+            {
+              name: 'url',
+              type: 'text',
+              label: 'URL',
+              required: true,
+              admin: {
+                width: '50%',
+              },
+            },
+          ],
+        },
+        {
+          name: 'newTab',
+          type: 'checkbox',
+          label: 'Open in new tab',
+          defaultValue: true,
+        },
       ],
-      maxRows: 6,
+      maxRows: 10,
       admin: {
         initCollapsed: true,
-        components: {
-          RowLabel: '@/website/layout/Footer/RowLabel#RowLabel',
-        },
       },
     },
 

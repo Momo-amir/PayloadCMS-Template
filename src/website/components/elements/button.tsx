@@ -17,10 +17,11 @@ const buttonVariants = cva(
         icon: 'h-10 w-10',
         lg: 'h-11 rounded px-8',
         sm: 'h-9 rounded px-3',
+        iconXL: 'h-16 w-16',
       },
       variant: {
         default: 'bg-primary border border-primary text-base hover:bg-base hover:text-primary',
-        accent: 'bg-accent text-primary hover:bg-accent3 hover:text-primary',
+        accent: 'bg-accent text-primary hover:bg-accentthree hover:text-primary',
         ghost: 'hover:bg-border hover:text-accent',
         link: 'text-primary items-start justify-start relative after:absolute after:bottom-0 after:left-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full max-w-fit',
         outline: 'border border-primary bg-base hover:bg-primary hover:text-base',

@@ -9,8 +9,8 @@ import { cn } from '@/cms/utilities/ui'
 
 import type { Header } from '@/payload-types'
 
-import { Logo } from '@/website/components/ui/Logo'
-import type { LogoProps } from '@/website/components/ui/Logo'
+import { Logo } from '@/website/components/elements/Logo'
+import type { LogoProps } from '@/website/components/elements/Logo'
 import { HeaderNav } from './Nav'
 
 interface HeaderClientProps {

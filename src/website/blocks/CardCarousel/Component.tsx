@@ -8,11 +8,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/website/components/ui/card'
+} from '@/website/components/elements/card'
 import Link from 'next/link'
-import Image from 'next/image'
+import { ImageMedia } from '@/website/components/Media/ImageMedia'
 import { cn } from '@/cms/utilities/ui'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
+import { cva } from 'class-variance-authority'
 
 type Props = CardCarouselBlockType & { className?: string }
 
@@ -101,19 +102,47 @@ export const CardCarouselBlock: React.FC<Props> = ({
                 ? (variantRaw as 'default' | 'light' | 'dark' | 'primary' | 'secondary')
                 : 'default'
 
+            const wrapperVariants = cva('', {
+              variants: {
+                variant: {
+                  default: 'bg-card',
+                  light: 'bg-base',
+                  dark: 'bg-accent text-white',
+                  primary: 'bg-black border-primary text-white',
+                  secondary: 'bg-secondary text-white border-secondary',
+                },
+              },
+              defaultVariants: { variant: 'default' },
+            })
+
+            const linkColorVariants = cva('', {
+              variants: {
+                variant: {
+                  default: 'text-primary',
+                  light: 'text-primary',
+                  dark: 'text-white',
+                  primary: 'text-white',
+                  secondary: 'text-white',
+                },
+              },
+              defaultVariants: { variant: 'default' },
+            })
+
             const cardInner = (
               <div className="slide px-2" style={{ width: slideWidth }}>
                 <Card
-                  className={cn('flex-shrink-0 h-full flex flex-col transition hover:shadow-md')}
-                  variant={variant}
+                  className={cn(
+                    'flex-shrink-0 h-full flex flex-col transition hover:shadow-md',
+                    wrapperVariants({ variant }),
+                  )}
                 >
                   {media && typeof media === 'object' && 'url' in media && (
                     <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
-                      <Image
-                        src={media.url || ''}
+                      <ImageMedia
+                        resource={media as any}
                         alt={media.alt || card.title}
                         fill
-                        className="object-cover"
+                        imgClassName="object-cover"
                       />
                     </div>
                   )}
@@ -124,7 +153,14 @@ export const CardCarouselBlock: React.FC<Props> = ({
                   {card.link && card.link.label && href && (
                     <CardContent className="pt-0 text-sm ">
                       <div className="flex items-center">
-                        <span className="text-lg font-semibold pr-2">{card.link.label}</span>{' '}
+                        <span
+                          className={cn(
+                            'text-lg font-semibold pr-2',
+                            linkColorVariants({ variant }),
+                          )}
+                        >
+                          {card.link.label}
+                        </span>
                         <IconArrowRight size={24} />
                       </div>
                     </CardContent>

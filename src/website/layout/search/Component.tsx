@@ -1,6 +1,6 @@
 'use client'
-import { Input } from '@/website/components/ui/input'
-import { Label } from '@/website/components/ui/label'
+import { Input } from '@/website/components/elements/input'
+import { Label } from '@/website/components/elements/label'
 import React, { useState, useEffect } from 'react'
 import { useDebounce } from '@/cms/utilities/useDebounce'
 import { useRouter } from 'next/navigation'

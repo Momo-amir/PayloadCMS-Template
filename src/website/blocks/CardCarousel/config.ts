@@ -29,6 +29,8 @@ export const CardCarouselBlock: ComponentBlock = {
       name: 'cardBackgroundColor',
       label: 'Card Variant',
       type: 'select',
+      // Short dbName to avoid exceeding Postgres identifier length
+      dbName: 'bg',
       defaultValue: '',
       options: [
         { label: 'Default', value: '' },
@@ -78,6 +80,8 @@ export const CardCarouselBlock: ComponentBlock = {
           name: 'cardBackgroundColor',
           label: 'Card Variant',
           type: 'select',
+          // Short dbName to avoid exceeding Postgres identifier length
+          dbName: 'bg',
           defaultValue: '',
           options: [
             { label: 'Default', value: '' },

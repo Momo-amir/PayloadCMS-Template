@@ -1,4 +1,4 @@
-import { Button } from '@/website/components/ui/button'
+import { Button } from '@/website/components/elements/button'
 import Link from 'next/link'
 import React from 'react'
 

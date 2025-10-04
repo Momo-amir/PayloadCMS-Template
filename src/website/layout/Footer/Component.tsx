@@ -1,19 +1,39 @@
 import { getCachedGlobal } from '@/cms/utilities/getGlobals'
 import Link from 'next/link'
 import React from 'react'
+import {
+  IconBrandFacebook,
+  IconBrandTwitter,
+  IconBrandInstagram,
+  IconBrandLinkedin,
+  IconBrandYoutube,
+  IconBrandGithub,
+  IconBrandTiktok,
+} from '@tabler/icons-react'
 
 import type { Footer } from '@/payload-types'
 
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/website/components/Link'
-import { Logo } from '@/website/components/ui/Logo'
+import { Logo } from '@/website/components/elements/Logo'
 import { getBranding, toLogoProps } from '@/cms/utilities/branding'
+
+const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  facebook: IconBrandFacebook,
+  twitter: IconBrandTwitter,
+  instagram: IconBrandInstagram,
+  linkedin: IconBrandLinkedin,
+  youtube: IconBrandYoutube,
+  github: IconBrandGithub,
+  tiktok: IconBrandTiktok,
+}
 
 export async function Footer() {
   const footerData = (await getCachedGlobal('footer', 1)()) as Footer
   const branding = await getBranding()
   const logoProps = toLogoProps(branding)
   const navItems = footerData?.navItems || []
+  const socialLinks = footerData?.socialLinks || []
   const themeMode = footerData?.themeMode || 'dark'
   const theme = themeMode === 'light' ? 'light' : 'dark'
 
@@ -23,16 +43,62 @@ export async function Footer() {
   return (
     <footer className={footerClass} data-theme={theme}>
       <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between">
-        <Link className="flex items-center" href="/">
-          <Logo loading="eager" priority="high" className="h-[34px]" theme={theme} {...logoProps} />
-        </Link>
+        <div className="flex flex-col gap-4">
+          <Link className="flex items-center" href="/">
+            <Logo
+              loading="eager"
+              priority="high"
+              className="h-[34px]"
+              theme={theme}
+              {...logoProps}
+            />
+          </Link>
+
+          {/* Company Info */}
+          <div className="flex flex-col gap-1 text-sm">
+            {footerData?.cvr && <div>{footerData.cvr}</div>}
+            {footerData?.tel && (
+              <Link href={`tel:${footerData.tel}`} className="hover:underline">
+                {footerData.tel}
+              </Link>
+            )}
+            {footerData?.contact && (
+              <Link href={`mailto:${footerData.contact}`} className="hover:underline">
+                {footerData.contact}
+              </Link>
+            )}
+          </div>
+        </div>
 
         <div className="flex flex-col-reverse items-start md:flex-row gap-4 md:items-center">
           <ThemeSelector />
           <nav className="flex flex-col md:flex-row gap-4">
             {navItems.map(({ link }, i) => {
-              return <CMSLink className="" key={i} {...link} />
+              return <CMSLink className="" key={i} {...link} appearance={'link'} />
             })}
+
+            {/* Social Links */}
+            {socialLinks.length > 0 && (
+              <div className="flex gap-2 md:ml-2">
+                {socialLinks.map((social, i) => {
+                  const IconComponent = socialIcons[social.platform || '']
+                  if (!IconComponent || !social.url) return null
+
+                  return (
+                    <CMSLink
+                      key={i}
+                      type="custom"
+                      url={social.url}
+                      newTab={social.newTab}
+                      size="iconXL"
+                      className="hover:scale-110 transition-transform ease duration-150"
+                    >
+                      <IconComponent className="h-5 w-5" />
+                    </CMSLink>
+                  )
+                })}
+              </div>
+            )}
           </nav>
         </div>
       </div>
