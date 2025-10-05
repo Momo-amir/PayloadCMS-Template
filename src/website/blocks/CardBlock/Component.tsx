@@ -13,7 +13,7 @@ const columnClass = (cardCount: number) => {
       return 'md:grid-cols-2'
     case 3:
     default:
-      return 'md:grid-cols-3' // 3+ cards always use 3 columns
+      return ' md:grid-cols-2 lg:grid-cols-3' // 3+ cards always use 3 columns
   }
 }
 
@@ -21,9 +21,7 @@ const columnClass = (cardCount: number) => {
 
 export const CardBlock: React.FC<Props> = ({ heading, cards = [], cardBackgroundColor }) => {
   if (!cards.length) return null
-  const variant = (cardBackgroundColor && cardBackgroundColor !== ''
-    ? cardBackgroundColor
-    : 'default') as 'default' | 'light' | 'dark' | 'primary' | 'secondary'
+  const variant = cardBackgroundColor ? cardBackgroundColor : 'default'
   return (
     <section className={cn('container')}>
       {heading && <h2 className="text-3xl font-semibold mb-8">{heading}</h2>}

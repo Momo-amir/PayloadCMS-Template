@@ -42,7 +42,7 @@ export async function Footer() {
 
   return (
     <footer className={footerClass} data-theme={theme}>
-      <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between items-center">
+      <div className="container py-8 gap-8 flex flex-col-reverse md:flex-row md:justify-between items-center">
         <div className="flex flex-col gap-4">
           <Link className="flex items-center" href="/">
             <Logo
@@ -55,7 +55,7 @@ export async function Footer() {
           </Link>
 
           {/* Company Info */}
-          <div className="flex flex-col gap-1 text-sm">
+          <div className="flex items-center md:items-baseline flex-col gap-1 text-sm">
             {footerData?.cvr && <div>{footerData.cvr}</div>}
             {footerData?.tel && (
               <Link href={`tel:${footerData.tel}`} className="hover:underline">
@@ -69,19 +69,11 @@ export async function Footer() {
             )}
           </div>
         </div>
-        <div className="flex flex-col md:flex-row gap-4 items-baseline">
-          <div className="flex flex-col items-start gap-4 ">
-            <nav className="grid grid-cols-2 gap-x-4 gap-y-2 ml-1">
+        <div className="flex flex-col-reverse md:flex-row gap-4 items-baseline">
+          <div className="flex flex-col items-center md:items-start gap-4 ">
+            <nav className="flex flex-wrap md:flex-col gap-x-4 gap-y-2 md:ml-1">
               {navItems.map(({ link }, i) => {
-                return (
-                  <CMSLink
-                    className="text-[1rem]"
-                    key={i}
-                    {...link}
-                    appearance={'link'}
-                    size={'lg'}
-                  />
-                )
+                return <CMSLink key={i} {...link} appearance={'link'} size={'lg'} />
               })}
             </nav>
             {/* Social Links */}

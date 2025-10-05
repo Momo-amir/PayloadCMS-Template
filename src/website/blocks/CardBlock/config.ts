@@ -60,7 +60,7 @@ export const CardBlock: ComponentBlock = {
           required: false,
         },
         // Include 'default' because the shared link field sets defaultValue: 'default'
-        link({ appearances: ['default', 'link', 'outline'] }),
+        link({ appearances: false }),
         {
           name: 'media',
           type: 'upload',
