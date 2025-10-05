@@ -24,7 +24,9 @@ services:
         set -e
         yarn payload migrate
         yarn build
-        node .next/standalone/server.js
+        cp -r public .next/standalone/
+        cp -r .next/static .next/standalone/.next/
+        cd .next/standalone && node server.js
 
   postgres:
     container_name: postgres-prod
