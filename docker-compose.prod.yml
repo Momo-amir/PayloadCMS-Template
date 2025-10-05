@@ -1,5 +1,6 @@
 services:
   payload:
+    container_name: payload-prod
     build:
       context: .
       dockerfile: Dockerfile.prod
@@ -24,6 +25,7 @@ services:
         node .next/standalone/server.js
 
   postgres:
+    container_name: postgres-prod
     image: postgres:latest
     restart: always
     environment:
