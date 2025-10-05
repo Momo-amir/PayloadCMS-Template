@@ -9,15 +9,12 @@
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -p ${PORT:-8890}",
-    "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && yarn build && yarn start",
     "generate:importmap": "cross-env NODE_OPTIONS='--import ./scss-loader.mjs --no-deprecation' node ./node_modules/.bin/payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS='--import ./scss-loader.mjs --no-deprecation' node ./node_modules/.bin/payload generate:types",
-    "ii": "cross-env NODE_OPTIONS=--no-deprecation yarn install",
+    "migrate:create": "yarn payload migrate:create",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation next lint --fix",
     "payload": "cross-env NODE_OPTIONS='--import ./scss-loader.mjs --no-deprecation' payload",
-    "dev:migrate": "yarn payload migrate && yarn dev",
-    "ci": "yarn payload migrate && yarn build",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm yarn.lock && yarn install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "cli": "tsx .cli/lib/core.ts",
@@ -25,8 +22,7 @@
     "docker-prod": "docker compose -f docker-compose.prod.yml up",
     "docker-prod:build": "docker compose -f docker-compose.prod.yml up --build",
     "docker-prod:down": "docker compose -f docker-compose.prod.yml down",
-    "docker-prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
-    "deploy-prod": "./deploy-production.sh"
+    "docker-prod:logs": "docker compose -f docker-compose.prod.yml logs -f"
   },
   "dependencies": {
     "@lexical/react": "^0.35.0",

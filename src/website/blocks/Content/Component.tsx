@@ -1,7 +1,7 @@
 import React from 'react'
 import { cn } from '@/cms/utilities/ui'
-import RichText from '@/cms/components/RichText'
-import { CMSLink } from '@/cms/components/Link'
+import RichText from '@/website/components/RichText'
+import { CMSLink } from '@/website/components/Link'
 import type { ContentBlock as ContentBlockProps } from '@/payload-types'
 export const ContentBlock: React.FC<ContentBlockProps & { enableGutter?: boolean }> = (props) => {
   const enableGutter = props.enableGutter ?? true

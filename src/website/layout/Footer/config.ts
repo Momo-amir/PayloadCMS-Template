@@ -1,7 +1,6 @@
 import type { GlobalConfig } from 'payload'
 import { link } from '@/cms/fields/link'
 import { revalidateFooter } from './hooks/revalidateFooter'
-import { createColorPaletteField } from '@/cms/fields/colorPalette'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
@@ -9,6 +8,35 @@ export const Footer: GlobalConfig = {
     read: () => true,
   },
   fields: [
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'cvr',
+          type: 'text',
+          label: 'CVR Number',
+          admin: {
+            width: '33%',
+          },
+        },
+        {
+          name: 'tel',
+          type: 'text',
+          label: 'Phone Number',
+          admin: {
+            width: '33%',
+          },
+        },
+        {
+          name: 'contact',
+          type: 'email',
+          label: 'Email Address',
+          admin: {
+            width: '33%',
+          },
+        },
+      ],
+    },
     {
       name: 'navItems',
       type: 'array',
@@ -25,11 +53,57 @@ export const Footer: GlobalConfig = {
         },
       },
     },
-    createColorPaletteField({
-      name: 'backgroundColor',
-      label: 'Background Color Theme',
-      description: 'Choose the color theme for the footer background and text',
-    }),
+
+    {
+      name: 'socialLinks',
+      type: 'array',
+      label: 'Social Links',
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'platform',
+              type: 'select',
+              label: 'Social Platform',
+              required: true,
+              options: [
+                { label: 'Facebook', value: 'facebook' },
+                { label: 'Twitter/X', value: 'twitter' },
+                { label: 'Instagram', value: 'instagram' },
+                { label: 'LinkedIn', value: 'linkedin' },
+                { label: 'YouTube', value: 'youtube' },
+                { label: 'GitHub', value: 'github' },
+                { label: 'TikTok', value: 'tiktok' },
+              ],
+              admin: {
+                width: '50%',
+              },
+            },
+            {
+              name: 'url',
+              type: 'text',
+              label: 'URL',
+              required: true,
+              admin: {
+                width: '50%',
+              },
+            },
+          ],
+        },
+        {
+          name: 'newTab',
+          type: 'checkbox',
+          label: 'Open in new tab',
+          defaultValue: true,
+        },
+      ],
+      maxRows: 10,
+      admin: {
+        initCollapsed: true,
+      },
+    },
+
     {
       name: 'themeMode',
       type: 'select',

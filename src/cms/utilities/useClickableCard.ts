@@ -55,17 +55,39 @@ function useClickableCard<T extends HTMLElement>({
 
   const handleMouseUp = useCallback(
     (e: MouseEvent) => {
-      if (link.current?.href) {
+      const anchor = link.current
+      const hrefFromAnchor = anchor?.getAttribute('href') || anchor?.href || ''
+      if (hrefFromAnchor) {
         const timeNow = +new Date()
         const difference = timeNow - timeDown.current
 
-        if (link.current?.href && difference <= 250) {
+        if (difference <= 250) {
           if (!hasActiveParent.current && pressedButton.current === 0 && !e.ctrlKey) {
-            if (external) {
+            // Decide external intelligently if not provided
+            let resolvedExternal = external
+            let to = hrefFromAnchor
+            try {
+              // Treat non-http(s) protocols as external
+              if (typeof resolvedExternal !== 'boolean') {
+                if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(hrefFromAnchor) && !/^https?:/i.test(hrefFromAnchor)) {
+                  resolvedExternal = true
+                } else {
+                  const u = new URL(hrefFromAnchor, window.location.href)
+                  resolvedExternal = u.origin !== window.location.origin
+                  // Build relative for internal navigation
+                  to = `${u.pathname}${u.search}${u.hash}`
+                }
+              }
+            } catch {
+              // Fallback: assume internal
+              resolvedExternal = false
+            }
+
+            if (resolvedExternal) {
               const target = newTab ? '_blank' : '_self'
-              window.open(link.current.href, target)
+              window.open(hrefFromAnchor, target)
             } else {
-              router.push(link.current.href, { scroll })
+              router.push(to, { scroll })
             }
           }
         }
@@ -81,6 +103,11 @@ function useClickableCard<T extends HTMLElement>({
     const abortController = new AbortController()
 
     if (cardNode) {
+      // Fallback: if consumer did not bind link.ref, try to find first anchor inside card
+      if (!link.current) {
+        const found = cardNode.querySelector('a') as HTMLAnchorElement | null
+        if (found) link.current = found
+      }
       cardNode.addEventListener('mousedown', handleMouseDown, {
         signal: abortController.signal,
       })

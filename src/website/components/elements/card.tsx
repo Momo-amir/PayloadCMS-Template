@@ -1,15 +1,13 @@
 import { cn } from '@/cms/utilities/ui'
 import * as React from 'react'
 
-const Card: React.FC<
-  { ref?: React.Ref<HTMLDivElement> } & React.HTMLAttributes<HTMLDivElement>
-> = ({ className, ref, ...props }) => (
-  <div
-    className={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
-    ref={ref}
-    {...props}
-  />
-)
+// Primitive Card component without variant logic.
+// Variant styling is owned by higher-level components (e.g., CustomCard).
+const Card: React.FC<{ ref?: React.Ref<HTMLDivElement> } & React.HTMLAttributes<HTMLDivElement>> = ({
+  className,
+  ref,
+  ...props
+}) => <div className={cn('rounded-lg border shadow-sm', className)} ref={ref} {...props} />
 
 const CardHeader: React.FC<
   { ref?: React.Ref<HTMLDivElement> } & React.HTMLAttributes<HTMLDivElement>
@@ -30,7 +28,7 @@ const CardTitle: React.FC<
 const CardDescription: React.FC<
   { ref?: React.Ref<HTMLParagraphElement> } & React.HTMLAttributes<HTMLParagraphElement>
 > = ({ className, ref, ...props }) => (
-  <p className={cn('text-sm text-muted-foreground', className)} ref={ref} {...props} />
+  <p className={cn('text-sm ', className)} ref={ref} {...props} />
 )
 
 const CardContent: React.FC<

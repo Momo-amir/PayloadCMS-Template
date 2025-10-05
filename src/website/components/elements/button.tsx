@@ -4,7 +4,7 @@ import { type VariantProps, cva } from 'class-variance-authority'
 import * as React from 'react'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded text-body font-body-semibold ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     defaultVariants: {
       size: 'default',
@@ -20,12 +20,12 @@ const buttonVariants = cva(
       },
       variant: {
         default: 'bg-primary border border-primary text-base hover:bg-base hover:text-primary',
-        accent: 'bg-accent text-primary hover:bg-accent3 hover:text-primary',
+        accent: 'bg-accent text-primary hover:bg-accentthree hover:text-primary',
         ghost: 'hover:bg-border hover:text-accent',
-        link: 'text-primary items-start justify-start relative after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full',
-        outline: 'border border-primary bg-base hover:bg-primary hover:text-base',
-        secondary: 'bg-secondary text-base hover:bg-secondary/80',
-        tertiary: 'bg-tertiary text-accent2 hover:bg-accent2 hover:text-tertiary',
+        link: 'text-primary items-start justify-start relative after:absolute after:bottom-0 after:left-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full max-w-min @max-md:active:text-accentthree transition-colors duration-200 ',
+        outline: 'border border-primary bg-transparent hover:bg-primary hover:text-base',
+        secondary: 'bg-black text-white hover:bg-secondary active:bg-secondary',
+        tertiary: 'bg-white text-black hover:bg-accentthree active:bg-accentthree',
       },
     },
   },

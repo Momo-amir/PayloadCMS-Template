@@ -1,11 +1,11 @@
-import { Button, type ButtonProps } from '@/website/components/button'
+import { Button, type ButtonProps } from '@/website/components/elements/button'
 import { cn } from '@/cms/utilities/ui'
 import Link from 'next/link'
 import React from 'react'
 
 import type { Page, Post } from '@/payload-types'
 
-type CMSLinkType = {
+export type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
   children?: React.ReactNode
   className?: string
@@ -21,6 +21,8 @@ type CMSLinkType = {
   url?: string | null
   useCustomColorTheme?: boolean | null
 }
+
+export type CMSLinkReference = NonNullable<CMSLinkType['reference']>
 
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const {

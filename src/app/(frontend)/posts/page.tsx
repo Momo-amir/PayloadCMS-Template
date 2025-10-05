@@ -1,8 +1,8 @@
 import type { Metadata } from 'next/types'
 
-import { CollectionArchive } from '@/cms/components/CollectionArchive'
-import { PageRange } from '@/cms/components/PageRange'
-import { Pagination } from '@/cms/components/Pagination'
+import { CollectionArchive } from '@/website/components/CollectionArchive'
+import { PageRange } from '@/website/components/PageRange'
+import { Pagination } from '@/website/components/Pagination/index'
 import configPromise from '@/payload.config'
 import { getPayload } from 'payload'
 import React from 'react'

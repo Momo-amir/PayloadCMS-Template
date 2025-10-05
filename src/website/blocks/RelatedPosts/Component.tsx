@@ -1,10 +1,10 @@
 import clsx from 'clsx'
 import React from 'react'
-import RichText from '@/cms/components/RichText'
+import RichText from '@/website/components/RichText'
 
 import type { Post } from '@/payload-types'
 
-import { Card } from '@/cms/components/Card'
+import { PostCard } from '@/website/components/Card/PostCard'
 import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
 export type RelatedPostsProps = {
@@ -24,7 +24,7 @@ export const RelatedPosts: React.FC<RelatedPostsProps> = (props) => {
         {docs?.map((doc, index) => {
           if (typeof doc === 'string') return null
 
-          return <Card key={index} doc={doc} relationTo="posts" showCategories />
+          return <PostCard key={index} doc={doc} relationTo="posts" showCategories />
         })}
       </div>
     </div>

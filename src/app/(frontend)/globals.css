@@ -8,20 +8,53 @@
 @source inline('{,hover:}text-{primary,secondary,tertiary,base,accent,accenttwo,accentthree,border,neutral,neutraltwo,error,success}');
 @source inline('{,hover:}border-{primary,secondary,tertiary,base,accent,accenttwo,accentthree,border,neutral,neutraltwo,error,success}');
 @source inline('lg:col-span-{4,6,8,12}');
+
+/* Light theme (explicit) as to allow forced theming on a per-component basis */
+[data-theme='light'] {
+  --color-primary: #060513;
+  --color-secondary: #0e0e9a;
+  --color-tertiary: #9ecde4;
+  --color-base: #ffffff;
+  --color-accent: #6a37c0;
+  --color-accenttwo: #c5a4e9;
+  --color-accentthree: #e7d8fa;
+  --color-border: #eee;
+  --color-neutral: #eee;
+  --color-neutraltwo: #a5a5aa;
+  --color-error: #b00020;
+  --color-success: #198754;
+}
+
+/* Dark theme */
+[data-theme='dark'] {
+  --color-primary: #e8e8e8;
+  --color-secondary: #0e0e9a;
+  --color-tertiary: #9ecde4;
+  --color-base: #121212;
+  --color-accent: #6a37c0;
+  --color-accenttwo: #c5a4e9;
+  --color-accentthree: #e7d8fa;
+  --color-border: #eee;
+  --color-neutral: #eee;
+  --color-neutraltwo: #a5a5aa;
+  --color-error: #cf6679;
+  --color-success: #5cb85c;
+}
+
 @theme static {
-  /* Colors */
-  --color-primary: var(--primary);
-  --color-secondary: var(--secondary);
-  --color-tertiary: var(--tertiary);
-  --color-base: var(--base);
-  --color-error: var(--error);
-  --color-success: var(--success);
-  --color-accent: var(--accent);
-  --color-accenttwo: var(--accenttwo);
-  --color-accentthree: var(--accentthree);
-  --color-border: var(--border);
-  --color-neutral: var(--neutral);
-  --color-neutraltwo: var(--neutraltwo);
+  /* Colors - yes a bit stupid. But this way we have access to tailwind classes*/
+  --color-primary: --color-primary;
+  --color-secondary: --color-secondary;
+  --color-tertiary: --color-tertiary;
+  --color-base: --color-base;
+  --color-accent: --color-accent;
+  --color-accenttwo: --color-accenttwo;
+  --color-accentthree: --color-accentthree;
+  --color-border: --color-border;
+  --color-neutral: --color-neutral;
+  --color-neutraltwo: --color-neutraltwo;
+  --color-error: --color-error;
+  --color-success: --color-success;
 }
 
 @theme {
@@ -128,7 +161,7 @@ html[data-theme='light'] {
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--border, currentcolor);
+    border-color: var(--color-border, currentcolor);
   }
   body {
     @apply bg-base min-h-screen flex flex-col text-primary;

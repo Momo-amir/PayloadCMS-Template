@@ -1,5 +1,4 @@
 import { link } from '@/cms/fields/link'
-import { createColorPaletteField } from '@/cms/fields/colorPalette'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
 import { CardCarouselBlock as CardCarouselBlockComponent } from './Component'
 
@@ -12,12 +11,6 @@ export const CardCarouselBlock: ComponentBlock = {
     plural: 'Card Carousel',
   },
   fields: [
-    createColorPaletteField({
-      name: 'cardBackgroundColor',
-      label: 'Card Background Color',
-      description: 'Applied to every card when mode is Single color.',
-      condition: (data) => !data?.colorMode || data?.colorMode === 'block',
-    }),
     {
       name: 'colorMode',
       type: 'select',
@@ -29,6 +22,25 @@ export const CardCarouselBlock: ComponentBlock = {
       ],
       admin: {
         description: 'Choose whether to use one color for all cards or set colors individually.',
+        width: '50%',
+      },
+    },
+    {
+      name: 'cardBackgroundColor',
+      label: 'Card Variant',
+      type: 'select',
+      // Short dbName to avoid exceeding Postgres identifier length
+      dbName: 'bg',
+      defaultValue: '',
+      options: [
+        { label: 'Default', value: '' },
+        { label: 'Light', value: 'light' },
+        { label: 'Dark', value: 'dark' },
+        { label: 'Primary', value: 'primary' },
+        { label: 'Secondary', value: 'secondary' },
+      ],
+      admin: {
+        description: 'When Color Mode is set to "Single color", this variant applies to all cards.',
         width: '50%',
       },
     },
@@ -64,6 +76,24 @@ export const CardCarouselBlock: ComponentBlock = {
           type: 'textarea',
           required: false,
         },
+        {
+          name: 'cardBackgroundColor',
+          label: 'Card Variant',
+          type: 'select',
+          // Short dbName to avoid exceeding Postgres identifier length
+          dbName: 'bg',
+          defaultValue: '',
+          options: [
+            { label: 'Default', value: '' },
+            { label: 'Light', value: 'light' },
+            { label: 'Dark', value: 'dark' },
+            { label: 'Primary', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+          ],
+          admin: {
+            description: 'Used when Color Mode is set to "Individual per card".',
+          },
+        },
         // Include 'default' because the shared link field sets defaultValue: 'default'
         link({ appearances: ['default', 'link', 'outline'] }),
         {
@@ -75,12 +105,6 @@ export const CardCarouselBlock: ComponentBlock = {
             description: 'Optional media (image or video) to show at top of card',
           },
         },
-
-        createColorPaletteField({
-          name: 'cardBackgroundColor',
-          description: 'Applied to every card when mode is Single color.',
-          condition: (data) => data?.colorMode === 'per-card',
-        }),
       ],
     },
     {

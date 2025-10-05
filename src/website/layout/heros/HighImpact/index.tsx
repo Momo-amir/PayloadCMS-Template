@@ -1,21 +1,18 @@
 'use client'
 
 import type { Page } from '@/payload-types'
-import { CMSLink } from '@/cms/components/Link'
-import { Media } from '@/cms/components/Media'
-import RichText from '@/cms/components/RichText'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
+import { CMSLink } from '@/website/components/Link'
+import { Media } from '@/website/components/Media'
+import RichText from '@/website/components/RichText'
+import { useHeaderThemeOverride } from '@/providers/Theme/LocalTheme/LocalTheme'
 import React from 'react'
 
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 
 export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText, theme }) => {
-  const { setHeaderTheme } = useHeaderTheme()
+  const forced = theme === 'dark' ? 'dark' : 'light'
+  useHeaderThemeOverride(forced)
   const heroRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    setHeaderTheme(theme === 'dark' ? 'dark' : 'light')
-  })
 
   return (
     <div

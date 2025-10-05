@@ -2,8 +2,8 @@ import React from 'react'
 
 import type { CallToActionBlock as CTABlockProps } from '@/payload-types'
 
-import RichText from '@/cms/components/RichText'
-import { CMSLink } from '@/cms/components/Link'
+import RichText from '@/website/components/RichText'
+import { CMSLink } from '@/website/components/Link'
 import { cn } from '@/cms/utilities/ui'
 
 export const CallToActionBlock: React.FC<CTABlockProps & { enableGutter?: boolean }> = ({

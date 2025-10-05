@@ -1,12 +1,12 @@
 import type { Metadata } from 'next/types'
 
-import { CollectionArchive } from '@/cms/components/CollectionArchive'
+import { CollectionArchive } from '@/website/components/CollectionArchive'
 import configPromise from '@/payload.config'
 import { getPayload } from 'payload'
 import React from 'react'
 import { Search } from '@/website/layout/search/Component'
 import PageClient from './page.client'
-import { CardPostData } from '@/cms/components/Card'
+import { CardPostData } from '@/website/components/Card/PostCard'
 
 type Args = {
   searchParams: Promise<{
@@ -63,7 +63,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
     <div className="pt-24 pb-24">
       <PageClient />
       <div className="container mb-16">
-        <div className="  dark: -invert max-w-none text-center">
+        <div className="  max-w-none text-center">
           <h1 className="mb-8 lg:mb-16">Search</h1>
 
           <div className="max-w-[50rem] mx-auto">

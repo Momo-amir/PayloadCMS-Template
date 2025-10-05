@@ -1,6 +1,5 @@
 import type { GlobalConfig } from 'payload'
 import { revalidateBranding } from './hooks/revalidateBranding'
-import { createThemeColorsGroup } from '@/cms/globals/Branding/fields/themeFields'
 
 export const BrandingGlobal: GlobalConfig = {
   slug: 'branding',
@@ -38,10 +37,6 @@ export const BrandingGlobal: GlobalConfig = {
               ],
             },
           ],
-        },
-        {
-          label: 'Theme',
-          fields: [createThemeColorsGroup()],
         },
       ],
     },

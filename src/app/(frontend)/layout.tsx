@@ -8,7 +8,7 @@ import React from 'react'
 import { AdminBar } from '@/cms/components/AdminBar'
 import { Footer } from '@/website/layout/Footer/Component'
 import { Header } from '@/website/layout/Header/Component'
-import { Providers } from '@/providers'
+import { Providers } from '@/providers/Theme/LocalTheme'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/cms/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
@@ -16,19 +16,16 @@ import { draftMode } from 'next/headers'
 import './globals.css'
 import { getServerSideURL } from '@/cms/utilities/getURL'
 import { getBranding, toFaviconProps } from '@/cms/utilities/branding'
-import { generateThemeCSS } from '@/cms/utilities/themeCSS'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
   const branding = await getBranding()
   const { lightHref, darkHref } = toFaviconProps(branding)
-  const themeCSS = generateThemeCSS(branding)
 
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
-        <style id="theme-variables" dangerouslySetInnerHTML={{ __html: themeCSS }} />
         <link
           href={darkHref}
           type={darkHref.endsWith('.png') ? 'image/png' : 'image/svg+xml'}

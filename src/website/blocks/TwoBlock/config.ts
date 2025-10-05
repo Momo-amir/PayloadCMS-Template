@@ -3,7 +3,6 @@ import { CallToAction } from '../CallToAction/config'
 import { Content } from '../Content/config'
 import { FormBlock } from '../Form/config'
 import { MediaBlock } from '../MediaBlock/config'
-import { createColorPaletteField } from '@/cms/fields/colorPalette'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
 import { TwoBlock } from './Component'
 
@@ -16,7 +15,6 @@ export const TwoBlockBlock: ComponentBlock = {
     plural: 'Two-Column Layouts',
   },
   fields: [
-    createColorPaletteField(),
     {
       name: 'left',
       type: 'blocks',

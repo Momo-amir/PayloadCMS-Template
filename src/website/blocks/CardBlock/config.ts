@@ -1,5 +1,4 @@
 import { link } from '@/cms/fields/link'
-import { createColorPaletteField } from '@/cms/fields/colorPalette'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
 import { CardBlock as CardBlockComponent } from './Component'
 
@@ -12,16 +11,23 @@ export const CardBlock: ComponentBlock = {
     plural: 'Card Layout',
   },
   fields: [
-    createColorPaletteField({
-      name: 'cardBackgroundColor',
-      label: 'Default Card Background Color',
-      description: 'Applied to all cards unless individually overridden.',
-    }),
     {
       name: 'heading',
       type: 'text',
       required: false,
       label: 'Section Heading',
+    },
+    {
+      name: 'cardBackgroundColor',
+      label: 'Card Variant',
+      type: 'select',
+      options: [
+        { label: 'Default', value: '' },
+        { label: 'Light', value: 'light' },
+        { label: 'Dark', value: 'dark' },
+        { label: 'Primary', value: 'primary' },
+        { label: 'Secondary', value: 'secondary' },
+      ],
     },
     {
       name: 'cards',
@@ -34,20 +40,15 @@ export const CardBlock: ComponentBlock = {
       },
       fields: [
         {
-          name: 'overrideColor',
-          type: 'checkbox',
-          label: 'Override Default Color',
-          defaultValue: false,
+          name: 'tag',
+          type: 'text',
+          required: false,
+          label: 'Tag',
           admin: {
-            description: 'Check to use a custom color palette for this specific card.',
+            description: 'Optional label to show above the title (e.g., "New", "Featured").',
+            width: '50%',
           },
         },
-        createColorPaletteField({
-          name: 'cardBackgroundColor',
-          label: 'Custom Card Background Color',
-          description: 'Color palette for this individual card.',
-          condition: (siblingData) => siblingData?.overrideColor === true,
-        }),
         {
           name: 'title',
           type: 'text',
@@ -59,6 +60,7 @@ export const CardBlock: ComponentBlock = {
           required: false,
         },
         // Include 'default' because the shared link field sets defaultValue: 'default'
+        link({ appearances: false }),
         {
           name: 'media',
           type: 'upload',
@@ -68,7 +70,6 @@ export const CardBlock: ComponentBlock = {
             description: 'Optional media (image or video) to show at top of card',
           },
         },
-        link({ appearances: ['default', 'link', 'outline'] }),
       ],
     },
   ],
