@@ -1,3 +1,5 @@
+name: kollab-payload-prod
+
 services:
   payload:
     container_name: payload-prod
