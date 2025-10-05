@@ -38,11 +38,11 @@ export async function Footer() {
   const theme = themeMode === 'light' ? 'light' : 'dark'
 
   // Always keep mt-auto, but allow dynamic backgroundColor and text color
-  const footerClass = ['mt-auto', 'bg-secondary text-primary'].filter(Boolean).join(' ')
+  const footerClass = ['mt-auto', 'bg-base text-primary'].filter(Boolean).join(' ')
 
   return (
     <footer className={footerClass} data-theme={theme}>
-      <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between">
+      <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between items-center">
         <div className="flex flex-col gap-4">
           <Link className="flex items-center" href="/">
             <Logo
@@ -69,17 +69,24 @@ export async function Footer() {
             )}
           </div>
         </div>
-
-        <div className="flex flex-col-reverse items-start md:flex-row gap-4 md:items-center">
-          <ThemeSelector />
-          <nav className="flex flex-col md:flex-row gap-4">
-            {navItems.map(({ link }, i) => {
-              return <CMSLink className="" key={i} {...link} appearance={'link'} />
-            })}
-
+        <div className="flex flex-col md:flex-row gap-4 items-baseline">
+          <div className="flex flex-col items-start gap-4 ">
+            <nav className="grid grid-cols-2 gap-x-4 gap-y-2 ml-1">
+              {navItems.map(({ link }, i) => {
+                return (
+                  <CMSLink
+                    className="text-[1rem]"
+                    key={i}
+                    {...link}
+                    appearance={'link'}
+                    size={'lg'}
+                  />
+                )
+              })}
+            </nav>
             {/* Social Links */}
             {socialLinks.length > 0 && (
-              <div className="flex gap-2 md:ml-2">
+              <div className="flex md:flex-row gap-x-2">
                 {socialLinks.map((social, i) => {
                   const IconComponent = socialIcons[social.platform || '']
                   if (!IconComponent || !social.url) return null
@@ -90,16 +97,17 @@ export async function Footer() {
                       type="custom"
                       url={social.url}
                       newTab={social.newTab}
-                      size="iconXL"
+                      size="icon"
                       className="hover:scale-110 transition-transform ease duration-150"
                     >
-                      <IconComponent className="h-5 w-5" />
+                      <IconComponent className="h-8 w-8" />
                     </CMSLink>
                   )
                 })}
               </div>
             )}
-          </nav>
+          </div>
+          <ThemeSelector />
         </div>
       </div>
     </footer>

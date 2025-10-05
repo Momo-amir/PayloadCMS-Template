@@ -82,7 +82,7 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
             {tag && (
               <span
                 className={cn(
-                  'text-xs uppercase tracking-wide mb-1 absolute top-2 right-2 px-2 py-1 rounded-md shadow-md z-50',
+                  'text-xs uppercase tracking-wide mb-1 absolute top-2 right-2 px-2 py-1 rounded-md shadow-md ',
                   cardVariant[variant].chip,
                 )}
               >
