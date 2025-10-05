@@ -50,11 +50,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
           {navItems.map(({ link }, i) => {
             return (
               <div key={i} onClick={() => setIsMobileMenuOpen(false)} className="">
-                <CMSLink
-                  {...link}
-                  appearance="link"
-                  className="uppercase active:text-accent transition-colors"
-                />
+                <CMSLink {...link} appearance="link" className="uppercase " />
               </div>
             )
           })}

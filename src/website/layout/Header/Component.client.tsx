@@ -86,7 +86,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) =
         <div className="ml-3 md:ml-auto">
           <Link href="/search">
             <span className="sr-only">Search</span>
-            <IconSearch className="w-5 text-primary active:text-accent md:active:text-primary hover:scale-110 transition-transform duration-100 ease-in-out" />
+            <IconSearch className="w-5 text-primary hover:scale-110 transition-transform duration-100 ease-in-out" />
           </Link>
         </div>
       </div>
