@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import type { CardCarouselBlock as CardCarouselBlockType } from '@/payload-types'
+import type { CardCarouselBlock as CardCarouselBlockType, Media } from '@/payload-types'
 import {
   Card,
   CardContent,
@@ -139,7 +139,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
                   {media && typeof media === 'object' && 'url' in media && (
                     <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
                       <ImageMedia
-                        resource={media as any}
+                        resource={media as Media}
                         alt={media.alt || card.title}
                         fill
                         imgClassName="object-cover"

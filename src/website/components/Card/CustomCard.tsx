@@ -9,12 +9,11 @@ import {
   CardTitle,
   CardFooter,
 } from '@/website/components/elements/card'
-import type { CardBlock as CardBlockType, Media } from '@/payload-types'
+import type { CardBlock as CardBlockType } from '@/payload-types'
 import React from 'react'
 import { IconArrowRight } from '@tabler/icons-react'
-import { ImageMedia } from '../Media/ImageMedia'
-import { CMSLink, type CMSLinkReference } from '@/website/components/Link'
-// Variants are defined locally in this file for simplicity
+import { Media as MediaComponent } from '../Media'
+import { CMSLink } from '@/website/components/Link'
 
 type CardItem = CardBlockType['cards'][number]
 
@@ -26,26 +25,11 @@ type CardProps = {
   variant?: CardVariant
 }
 
-function getMediaInfo(media?: Media | number | null) {
-  if (!media || typeof media === 'number')
-    return { url: undefined as string | undefined, alt: undefined as string | undefined }
-  return { url: media.url ?? undefined, alt: media.alt ?? undefined }
-}
-
 export const Card: React.FC<CardProps> = ({ card, className, variant = 'default' }) => {
-  const title = card.title
-  const description = card.description
-  // Optional tag label
-  const tag = typeof card.tag === 'string' ? card.tag : undefined
-  const ctaLabel = card.link?.label ?? null
-  // Use CMSLink for URL building; clickable-card hook will discover the anchor
-  const l = card.link
-  const newTab = Boolean(l?.newTab)
-  const { card: cardRef } = useClickableCard<HTMLDivElement>({ newTab })
+  const { title, description, tag, link, media } = card
+  const { card: cardRef } = useClickableCard<HTMLDivElement>({ newTab: link?.newTab ?? false })
 
-  const mediaInfo = getMediaInfo(card.media as Media | number | null)
-
-  // Single source of truth for card variant classes
+  //Card variants - Different looks for this type of card
   const cardVariant: Record<CardVariant, { wrapper: string; chip: string }> = {
     default: { wrapper: 'bg-card', chip: 'bg-white text-black' },
     light: { wrapper: 'bg-base', chip: 'bg-primary text-base' },
@@ -53,15 +37,6 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
     primary: { wrapper: 'bg-black border-primary text-white', chip: 'bg-white text-black' },
     secondary: { wrapper: 'bg-secondary text-white border-secondary', chip: 'bg-white text-black' },
   }
-
-  // Use exported CMSLinkReference type from the CMSLink component
-  const cmsLinkReference: CMSLinkReference | null =
-    l?.type === 'reference' && l.reference && typeof l.reference === 'object'
-      ? {
-          relationTo: l.reference.relationTo,
-          value: l.reference.value,
-        }
-      : null
 
   return (
     <article ref={cardRef.ref} className={cn('group h-full hover:cursor-pointer', className)}>
@@ -71,18 +46,13 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
           cardVariant[variant].wrapper,
         )}
       >
-        {mediaInfo.url && (
+        {media && (
           <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
-            <ImageMedia
-              resource={card.media as Media}
-              alt={mediaInfo.alt || title || ''}
-              fill
-              imgClassName="object-cover"
-            />
+            <MediaComponent resource={media} fill imgClassName="object-cover" />
             {tag && (
               <span
                 className={cn(
-                  'text-xs uppercase tracking-wide mb-1 absolute top-2 right-2 px-2 py-1 rounded-md shadow-md ',
+                  'text-xs uppercase tracking-wide mb-1 absolute top-2 right-2 px-2 py-1 rounded-full shadow-md ',
                   cardVariant[variant].chip,
                 )}
               >
@@ -94,21 +64,17 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
         {(title || description) && (
           <CardHeader>{title && <CardTitle>{title}</CardTitle>}</CardHeader>
         )}
-        {(description || l) && (
+        {(description || link) && (
           <>
             <CardContent className={cn(!description ? 'pt-0' : undefined)}>
               {description && <CardDescription>{description}</CardDescription>}
             </CardContent>
             <CardFooter>
-              {l ? (
+              {link ? (
                 <CMSLink
+                  {...link}
                   appearance="inline"
                   className={cn('font-bold pointer-events-none flex items-center')}
-                  label={ctaLabel || ''}
-                  newTab={newTab}
-                  reference={cmsLinkReference}
-                  type={l?.type || null}
-                  url={l?.url || null}
                 >
                   <IconArrowRight
                     size={24}
