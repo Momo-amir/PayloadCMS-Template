@@ -42,7 +42,7 @@
 }
 
 @theme static {
-  /* Colors - yes a bit stupid. But this way we have access to tailwind classes they are actually defined in */
+  /* Colors - yes a bit stupid. But this way we have access to tailwind classes*/
   --color-primary: --color-primary;
   --color-secondary: --color-secondary;
   --color-tertiary: --color-tertiary;
