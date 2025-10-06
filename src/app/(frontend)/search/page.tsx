@@ -8,6 +8,8 @@ import { Search } from '@/website/layout/search/Component'
 import PageClient from './page.client'
 import { CardPostData } from '@/website/components/Card/PostCard'
 
+export const dynamic = 'force-dynamic'
+
 type Args = {
   searchParams: Promise<{
     q: string
