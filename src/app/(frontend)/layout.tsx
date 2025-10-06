@@ -17,6 +17,8 @@ import './globals.css'
 import { getServerSideURL } from '@/cms/utilities/getURL'
 import { getBranding, toFaviconProps } from '@/cms/utilities/branding'
 
+export const dynamic = 'force-dynamic'
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
   const branding = await getBranding()
