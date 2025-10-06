@@ -21,8 +21,9 @@
   --color-border: #eee;
   --color-neutral: #eee;
   --color-neutraltwo: #a5a5aa;
-  --color-error: #b00020;
-  --color-success: #198754;
+  --color-error: #d6281f;
+  --color-success: #008550;
+  --color-warning: #ef8500;
 }
 
 /* Dark theme */
@@ -37,8 +38,9 @@
   --color-border: #eee;
   --color-neutral: #eee;
   --color-neutraltwo: #a5a5aa;
-  --color-error: #cf6679;
-  --color-success: #5cb85c;
+  --color-error: #ff4961;
+  --color-success: #29c467;
+  --color-warning: #ff9800;
 }
 
 @theme static {

@@ -22,8 +22,6 @@ COPY . .
 # Disable Next.js telemetry during build
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Don't build here - we'll do a full build at runtime when DB is available
-# Just prepare the environment
 
 # Production image, copy all the files and run next
 FROM base AS runner
