@@ -1,6 +1,11 @@
 import canUseDOM from './canUseDOM'
 
 export const getServerSideURL = () => {
+  // Use internal Docker URL for server-side requests in production
+  if (process.env.PAYLOAD_PUBLIC_SERVER_URL) {
+    return process.env.PAYLOAD_PUBLIC_SERVER_URL
+  }
+
   let url = process.env.NEXT_PUBLIC_SERVER_URL
 
   if (!url && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
