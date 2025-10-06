@@ -18,10 +18,13 @@ import { BrandingGlobal } from './cms/globals/Branding/config'
 import { defaultLexical } from '@/cms/fields/defaultLexical'
 import { getServerSideURL } from './cms/utilities/getURL'
 
+import exports from "./website/blocks/exports";
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  blocks: exports.blocks,
   admin: {
     meta: {
       icons: [

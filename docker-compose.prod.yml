@@ -20,16 +20,6 @@ services:
       - PAYLOAD_PUBLIC_SERVER_URL=http://payload-prod:3000
       - HOSTNAME=0.0.0.0
     restart: unless-stopped
-    command: 
-      - sh
-      - -c
-      - |
-        set -e
-        yarn payload migrate
-        yarn build
-        cp -r public .next/standalone/
-        cp -r .next/static .next/standalone/.next/
-        cd .next/standalone && node server.js
 
   postgres:
     container_name: postgres-prod

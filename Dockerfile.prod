@@ -1,26 +1,22 @@
 # Multi-stage build for PayloadCMS with Next.js
 FROM node:22.2.0-alpine AS base
 
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
-
-# Copy package files and yarn config
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
-
-# Install dependencies with yarn
-RUN yarn install
-
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY package.json yarn.lock ./
+
+RUN yarn install
+
 COPY . .
 
 # Disable Next.js telemetry during build
 ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN yarn generate:importmap
+RUN yarn generate:types
+
+RUN yarn build
 
 
 # Production image, copy all the files and run next
@@ -33,25 +29,14 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
-
 # Set the correct permission for .next directory
 RUN mkdir -p .next
 RUN chown -R nextjs:nodejs .next
 
 # Copy all necessary files (no .next yet since we'll build at runtime)
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-COPY --from=builder --chown=nextjs:nodejs /app/src ./src
-COPY --from=builder --chown=nextjs:nodejs /app/.yarn ./.yarn
-COPY --from=builder --chown=nextjs:nodejs /app/.yarnrc.yml ./.yarnrc.yml
-COPY --from=builder --chown=nextjs:nodejs /app/yarn.lock ./yarn.lock
-COPY --from=builder --chown=nextjs:nodejs /app/scss-loader.mjs ./scss-loader.mjs
-COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./tsconfig.json
-COPY --from=builder --chown=nextjs:nodejs /app/next.config.js ./next.config.js
-COPY --from=builder --chown=nextjs:nodejs /app/redirects.js ./redirects.js
-COPY --from=builder --chown=nextjs:nodejs /app/next-sitemap.config.cjs ./next-sitemap.config.cjs
-COPY --from=builder --chown=nextjs:nodejs /app/postcss.config.js ./postcss.config.js
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
 
 # Give nextjs user ownership of the entire app directory for runtime build
 RUN chown -R nextjs:nodejs /app
@@ -63,4 +48,4 @@ EXPOSE 3000
 ENV PORT=3000
 
 # Command will be overridden by docker-compose to run migrations and build
-CMD ["node", "server.js"]
+CMD ["yarn", "payload", "migrate", "&&", "node", "server.js"]
