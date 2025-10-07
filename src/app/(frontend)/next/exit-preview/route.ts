@@ -1,4 +1,5 @@
 import { draftMode } from 'next/headers'
+export const dynamic = 'force-dynamic'
 
 export async function GET(): Promise<Response> {
   const draft = await draftMode()

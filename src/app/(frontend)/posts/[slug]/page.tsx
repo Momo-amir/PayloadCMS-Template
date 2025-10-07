@@ -5,6 +5,7 @@ import { PayloadRedirects } from '@/cms/components/PayloadRedirects'
 import configPromise from '@/payload.config'
 import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
+import { unstable_cache } from 'next/cache'
 import React, { cache } from 'react'
 import RichText from '@/website/components/RichText'
 
@@ -46,7 +47,8 @@ export default async function Post({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
   const url = '/posts/' + slug
-  const post = await queryPostBySlug({ slug })
+  // Use cached data when not in draft/preview; bypass cache in preview to ensure freshness
+  const post = draft ? await queryPostBySlug({ slug }) : await getPostBySlugCached(slug)()
 
   if (!post) return <PayloadRedirects url={url} />
 
@@ -77,8 +79,9 @@ export default async function Post({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
-  const post = await queryPostBySlug({ slug })
+  const post = draft ? await queryPostBySlug({ slug }) : await getPostBySlugCached(slug)()
 
   return generateMeta({ doc: post })
 }
@@ -103,3 +106,26 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
 
   return result.docs?.[0] || null
 })
+
+// Cached getter for non-preview usage; tag per post slug so hooks can revalidate precisely
+const getPostBySlugCached = (slug: string) =>
+  unstable_cache(
+    async () => {
+      const payload = await getPayload({ config: configPromise })
+      const result = await payload.find({
+        collection: 'posts',
+        draft: false,
+        limit: 1,
+        overrideAccess: false,
+        pagination: false,
+        where: {
+          slug: {
+            equals: slug,
+          },
+        },
+      })
+      return result.docs?.[0] || null
+    },
+    ['post-by-slug', slug],
+    { tags: [`post:${slug}`] },
+  )

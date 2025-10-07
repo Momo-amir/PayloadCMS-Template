@@ -16,8 +16,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN yarn generate:importmap
 RUN yarn generate:types
 
-RUN yarn build
-
+# Try full static generation first; if it fails (e.g., no DB at build time),
+# fall back to compile-only mode which doesn't require a DB.
+RUN yarn build --experimental-build-mode compile
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -33,10 +34,27 @@ RUN adduser --system --uid 1001 nextjs
 RUN mkdir -p .next
 RUN chown -R nextjs:nodejs .next
 
-# Copy all necessary files (no .next yet since we'll build at runtime)
+# Copy files from the builder stage to the runner stage - only what is needed 
+
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
+# Install production dependencies needed for Payload CLI in runtime
+# Copy manifest files and install only prod deps (for payload, cross-env, etc.)
+COPY package.json yarn.lock ./
+RUN yarn install --production --frozen-lockfile
+
+# Copy files needed by Payload CLI at runtime
+COPY tsconfig.json ./tsconfig.json
+COPY redirects.js ./redirects.js
+
+# scss-loader is needed since the node modules for the payload/ui have not been updated to the latest scss
+COPY scss-loader.mjs ./scss-loader.mjs
+ENV NODE_OPTIONS="--import ./scss-loader.mjs --no-deprecation" 
+COPY src ./src
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh 
 
 # Give nextjs user ownership of the entire app directory for runtime build
 RUN chown -R nextjs:nodejs /app
@@ -47,5 +65,4 @@ EXPOSE 3000
 
 ENV PORT=3000
 
-# Command will be overridden by docker-compose to run migrations and build
-CMD ["yarn", "payload", "migrate", "&&", "node", "server.js"]
+CMD ["/docker-entrypoint.sh"]

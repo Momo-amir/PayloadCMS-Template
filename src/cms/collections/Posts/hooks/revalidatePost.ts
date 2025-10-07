@@ -17,6 +17,8 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 
       revalidatePath(path)
       revalidateTag('posts-sitemap')
+      // Invalidate cached post detail fetch
+      revalidateTag(`post:${doc.slug}`)
     }
 
     // If the post was previously published, we need to revalidate the old path
@@ -27,6 +29,8 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 
       revalidatePath(oldPath)
       revalidateTag('posts-sitemap')
+      // Invalidate cached post detail fetch for previous slug
+      revalidateTag(`post:${previousDoc.slug}`)
     }
   }
   return doc
@@ -38,6 +42,8 @@ export const revalidateDelete: CollectionAfterDeleteHook<Post> = ({ doc, req: { 
 
     revalidatePath(path)
     revalidateTag('posts-sitemap')
+    // Invalidate cached post detail fetch
+    if (doc?.slug) revalidateTag(`post:${doc.slug}`)
   }
 
   return doc

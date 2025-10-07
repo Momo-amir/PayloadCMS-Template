@@ -4,6 +4,7 @@ import { PayloadRedirects } from '@/cms/components/PayloadRedirects'
 import configPromise from '@/payload.config'
 import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
 import { draftMode } from 'next/headers'
+import { unstable_cache } from 'next/cache'
 import React, { cache } from 'react'
 import { homeStatic } from '@/cms/endpoints/seed/home-static'
 import { RenderBlocks } from '@/website/blocks/RenderBlocks'
@@ -51,9 +52,8 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   let page: RequiredDataFromCollectionSlug<'pages'> | null
 
-  page = await queryPageBySlug({
-    slug,
-  })
+  // Use cached data when not in draft/preview; bypass cache in preview to ensure freshness
+  page = draft ? await queryPageBySlug({ slug }) : await getPageBySlugCached(slug)()
 
   // Remove this code once your website is seeded
   if (!page && slug === 'home') {
@@ -81,10 +81,9 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const { isEnabled: draft } = await draftMode()
   const { slug = 'home' } = await paramsPromise
-  const page = await queryPageBySlug({
-    slug,
-  })
+  const page = draft ? await queryPageBySlug({ slug }) : await getPageBySlugCached(slug)()
 
   return generateMeta({ doc: page })
 }
@@ -109,3 +108,26 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
 
   return result.docs?.[0] || null
 })
+
+// Cached getter for non-preview usage; tag per page slug so hooks can revalidate precisely
+const getPageBySlugCached = (slug: string) =>
+  unstable_cache(
+    async () => {
+      const payload = await getPayload({ config: configPromise })
+      const result = await payload.find({
+        collection: 'pages',
+        draft: false,
+        limit: 1,
+        pagination: false,
+        overrideAccess: false,
+        where: {
+          slug: {
+            equals: slug,
+          },
+        },
+      })
+      return result.docs?.[0] || null
+    },
+    ['page-by-slug', slug],
+    { tags: [`page:${slug}`] },
+  )
