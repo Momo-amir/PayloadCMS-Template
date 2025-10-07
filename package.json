@@ -20,9 +20,9 @@
     "cli": "tsx .cli/lib/core.ts",
     "docker-dev": "docker compose up payload",
     "docker-prod": "docker compose -f docker-compose.prod.yml up",
-    "docker-prod:build": "docker compose -f docker-compose.prod.yml up --build",
+    "docker-prod:build": "docker compose -f docker-compose.prod.yml build",
     "docker-prod:down": "docker compose -f docker-compose.prod.yml down",
-    "docker-prod:logs": "docker compose -f docker-compose.prod.yml logs -f"
+    "docker-prod:up-build": "docker compose -f docker-compose.prod.yml up --build"
   },
   "dependencies": {
     "@lexical/react": "^0.35.0",
