@@ -6,6 +6,7 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { link } from '@/cms/fields/link'
+import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
 import { ContentBlock } from './Component'
 
@@ -36,6 +37,7 @@ const columnFields: Field[] = [
   {
     name: 'richText',
     type: 'richText',
+    defaultValue: EMPTY_LEXICAL_CONTENT,
     editor: lexicalEditor({
       features: ({ rootFeatures }) => {
         return [

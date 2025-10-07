@@ -7,9 +7,6 @@ import {
   lexicalEditor,
   UnderlineFeature,
   AlignFeature,
-  IndentFeature,
-  OrderedListFeature,
-  UnorderedListFeature,
   type LinkFields,
 } from '@payloadcms/richtext-lexical'
 
@@ -21,9 +18,6 @@ export const defaultLexical: Config['editor'] = lexicalEditor({
       BoldFeature(),
       ItalicFeature(),
       AlignFeature(),
-      IndentFeature(),
-      OrderedListFeature(),
-      UnorderedListFeature(),
       LinkFeature({
         enabledCollections: ['pages', 'posts'],
         fields: ({ defaultFields }) => {
@@ -53,5 +47,27 @@ export const defaultLexical: Config['editor'] = lexicalEditor({
         },
       }),
     ]
+  },
+})
+
+// Reusable empty Lexical editor state for initializing richText fields inside array rows.
+// Use this to avoid JSON.parse(undefined) in the admin when adding new rows.
+export const EMPTY_LEXICAL_CONTENT = () => ({
+  root: {
+    children: [
+      {
+        children: [],
+        direction: null,
+        format: '',
+        indent: 0,
+        type: 'paragraph',
+        version: 1,
+      },
+    ],
+    direction: null,
+    format: '',
+    indent: 0,
+    type: 'root',
+    version: 1,
   },
 })
