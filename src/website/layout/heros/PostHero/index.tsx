@@ -5,7 +5,6 @@ import type { Post } from '@/payload-types'
 
 import { Media } from '@/website/components/Media'
 import { formatAuthors } from '@/cms/utilities/formatAuthors'
-import { useHeaderThemeOverride } from '@/providers/Theme/LocalTheme/LocalTheme'
 
 export const PostHero: React.FC<{
   post: Post
@@ -14,9 +13,6 @@ export const PostHero: React.FC<{
 
   const hasAuthors =
     populatedAuthors && populatedAuthors.length > 0 && formatAuthors(populatedAuthors) !== ''
-
-  useHeaderThemeOverride('dark')
-
   return (
     <div className="relative -mt-[10.4rem] flex items-end">
       <div className="container z-10 relative lg:grid lg:grid-cols-[1fr_48rem_1fr] text-white pb-8">
