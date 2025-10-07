@@ -20,6 +20,9 @@ services:
       - PAYLOAD_PUBLIC_SERVER_URL=http://payload-prod:3000
       - HOSTNAME=0.0.0.0
     restart: unless-stopped
+    volumes:                
+      - payload_media:/app/public/media
+
 
   postgres:
     container_name: postgres-prod
@@ -39,3 +42,4 @@ services:
 
 volumes:
   pgdata_prod:
+  payload_media:

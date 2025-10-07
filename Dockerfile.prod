@@ -35,10 +35,11 @@ RUN mkdir -p .next
 RUN chown -R nextjs:nodejs .next
 
 # Copy files from the builder stage to the runner stage - only what is needed 
-
+# public files needed at runtime to access assets and media in the public folder - yes
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public 
+
 
 # Install production dependencies needed for Payload CLI in runtime
 # Copy manifest files and install only prod deps (for payload, cross-env, etc.)
@@ -47,7 +48,6 @@ RUN yarn install --production --frozen-lockfile
 
 # Copy files needed by Payload CLI at runtime
 COPY tsconfig.json ./tsconfig.json
-COPY redirects.js ./redirects.js
 
 # scss-loader is needed since the node modules for the payload/ui have not been updated to the latest scss
 COPY scss-loader.mjs ./scss-loader.mjs
