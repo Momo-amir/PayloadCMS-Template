@@ -30,15 +30,19 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+RUN chown nextjs:nodejs /app
+
 # Set the correct permission for .next directory
 RUN mkdir -p .next
 RUN chown -R nextjs:nodejs .next
 
-# Copy files from the builder stage to the runner stage - only what is needed 
+USER nextjs
+
+# Copy files from the builder stage to the runner stage - only what is needed
 # public files needed at runtime to access assets and media in the public folder - yes
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public 
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 
 # Install production dependencies needed for Payload CLI in runtime
@@ -51,15 +55,13 @@ COPY tsconfig.json ./tsconfig.json
 
 # scss-loader is needed since the node modules for the payload/ui have not been updated to the latest scss
 COPY scss-loader.mjs ./scss-loader.mjs
-ENV NODE_OPTIONS="--import ./scss-loader.mjs --no-deprecation" 
+ENV NODE_OPTIONS="--import ./scss-loader.mjs --no-deprecation"
 COPY src ./src
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh 
+COPY --chown=nextjs:nodejs docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Give nextjs user ownership of the entire app directory for runtime build
-RUN chown -R nextjs:nodejs /app
-
-USER nextjs
+#RUN chown -R nextjs:nodejs /app
 
 EXPOSE 3000
 
