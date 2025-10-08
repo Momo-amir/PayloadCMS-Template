@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     ports:
-      - "3000:3000"
+      - "8890:3000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -20,7 +20,7 @@ services:
       - PAYLOAD_PUBLIC_SERVER_URL=http://payload-prod:3000
       - HOSTNAME=0.0.0.0
     restart: unless-stopped
-    volumes:                
+    volumes:
       - payload_media:/app/public/media
 
 
