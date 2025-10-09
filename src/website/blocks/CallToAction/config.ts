@@ -1,11 +1,10 @@
-import type { Block } from 'payload'
-
 import {
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 
 import { linkGroup } from '@/cms/fields/linkGroup'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
@@ -19,11 +18,12 @@ export const CallToAction: ComponentBlock = {
     {
       name: 'richText',
       type: 'richText',
+      defaultValue: EMPTY_LEXICAL_CONTENT,
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
           return [
             ...rootFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+            HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
             FixedToolbarFeature(),
             InlineToolbarFeature(),
           ]
@@ -32,7 +32,7 @@ export const CallToAction: ComponentBlock = {
       label: false,
     },
     linkGroup({
-      appearances: ['default', 'outline', 'link'],
+      appearances: ['default', 'outline', 'link', 'secondary', 'tertiary'],
       overrides: {
         maxRows: 2,
       },
