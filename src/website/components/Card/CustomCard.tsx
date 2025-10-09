@@ -69,7 +69,7 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
             <CardContent className={cn(!description ? 'pt-0' : undefined)}>
               {description && <CardDescription>{description}</CardDescription>}
             </CardContent>
-            <CardFooter>
+            <CardFooter className="mt-auto">
               {link ? (
                 <CMSLink
                   {...link}
