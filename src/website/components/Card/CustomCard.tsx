@@ -17,7 +17,7 @@ import { CMSLink } from '@/website/components/Link'
 
 type CardItem = CardBlockType['cards'][number]
 
-type CardVariant = 'default' | 'light' | 'dark' | 'primary' | 'secondary'
+type CardVariant = 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary'
 
 type CardProps = {
   className?: string
@@ -31,11 +31,11 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
 
   //Card variants - Different looks for this type of card
   const cardVariant: Record<CardVariant, { wrapper: string; chip: string }> = {
-    default: { wrapper: 'bg-card', chip: 'bg-white text-black' },
-    light: { wrapper: 'bg-base', chip: 'bg-primary text-base' },
-    dark: { wrapper: 'bg-accent text-white', chip: 'bg-accenttwo text-white' },
-    primary: { wrapper: 'bg-black border-primary text-white', chip: 'bg-white text-black' },
-    secondary: { wrapper: 'bg-secondary text-white border-secondary', chip: 'bg-white text-black' },
+    default: { wrapper: 'bg-base text-primary', chip: 'bg-white text-black' },
+    accent: { wrapper: 'bg-accent text-white', chip: 'bg-primary text-base' },
+    accentThree: { wrapper: 'bg-accentthree text-black', chip: 'bg-accenttwo text-white' },
+    dark: { wrapper: 'bg-black border-neutraltwo text-white', chip: 'bg-white text-black' },
+    secondary: { wrapper: 'bg-secondary text-white border-border', chip: 'bg-white text-black' },
   }
 
   return (
@@ -74,7 +74,10 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
                 <CMSLink
                   {...link}
                   appearance="inline"
-                  className={cn('font-bold pointer-events-none flex items-center')}
+                  className={cn(
+                    'font-bold pointer-events-none flex items-center',
+                    cardVariant[variant].wrapper,
+                  )}
                 >
                   <IconArrowRight
                     size={24}

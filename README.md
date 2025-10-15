@@ -155,6 +155,49 @@ Details:
 
 ---
 
+## Payload CLI
+
+You should use the Payload CLI for some specific tasks, we have already talked about `migrate:create` but there are more commands you might find useful:
+
+```bash
+yarn generate:types
+yarn generate:importmap
+yarn migrate:create
+```
+
+Details:
+
+- These commands are the most common ones that we also have aliased in the `package.json` file.
+  - `generate:types` generates the types in `payload-types.ts` any code that writes to the database gets reflected here.
+  - `generate:importmap` generates the import map in `payload-import-map.json` This way Payload keeps track of where everything is.
+  - `migrate:create`creates the migrations you will need to push for the database structure in production or when not using the auto push to database in development.
+
+Payload has more commands that you can use a full list here:
+
+```bash
+yarn payload <command>
+
+  - generate:db-schema
+  - generate:importmap
+  - generate:types
+  - info
+  - jobs:run
+  - jobs:handle-schedules
+  - run
+  - migrate
+  - migrate:create
+  - migrate:down
+  - migrate:refresh
+  - migrate:reset
+  - migrate:status
+  - migrate:fresh
+
+```
+
+Details:
+
+- You can run any of these commands by prefixing them with `yarn payload <command>`. Most noteworthy are the ones regarding Jobs. Payload's Jobs gives you a simple, yet powerful way to offload large or future tasks to separate compute resources. You can read more about it in the [official documentation](https://payloadcms.com/docs/jobs-queue/overview).
+
 ## Personalization
 
 You can customize the template here:

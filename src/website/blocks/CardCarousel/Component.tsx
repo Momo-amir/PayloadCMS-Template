@@ -17,6 +17,9 @@ import { cva } from 'class-variance-authority'
 
 type Props = CardCarouselBlockType & { className?: string }
 
+//TODO - The new CustomCard.tsx should be used here instead of redefining the card
+//The configuration options are different so take a look at CardLayout for reference
+
 function resolveHref(card: CardCarouselBlockType['cards'][0]): string | undefined {
   const l = card.link
   if (!l) return undefined

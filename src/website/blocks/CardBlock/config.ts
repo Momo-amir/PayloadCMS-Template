@@ -23,10 +23,10 @@ export const CardBlock: ComponentBlock = {
       type: 'select',
       options: [
         { label: 'Default', value: '' },
-        { label: 'Light', value: 'light' },
         { label: 'Dark', value: 'dark' },
-        { label: 'Primary', value: 'primary' },
-        { label: 'Secondary', value: 'secondary' },
+        { label: 'Purple', value: 'accent' },
+        { label: 'Pink', value: 'accentThree' },
+        { label: 'Blue', value: 'secondary' },
       ],
     },
     {
