@@ -2,18 +2,11 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import type { CardCarouselBlock as CardCarouselBlockType, Media } from '@/payload-types'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/website/components/elements/card'
-import Link from 'next/link'
-import { ImageMedia } from '@/website/components/Media/ImageMedia'
+import { Card, CardVariant } from '@/website/components/Card/CustomCard'
 import { cn } from '@/cms/utilities/ui'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
-import { cva } from 'class-variance-authority'
+import {Button} from "@site/components/elements/button";
+
 
 type Props = CardCarouselBlockType & { className?: string }
 
@@ -96,108 +89,29 @@ export const CardCarouselBlock: React.FC<Props> = ({
           }}
         >
           {cards.map((card, i) => {
-            const href = resolveHref(card)
-            const media = card.media
             const variantRaw =
               colorMode === 'per-card' ? card.cardBackgroundColor : cardBackgroundColor
             const variant =
               typeof variantRaw === 'string' && variantRaw !== ''
-                ? (variantRaw as 'default' | 'light' | 'dark' | 'primary' | 'secondary')
+                ? (variantRaw as CardVariant)
                 : 'default'
 
-            const wrapperVariants = cva('', {
-              variants: {
-                variant: {
-                  default: 'bg-card',
-                  light: 'bg-base',
-                  dark: 'bg-accent text-white',
-                  primary: 'bg-black border-primary text-white',
-                  secondary: 'bg-secondary text-white border-secondary',
-                },
-              },
-              defaultVariants: { variant: 'default' },
-            })
-
-            const linkColorVariants = cva('', {
-              variants: {
-                variant: {
-                  default: 'text-primary',
-                  light: 'text-primary',
-                  dark: 'text-white',
-                  primary: 'text-white',
-                  secondary: 'text-white',
-                },
-              },
-              defaultVariants: { variant: 'default' },
-            })
-
-            const cardInner = (
-              <div className="slide px-2" style={{ width: slideWidth }}>
-                <Card
-                  className={cn(
-                    'flex-shrink-0 h-full flex flex-col transition hover:shadow-md',
-                    wrapperVariants({ variant }),
-                  )}
-                >
-                  {media && typeof media === 'object' && 'url' in media && (
-                    <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
-                      <ImageMedia
-                        resource={media as Media}
-                        alt={media.alt || card.title}
-                        fill
-                        imgClassName="object-cover"
-                      />
-                    </div>
-                  )}
-                  <CardHeader className="flex-1">
-                    <CardTitle>{card.title}</CardTitle>
-                    {card.description && <CardDescription>{card.description}</CardDescription>}
-                  </CardHeader>
-                  {card.link && card.link.label && href && (
-                    <CardContent className="pt-0 text-sm ">
-                      <div className="flex items-center">
-                        <span
-                          className={cn(
-                            'text-lg font-semibold pr-2',
-                            linkColorVariants({ variant }),
-                          )}
-                        >
-                          {card.link.label}
-                        </span>
-                        <IconArrowRight size={24} />
-                      </div>
-                    </CardContent>
-                  )}
-                </Card>
+            return (
+              <div key={i} className="slide px-2" style={{ width: slideWidth }}>
+                <Card key={i} variant={variant} card={card}></Card>
               </div>
-            )
-
-            return href ? (
-              <Link key={i} href={href} className="link">
-                {cardInner}
-              </Link>
-            ) : (
-              <div key={i}>{cardInner}</div>
             )
           })}
         </div>
       </div>
 
       <div className="absolute inset-x-0 top-1/2 flex justify-between pointer-events-none">
-        <button
-          onClick={prev}
-          disabled={currentIndex === 0}
-          className="cursor-pointer pointer-events-auto -ml-14 w-[48px] h-[48px] rounded-full bg-black text-white shadow disabled:opacity-30"
-        >
-          <IconArrowLeft size={36} className="mx-auto" />
-        </button>
-        <button
-          onClick={next}
-          disabled={currentIndex >= pageCount - 1}
-          className="cursor-pointer pointer-events-auto -mr-14 w-[48px] h-[48px] rounded-full bg-black text-white shadow disabled:opacity-30"
-        >
-          <IconArrowRight size={36} className="mx-auto" />
-        </button>
+        <Button variant={"arrow"} className="-ml-14"
+                icon="IconArrowLeft" iconSize={36}
+                onClick={prev} disabled={currentIndex === 0}/>
+        <Button variant={"arrow"} className="-mr-14"
+                icon="IconArrowRight" iconSize={36}
+                onClick={next} disabled={currentIndex >= pageCount - 1}/>
       </div>
 
       <div className="mt-6 flex justify-center gap-2">

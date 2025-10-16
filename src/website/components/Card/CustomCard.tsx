@@ -17,7 +17,7 @@ import { CMSLink } from '@/website/components/Link'
 
 type CardItem = CardBlockType['cards'][number]
 
-type CardVariant = 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary'
+export type CardVariant = 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary'
 
 type CardProps = {
   className?: string
