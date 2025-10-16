@@ -1,35 +1,13 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import type { CardCarouselBlock as CardCarouselBlockType, Media } from '@/payload-types'
+import type { CardCarouselBlock as CardCarouselBlockType } from '@/payload-types'
 import { Card, CardVariant } from '@/website/components/Card/CustomCard'
 import { cn } from '@/cms/utilities/ui'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
-import {Button} from "@site/components/elements/button";
-
+import { Button } from '@site/components/elements/button'
 
 type Props = CardCarouselBlockType & { className?: string }
-
-//TODO - The new CustomCard.tsx should be used here instead of redefining the card
-//The configuration options are different so take a look at CardLayout for reference
-
-function resolveHref(card: CardCarouselBlockType['cards'][0]): string | undefined {
-  const l = card.link
-  if (!l) return undefined
-  if (l.type === 'custom') return l.url || undefined
-  if (l.type === 'reference' && l.reference) {
-    // Relationship field returns { relationTo, value }
-    const ref = l.reference
-    if (ref && typeof ref === 'object') {
-      // If populated, value may be the full doc; if not, could be an ID.
-      const value = 'value' in ref ? ref.value : ref
-      if (value && typeof value === 'object') {
-        if ('slug' in value && value.slug) return `/${value.slug}`
-      }
-    }
-  }
-  return undefined
-}
 
 export const CardCarouselBlock: React.FC<Props> = ({
   heading,
@@ -106,12 +84,22 @@ export const CardCarouselBlock: React.FC<Props> = ({
       </div>
 
       <div className="absolute inset-x-0 top-1/2 flex justify-between pointer-events-none">
-        <Button variant={"arrow"} className="-ml-14"
-                icon="IconArrowLeft" iconSize={36}
-                onClick={prev} disabled={currentIndex === 0}/>
-        <Button variant={"arrow"} className="-mr-14"
-                icon="IconArrowRight" iconSize={36}
-                onClick={next} disabled={currentIndex >= pageCount - 1}/>
+        <Button
+          variant={'arrow'}
+          className="-ml-14"
+          icon={IconArrowLeft}
+          iconSize={36}
+          onClick={prev}
+          disabled={currentIndex === 0}
+        />
+        <Button
+          variant={'arrow'}
+          className="-mr-14"
+          icon={IconArrowRight}
+          iconSize={36}
+          onClick={next}
+          disabled={currentIndex >= pageCount - 1}
+        />
       </div>
 
       <div className="mt-6 flex justify-center gap-2">

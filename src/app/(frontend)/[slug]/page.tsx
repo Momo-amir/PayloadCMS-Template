@@ -2,11 +2,10 @@ import type { Metadata } from 'next'
 
 import { PayloadRedirects } from '@/cms/components/PayloadRedirects'
 import configPromise from '@/payload.config'
-import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
+import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import { unstable_cache } from 'next/cache'
 import React, { cache } from 'react'
-import { homeStatic } from '@/cms/endpoints/seed/home-static'
 import { RenderBlocks } from '@/website/blocks/RenderBlocks'
 import { RenderHero } from '@/website/layout/heros/RenderHero'
 import { generateMeta } from '@/cms/utilities/generateMeta'
@@ -14,6 +13,7 @@ import PageClient from './page.client'
 import { LivePreviewListener } from '@/cms/components/LivePreviewListener'
 
 export const dynamic = 'force-dynamic'
+export const dynamicParams = true
 
 type Args = {
   params: Promise<{
@@ -26,20 +26,12 @@ export default async function Page({ params: paramsPromise }: Args) {
   const { slug = 'home' } = await paramsPromise
   const url = '/' + slug
 
-  let page: RequiredDataFromCollectionSlug<'pages'> | null
-
   // Use cached data when not in draft/preview; bypass cache in preview to ensure freshness
-  page = draft ? await queryPageBySlug({ slug }) : await getPageBySlugCached(slug)()
-
-  // Remove this code once your website is seeded
-  if (!page && slug === 'home') {
-    page = homeStatic
-  }
+  const page = draft ? await queryPageBySlug({ slug }) : await getPageBySlugCached(slug)()
 
   if (!page) {
     return <PayloadRedirects url={url} />
   }
-
   const { hero, layout } = page
 
   return (

@@ -248,10 +248,6 @@ html[data-theme='light'] {
   strong {
     @apply font-bold;
   }
-
-  a {
-    @apply text-primary;
-  }
 }
 
 /*WEBSITE STYLES*/

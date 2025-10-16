@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import { UserLoginBlock } from './UserLogin/config'
 import { ComponentBlock } from '../types/ComponentBlock'
 import { Content } from './Content/config'

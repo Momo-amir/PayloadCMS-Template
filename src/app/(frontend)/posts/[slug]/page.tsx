@@ -16,6 +16,7 @@ import { generateMeta } from '@/cms/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/cms/components/LivePreviewListener'
 export const dynamic = 'force-dynamic'
+export const dynamicParams = true // Allow any slug to be rendered dynamically
 
 type Args = {
   params: Promise<{
