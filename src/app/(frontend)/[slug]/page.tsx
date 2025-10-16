@@ -15,37 +15,7 @@ import { LivePreviewListener } from '@/cms/components/LivePreviewListener'
 
 export const dynamic = 'force-dynamic'
 
-export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const pages = await payload.find({
-    collection: 'pages',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = pages.docs
-    ?.filter((doc) => {
-      return doc.slug !== 'home'
-    })
-    .map(({ slug }) => {
-      return { slug }
-    })
-
-  return params
-}
-
-type Args = {
-  params: Promise<{
-    slug?: string
-  }>
-}
-
-export default async function Page({ params: paramsPromise }: Args) {
+export default async function Page({ params: paramsPromise }) {
   const { isEnabled: draft } = await draftMode()
   const { slug = 'home' } = await paramsPromise
   const url = '/' + slug
