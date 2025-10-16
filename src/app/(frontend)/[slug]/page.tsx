@@ -15,7 +15,13 @@ import { LivePreviewListener } from '@/cms/components/LivePreviewListener'
 
 export const dynamic = 'force-dynamic'
 
-export default async function Page({ params: paramsPromise }) {
+type Args = {
+  params: Promise<{
+    slug?: string
+  }>
+}
+
+export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = 'home' } = await paramsPromise
   const url = '/' + slug
