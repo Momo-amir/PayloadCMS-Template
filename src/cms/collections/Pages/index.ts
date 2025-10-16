@@ -2,7 +2,6 @@ import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
-import { Archive } from '@/website/blocks/ArchiveBlock/config'
 import { hero } from '@/website/layout/heros/config'
 import { slugField } from '@/cms/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -18,10 +17,9 @@ import {
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
+import { ComponentBlock } from '@/website/types/ComponentBlock'
 
-const layoutBlocks = [
-  Archive
-];
+const layoutBlocks: ComponentBlock[] = [];
 
 blockExports.blocks.forEach((block) => {
   if (block.showOnPage !== false) layoutBlocks.push(block);
