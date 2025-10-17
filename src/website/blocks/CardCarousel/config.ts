@@ -34,10 +34,10 @@ export const CardCarouselBlock: ComponentBlock = {
       defaultValue: '',
       options: [
         { label: 'Default', value: '' },
-        { label: 'Light', value: 'light' },
         { label: 'Dark', value: 'dark' },
-        { label: 'Primary', value: 'primary' },
-        { label: 'Secondary', value: 'secondary' },
+        { label: 'Purple', value: 'accent' },
+        { label: 'Pink', value: 'accentThree' },
+        { label: 'Blue', value: 'secondary' },
       ],
       admin: {
         description: 'When Color Mode is set to "Single color", this variant applies to all cards.',
@@ -67,6 +67,16 @@ export const CardCarouselBlock: ComponentBlock = {
       },
       fields: [
         {
+          name: 'tag',
+          type: 'text',
+          required: false,
+          label: 'Tag',
+          admin: {
+            description: 'Optional label to show above the title (e.g., "New", "Featured").',
+            width: '50%',
+          },
+        },
+        {
           name: 'title',
           type: 'text',
           required: true,
@@ -85,17 +95,17 @@ export const CardCarouselBlock: ComponentBlock = {
           defaultValue: '',
           options: [
             { label: 'Default', value: '' },
-            { label: 'Light', value: 'light' },
             { label: 'Dark', value: 'dark' },
-            { label: 'Primary', value: 'primary' },
-            { label: 'Secondary', value: 'secondary' },
+            { label: 'Purple', value: 'accent' },
+            { label: 'Pink', value: 'accentThree' },
+            { label: 'Blue', value: 'secondary' },
           ],
           admin: {
             description: 'Used when Color Mode is set to "Individual per card".',
           },
         },
         // Include 'default' because the shared link field sets defaultValue: 'default'
-        link({ appearances: ['default', 'link', 'outline'] }),
+        link({ appearances: false }),
         {
           name: 'media',
           type: 'upload',
@@ -106,17 +116,6 @@ export const CardCarouselBlock: ComponentBlock = {
           },
         },
       ],
-    },
-    {
-      name: 'columns',
-      type: 'number',
-      label: 'Columns (desktop)',
-      defaultValue: 3,
-      min: 1,
-      max: 4,
-      admin: {
-        description: 'Number of columns on large screens.',
-      },
     },
   ],
 }

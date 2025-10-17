@@ -14,8 +14,14 @@ type Props = MediaBlockProps & {
   className?: string
   enableGutter?: boolean
   imgClassName?: string
+  videoClassName?: string
   staticImage?: StaticImageData
   disableInnerContainer?: boolean
+  // Video-specific props
+  autoplay?: boolean
+  loop?: boolean
+  muted?: boolean
+  controls?: boolean
 }
 
 export const MediaBlock: React.FC<Props> = (props) => {
@@ -24,9 +30,14 @@ export const MediaBlock: React.FC<Props> = (props) => {
     className,
     enableGutter = true,
     imgClassName,
+    videoClassName,
     media,
     staticImage,
     disableInnerContainer,
+    autoplay,
+    loop,
+    muted,
+    controls,
   } = props
 
   let caption
@@ -47,8 +58,15 @@ export const MediaBlock: React.FC<Props> = (props) => {
           imgClassName={cn(' media-block rounded-[0.8rem]', imgClassName, {
             border: enableGutter && 'border-border',
           })}
+          videoClassName={cn(' media-block rounded-[0.8rem]', videoClassName, {
+            border: enableGutter && 'border-border',
+          })}
           resource={media}
           src={staticImage}
+          autoplay={autoplay}
+          loop={loop}
+          muted={muted}
+          controls={controls}
         />
       )}
       {caption && (

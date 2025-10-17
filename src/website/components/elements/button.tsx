@@ -29,7 +29,7 @@ const buttonVariants = cva(
         secondary: 'bg-black text-white hover:bg-secondary active:bg-secondary',
         tertiary: 'bg-white text-black hover:bg-accentthree active:bg-accentthree',
         arrow:
-          'cursor-pointer pointer-events-auto w-[48px] h-[48px] rounded-full bg-black text-white shadow disabled:opacity-30',
+          'cursor-pointer pointer-events-auto w-12 h-12 rounded-full bg-black text-white shadow disabled:opacity-30',
       },
     },
   },
