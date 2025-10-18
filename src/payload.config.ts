@@ -4,6 +4,7 @@ import sharp from 'sharp' // sharp-import
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
+import { migrations } from './migrations'
 // import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 import { Categories } from './cms/collections/Categories'
@@ -18,7 +19,7 @@ import { BrandingGlobal } from './cms/globals/Branding/config'
 import { defaultLexical } from '@/cms/fields/defaultLexical'
 import { getServerSideURL } from './cms/utilities/getURL'
 
-import exports from "./website/blocks/exports";
+import exports from './website/blocks/exports'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -80,6 +81,7 @@ export default buildConfig({
   db: postgresAdapter({
     // Postgres-specific arguments go here.
     // `pool` is required.
+    prodMigrations: migrations,
     pool: {
       connectionString: process.env.DATABASE_URI,
     },
