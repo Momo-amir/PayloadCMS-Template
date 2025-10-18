@@ -4,7 +4,6 @@ import sharp from 'sharp' // sharp-import
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
-import { migrations } from './migrations'
 // import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 import { Categories } from './cms/collections/Categories'
@@ -81,7 +80,6 @@ export default buildConfig({
   db: postgresAdapter({
     // Postgres-specific arguments go here.
     // `pool` is required.
-    prodMigrations: migrations,
     pool: {
       connectionString: process.env.DATABASE_URI,
     },
