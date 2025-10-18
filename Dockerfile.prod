@@ -13,8 +13,8 @@ COPY . .
 # Disable Next.js telemetry during build
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN yarn generate:importmap
-RUN yarn generate:types
+RUN yarn _generate:importmap
+RUN yarn _generate:types
 
 # Try full static generation first; if it fails (e.g., no DB at build time),
 # fall back to compile-only mode which doesn't require a DB.
