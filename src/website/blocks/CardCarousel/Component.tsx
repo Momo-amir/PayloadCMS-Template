@@ -105,8 +105,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
         <div className="w-1/2 mx-auto">
           <p className="text-center mb-16">{description}</p>
         </div>
-      )}
-      å{' '}
+      )}{' '}
       <div className="flex items-center gap-4">
         <Button
           variant={'arrow'}
