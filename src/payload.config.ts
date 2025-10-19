@@ -4,7 +4,7 @@ import sharp from 'sharp' // sharp-import
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
-// import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 import { Categories } from './cms/collections/Categories'
 import { Media } from './cms/collections/Media'
@@ -114,16 +114,17 @@ export default buildConfig({
   },
 
   //Email config - using nodemailer TODO hook up to sendgrid or similar - when ready hooks available with req.payload.sendEmail() etc
-  // email: nodemailerAdapter({
-  //   defaultFromAddress: 'info@example.com',
-  //   defaultFromName: 'Kollab-template',
-  //   transportOptions: {
-  //     host: 'smtp.sendgrid.net',
-  //     port: 587,
-  //     auth: {
-  //       user: process.env.SENDGRID_USERNAME,
-  //       pass: process.env.SENDGRID_PASSWORD,
-  //     },
-  //   },
-  // }),
+  email: process.env.MAIL_ENABLED == "true" ? nodemailerAdapter({
+    defaultFromAddress: process.env.MAIL_FROM_ADDRESS || 'info@example.com',
+    defaultFromName: process.env.MAIL_FROM_NAME || 'Kollab',
+    transportOptions: {
+      secure: process.env.MAIL_SECURE == "true",
+      host: process.env.MAIL_HOST,
+      port: process.env.MAIL_PORT,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
+    },
+  }) : undefined,
 })
