@@ -61,7 +61,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
   const prev = () => goToPage(currentIndex - 1)
   const next = () => goToPage(currentIndex + 1)
 
-  // Touch/swipe handlers for mobile
+  // Touch/swipe handlers for mobile - allow swiping to change slides
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.targetTouches[0]) {
       setTouchStart(e.targetTouches[0].clientX)
