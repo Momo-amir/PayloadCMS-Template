@@ -39,24 +39,40 @@ export const hero: Field = {
       required: true,
     },
     {
-      name: 'theme',
-      type: 'select',
-      defaultValue: 'dark',
-      options: [
+      type: 'group',
+      fields: [
         {
-          label: 'Light',
-          value: 'light',
+          name: 'theme',
+          type: 'select',
+          defaultValue: 'dark',
+          options: [
+            {
+              label: 'Light',
+              value: 'light',
+            },
+            {
+              label: 'Dark',
+              value: 'dark',
+            },
+          ],
+          admin: {
+            condition: (_, { type } = {}) => ['highImpact'].includes(type),
+          },
+          required: true,
         },
         {
-          label: 'Dark',
-          value: 'dark',
+          name: 'centered',
+          type: 'checkbox',
+          label: 'Centered Content',
+          defaultValue: 'false',
+          admin: {
+            condition: (_, { type } = {}) => ['highImpact'].includes(type),
+          },
+          required: true,
         },
       ],
-      admin: {
-        condition: (_, { type } = {}) => ['highImpact'].includes(type),
-      },
-      required: true,
     },
+
     {
       name: 'richText',
       type: 'richText',

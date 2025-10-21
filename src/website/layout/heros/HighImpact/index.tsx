@@ -9,7 +9,13 @@ import React from 'react'
 
 import { useRef } from 'react'
 
-export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText, theme }) => {
+export const HighImpactHero: React.FC<Page['hero']> = ({
+  links,
+  media,
+  richText,
+  theme,
+  centered,
+}) => {
   const forced = theme === 'dark' ? 'dark' : 'light'
   useHeaderThemeOverride(forced)
   const heroRef = useRef<HTMLDivElement>(null)
@@ -20,11 +26,13 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText,
       className="relative flex items-center justify-center text-primary mb-8 -mt-[9.4rem]"
       data-theme={theme}
     >
-      <div className="container mb-8 z-10 relative flex items-center w-full mt-20 sm:mt-16">
-        <div className="max-w-[36.5rem] hero-rich-text ">
+      <div
+        className={`container mb-8 z-10 relative flex items-center w-full mt-20 sm:mt-16 ${centered ? 'justify-center' : ''}`}
+      >
+        <div className={`max-w-[36.5rem] hero-rich-text ${centered ? 'text-center' : ''}`}>
           {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
           {Array.isArray(links) && links.length > 0 && (
-            <ul className="flex gap-4">
+            <ul className={`flex gap-4 ${centered ? 'justify-center' : ''}`}>
               {links.map(({ link }, i) => (
                 <li key={i}>
                   <CMSLink {...link} />
