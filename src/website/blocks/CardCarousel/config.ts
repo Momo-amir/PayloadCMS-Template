@@ -12,24 +12,9 @@ export const CardCarouselBlock: ComponentBlock = {
   },
   fields: [
     {
-      name: 'colorMode',
-      type: 'select',
-      label: 'Color Mode',
-      defaultValue: 'block',
-      options: [
-        { label: 'Single color (all cards)', value: 'block' },
-        { label: 'Individual per card', value: 'per-card' },
-      ],
-      admin: {
-        description: 'Choose whether to use one color for all cards or set colors individually.',
-        width: '50%',
-      },
-    },
-    {
       name: 'cardBackgroundColor',
       label: 'Card Variant',
       type: 'select',
-      // Short dbName to avoid exceeding Postgres identifier length
       dbName: 'bg',
       defaultValue: '',
       options: [
@@ -41,7 +26,7 @@ export const CardCarouselBlock: ComponentBlock = {
         { label: 'Gray', value: 'neutral' },
       ],
       admin: {
-        description: 'When Color Mode is set to "Single color", this variant applies to all cards.',
+        description: 'Applies this variant to all cards in the carousel.',
         width: '50%',
       },
     },
@@ -87,26 +72,7 @@ export const CardCarouselBlock: ComponentBlock = {
           type: 'textarea',
           required: false,
         },
-        {
-          name: 'cardBackgroundColor',
-          label: 'Card Variant',
-          type: 'select',
-          // Short dbName to avoid exceeding Postgres identifier length
-          dbName: 'bg',
-          defaultValue: '',
-          options: [
-            { label: 'Default', value: '' },
-            { label: 'Dark', value: 'dark' },
-            { label: 'Purple', value: 'accent' },
-            { label: 'Pink', value: 'accentThree' },
-            { label: 'Blue', value: 'secondary' },
-            { label: 'Gray', value: 'neutral' },
-          ],
-          admin: {
-            description: 'Used when Color Mode is set to "Individual per card".',
-          },
-        },
-        // Include 'default' because the shared link field sets defaultValue: 'default'
+
         link({ appearances: false }),
         {
           name: 'media',

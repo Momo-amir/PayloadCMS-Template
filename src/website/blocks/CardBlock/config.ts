@@ -60,7 +60,6 @@ export const CardBlock: ComponentBlock = {
           type: 'textarea',
           required: false,
         },
-        // Include 'default' because the shared link field sets defaultValue: 'default'
         link({ appearances: false }),
         {
           name: 'media',

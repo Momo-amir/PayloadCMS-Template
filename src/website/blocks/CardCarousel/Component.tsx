@@ -30,7 +30,6 @@ export const CardCarouselBlock: React.FC<Props> = ({
   description,
   cards = [],
   cardBackgroundColor,
-  colorMode,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [containerWidth, setContainerWidth] = useState(0)
@@ -130,12 +129,16 @@ export const CardCarouselBlock: React.FC<Props> = ({
             onTouchEnd={handleTouchEnd}
           >
             {cards.map((card, i) => {
-              const variantRaw =
-                colorMode === 'per-card' ? card.cardBackgroundColor : cardBackgroundColor
+              const variantRaw = cardBackgroundColor
               const variant =
                 typeof variantRaw === 'string' && variantRaw !== ''
-                  ? (variantRaw as 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary',
-                    'neutral')
+                  ? (variantRaw as
+                      | 'default'
+                      | 'accent'
+                      | 'accentThree'
+                      | 'dark'
+                      | 'secondary'
+                      | 'neutral')
                   : 'default'
 
               return (
