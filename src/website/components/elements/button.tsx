@@ -28,8 +28,8 @@ const buttonVariants = cva(
         outline: 'border border-primary bg-transparent hover:bg-primary hover:text-base',
         secondary: 'bg-black text-white hover:bg-secondary active:bg-secondary',
         tertiary: 'bg-white text-black hover:bg-accentthree active:bg-accentthree',
-        arrow:
-          'cursor-pointer pointer-events-auto w-12 h-12 rounded-full bg-black text-white shadow disabled:opacity-30',
+        circle:
+          'cursor-pointer w-12 h-12 rounded-full bg-primary text-base shadow disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-primary disabled:hover:text-base transition-colors duration-200 ease-in-out hover:bg-accent hover:text-white',
       },
     },
   },

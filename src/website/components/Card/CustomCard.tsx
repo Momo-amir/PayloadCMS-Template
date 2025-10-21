@@ -17,7 +17,7 @@ import { CMSLink } from '@/website/components/Link'
 
 type CardItem = CardBlockType['cards'][number]
 
-export type CardVariant = 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary'
+export type CardVariant = 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary' | 'neutral'
 
 type CardProps = {
   className?: string
@@ -32,10 +32,11 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
   //Card variants - Different looks for this type of card
   const cardVariant: Record<CardVariant, { wrapper: string; chip: string }> = {
     default: { wrapper: 'bg-base text-primary', chip: 'bg-white text-black' },
-    accent: { wrapper: 'bg-accent text-white', chip: 'bg-primary text-base' },
+    accent: { wrapper: 'bg-accent text-white', chip: 'bg-white text-black' },
     accentThree: { wrapper: 'bg-accentthree text-black', chip: 'bg-accenttwo text-white' },
     dark: { wrapper: 'bg-black border-neutraltwo text-white', chip: 'bg-white text-black' },
     secondary: { wrapper: 'bg-secondary text-white border-border', chip: 'bg-white text-black' },
+    neutral: { wrapper: 'bg-neutral text-black border-border', chip: 'bg-white text-black' },
   }
 
   return (

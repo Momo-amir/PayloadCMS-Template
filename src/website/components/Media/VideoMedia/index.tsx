@@ -57,16 +57,17 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
         >
           <source src={`${getClientSideURL()}/media/${filename}`} />
         </video>
-
-        <Button
-          className={cn(
-            'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-accenttwo rounded-full transition duration-300 border-none cursor-pointer hover:bg-accentthree',
-            isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100',
-          )}
-          onClick={handleTogglePlay}
-          icon={isPlaying ? IconPlayerPauseFilled : IconPlayerPlayFilled}
-          iconSize={45}
-        />
+        {!autoplay && (
+          <Button
+            className={cn(
+              'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-accenttwo rounded-full transition duration-300 border-none cursor-pointer hover:bg-accentthree',
+              isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100',
+            )}
+            onClick={handleTogglePlay}
+            icon={isPlaying ? IconPlayerPauseFilled : IconPlayerPlayFilled}
+            iconSize={45}
+          />
+        )}
       </div>
     )
   }

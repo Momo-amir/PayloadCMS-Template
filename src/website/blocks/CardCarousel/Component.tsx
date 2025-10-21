@@ -106,14 +106,17 @@ export const CardCarouselBlock: React.FC<Props> = ({
           <p className="text-center mb-16">{description}</p>
         </div>
       )}{' '}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 relative">
         <Button
-          variant={'arrow'}
+          variant={'circle'}
           icon={IconArrowLeft}
           iconSize={36}
           onClick={prev}
           disabled={currentIndex === 0}
-          className="hidden lg:flex flex-shrink-0"
+          className={cn(
+            'hidden lg:flex flex-shrink-0',
+            'min-[90rem]:absolute min-[90rem]:left-[-4rem] min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
+          )}
         />
         <div ref={containerRef} className="overflow-hidden w-full">
           <div
@@ -131,7 +134,8 @@ export const CardCarouselBlock: React.FC<Props> = ({
                 colorMode === 'per-card' ? card.cardBackgroundColor : cardBackgroundColor
               const variant =
                 typeof variantRaw === 'string' && variantRaw !== ''
-                  ? (variantRaw as 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary')
+                  ? (variantRaw as 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary',
+                    'neutral')
                   : 'default'
 
               return (
@@ -144,12 +148,15 @@ export const CardCarouselBlock: React.FC<Props> = ({
         </div>
 
         <Button
-          variant={'arrow'}
+          variant={'circle'}
           icon={IconArrowRight}
           iconSize={36}
           onClick={next}
           disabled={currentIndex >= pageCount - 1}
-          className="hidden lg:flex flex-shrink-0"
+          className={cn(
+            'hidden lg:flex flex-shrink-0',
+            'min-[90rem]:absolute min-[90rem]:right-[-4rem] min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
+          )}
         />
       </div>
       <div className="mt-6 flex justify-center gap-2">
@@ -159,7 +166,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
             onClick={() => goToPage(p)}
             className={cn(
               'w-[15px] h-[15px] rounded-full cursor-pointer',
-              p === currentIndex ? 'bg-black' : 'bg-border',
+              p === currentIndex ? 'bg-neutraltwo' : 'bg-border',
             )}
           />
         ))}

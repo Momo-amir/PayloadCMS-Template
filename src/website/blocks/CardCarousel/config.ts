@@ -99,6 +99,7 @@ export const CardCarouselBlock: ComponentBlock = {
             { label: 'Purple', value: 'accent' },
             { label: 'Pink', value: 'accentThree' },
             { label: 'Blue', value: 'secondary' },
+            { label: 'Gray', value: 'neutral' },
           ],
           admin: {
             description: 'Used when Color Mode is set to "Individual per card".',

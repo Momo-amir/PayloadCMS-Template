@@ -6,6 +6,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 import { ArchiveBlock } from './Component'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
+import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 
 export const Archive: ComponentBlock = {
   slug: 'archive',
@@ -15,6 +16,7 @@ export const Archive: ComponentBlock = {
     {
       name: 'introContent',
       type: 'richText',
+      defaultValue: EMPTY_LEXICAL_CONTENT,
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
           return [
