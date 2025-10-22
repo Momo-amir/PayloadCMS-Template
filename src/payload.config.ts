@@ -114,17 +114,20 @@ export default buildConfig({
   },
 
   //Email config - using nodemailer TODO hook up to sendgrid or similar - when ready hooks available with req.payload.sendEmail() etc
-  email: process.env.MAIL_ENABLED == "true" ? nodemailerAdapter({
-    defaultFromAddress: process.env.MAIL_FROM_ADDRESS || 'info@example.com',
-    defaultFromName: process.env.MAIL_FROM_NAME || 'Kollab',
-    transportOptions: {
-      secure: process.env.MAIL_SECURE == "true",
-      host: process.env.MAIL_HOST,
-      port: process.env.MAIL_PORT,
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-      },
-    },
-  }) : undefined,
+  email:
+    process.env.MAIL_ENABLED == 'true'
+      ? nodemailerAdapter({
+          defaultFromAddress: process.env.MAIL_FROM_ADDRESS || 'info@example.com',
+          defaultFromName: process.env.MAIL_FROM_NAME || 'Kollab',
+          transportOptions: {
+            secure: process.env.MAIL_SECURE == 'true',
+            host: process.env.MAIL_HOST,
+            port: process.env.MAIL_PORT,
+            auth: {
+              user: process.env.MAIL_USER,
+              pass: process.env.MAIL_PASS,
+            },
+          },
+        })
+      : undefined,
 })

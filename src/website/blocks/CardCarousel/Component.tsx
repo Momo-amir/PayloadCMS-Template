@@ -169,7 +169,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
             onClick={() => goToPage(p)}
             className={cn(
               'w-[15px] h-[15px] rounded-full cursor-pointer',
-              p === currentIndex ? 'bg-neutraltwo' : 'bg-border',
+              p === currentIndex ? 'bg-primary' : 'bg-neutral',
             )}
           />
         ))}
