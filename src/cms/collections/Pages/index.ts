@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { hero } from '@/website/layout/heros/config'
-import { slugField } from '@/cms/fields/slug'
+import { slugField } from 'payload'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
@@ -19,11 +19,11 @@ import {
 } from '@payloadcms/plugin-seo/fields'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
 
-const layoutBlocks: ComponentBlock[] = [];
+const layoutBlocks: ComponentBlock[] = []
 
 blockExports.blocks.forEach((block) => {
-  if (block.showOnPage !== false) layoutBlocks.push(block);
-});
+  if (block.showOnPage !== false) layoutBlocks.push(block)
+})
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
@@ -41,21 +41,18 @@ export const Pages: CollectionConfig<'pages'> = {
     slug: true,
   },
   admin: {
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'updatedAt', 'status'],
     livePreview: {
-      url: ({ data, req }) => {
-        const path = generatePreviewPath({
-          slug: typeof data?.slug === 'string' ? data.slug : '',
+      url: ({ data, req }) =>
+        generatePreviewPath({
+          slug: data?.slug,
           collection: 'pages',
           req,
-        })
-
-        return path
-      },
+        }),
     },
     preview: (data, { req }) =>
       generatePreviewPath({
-        slug: typeof data?.slug === 'string' ? data.slug : '',
+        slug: data?.slug as string,
         collection: 'pages',
         req,
       }),
@@ -124,7 +121,16 @@ export const Pages: CollectionConfig<'pages'> = {
         position: 'sidebar',
       },
     },
-    ...slugField(),
+    slugField({
+      overrides: (field) => {
+        type SlugRowLike = { fields?: Array<{ label?: string }> }
+        const row = field as unknown as SlugRowLike
+        if (Array.isArray(row.fields) && row.fields[1]) {
+          row.fields[1].label = 'Website Link (Slug)'
+        }
+        return field
+      },
+    }),
   ],
   hooks: {
     afterChange: [revalidatePage],
@@ -134,7 +140,7 @@ export const Pages: CollectionConfig<'pages'> = {
   versions: {
     drafts: {
       autosave: {
-        interval: 800, // We set this interval for optimal live preview
+        interval: 100, // We set this interval for optimal live preview
       },
       schedulePublish: true,
     },

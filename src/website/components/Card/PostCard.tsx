@@ -7,6 +7,13 @@ import React, { Fragment } from 'react'
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/website/components/Media'
+import {
+  Card as CardComponent,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/website/components/elements/card'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
 
@@ -30,55 +37,59 @@ export const PostCard: React.FC<{
   const href = `/${relationTo}/${slug}`
 
   return (
-    <article
-      className={cn(
-        'border border-border rounded-lg overflow-hidden bg-card hover:cursor-pointer',
-        className,
-      )}
-      ref={card.ref}
-    >
-      <div className="relative w-full ">
-        {!metaImage && <div className="">No image</div>}
-        {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="33vw" />}
-      </div>
-      <div className="p-4">
-        {showCategories && hasCategories && (
-          <div className="uppercase text-sm mb-4">
-            {showCategories && hasCategories && (
-              <div>
-                {categories?.map((category, index) => {
-                  if (typeof category === 'object') {
-                    const { title: titleFromCategory } = category
+    <article ref={card.ref} className={cn('group h-full hover:cursor-pointer', className)}>
+      <CardComponent
+        className={cn('h-full flex flex-col transition hover:shadow-md bg-card border-border')}
+      >
+        <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
+          {!metaImage && (
+            <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground bg-muted">
+              No image
+            </div>
+          )}
+          {metaImage && typeof metaImage !== 'string' && (
+            <Media resource={metaImage} fill imgClassName="object-cover" />
+          )}
 
-                    const categoryTitle = titleFromCategory || 'Untitled category'
+          {showCategories && hasCategories && (
+            <div className="text-xs uppercase tracking-wide mb-1 absolute top-2 right-2 px-2 py-1 rounded-full shadow-md bg-white text-black">
+              {categories?.map((category, index) => {
+                if (typeof category === 'object') {
+                  const { title: titleFromCategory } = category
+                  const categoryTitle = titleFromCategory || 'Untitled category'
+                  const isLast = index === categories.length - 1
 
-                    const isLast = index === categories.length - 1
+                  return (
+                    <Fragment key={index}>
+                      {categoryTitle}
+                      {!isLast && <Fragment>, &nbsp;</Fragment>}
+                    </Fragment>
+                  )
+                }
+                return null
+              })}
+            </div>
+          )}
+        </div>
 
-                    return (
-                      <Fragment key={index}>
-                        {categoryTitle}
-                        {!isLast && <Fragment>, &nbsp;</Fragment>}
-                      </Fragment>
-                    )
-                  }
-
-                  return null
-                })}
-              </div>
+        {(showCategories || titleToUse) && (
+          <CardHeader>
+            {titleToUse && (
+              <CardTitle className="text-xl">
+                <Link href={href} ref={link.ref} className="">
+                  {titleToUse}
+                </Link>
+              </CardTitle>
             )}
-          </div>
+          </CardHeader>
         )}
-        {titleToUse && (
-          <div className=" ">
-            <h3>
-              <Link className="not- " href={href} ref={link.ref}>
-                {titleToUse}
-              </Link>
-            </h3>
-          </div>
+
+        {description && (
+          <CardContent className="pt-0">
+            <CardDescription>{sanitizedDescription}</CardDescription>
+          </CardContent>
         )}
-        {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>}
-      </div>
+      </CardComponent>
     </article>
   )
 }

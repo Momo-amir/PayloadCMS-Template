@@ -7,7 +7,6 @@ import {
   HorizontalRuleFeature,
   InlineToolbarFeature,
   lexicalEditor,
-  UploadFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { authenticated } from '../../access/authenticated'
@@ -26,7 +25,7 @@ import {
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
-import { slugField } from '@/cms/fields/slug'
+import { slugField } from 'payload'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -49,21 +48,18 @@ export const Posts: CollectionConfig<'posts'> = {
     },
   },
   admin: {
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'updatedAt', 'status'],
     livePreview: {
-      url: ({ data, req }) => {
-        const path = generatePreviewPath({
-          slug: typeof data?.slug === 'string' ? data.slug : '',
+      url: ({ data, req }) =>
+        generatePreviewPath({
+          slug: data?.slug,
           collection: 'posts',
           req,
-        })
-
-        return path
-      },
+        }),
     },
     preview: (data, { req }) =>
       generatePreviewPath({
-        slug: typeof data?.slug === 'string' ? data.slug : '',
+        slug: data?.slug as string,
         collection: 'posts',
         req,
       }),
@@ -97,7 +93,6 @@ export const Posts: CollectionConfig<'posts'> = {
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
                     HorizontalRuleFeature(),
-                    UploadFeature(),
                   ]
                 },
               }),
@@ -219,7 +214,16 @@ export const Posts: CollectionConfig<'posts'> = {
         },
       ],
     },
-    ...slugField(),
+    slugField({
+      overrides: (field) => {
+        type SlugRowLike = { fields?: Array<{ label?: string }> }
+        const row = field as unknown as SlugRowLike
+        if (Array.isArray(row.fields) && row.fields[1]) {
+          row.fields[1].label = 'Website Link (Slug)'
+        }
+        return field
+      },
+    }),
   ],
   hooks: {
     afterChange: [revalidatePost],
@@ -229,7 +233,7 @@ export const Posts: CollectionConfig<'posts'> = {
   versions: {
     drafts: {
       autosave: {
-        interval: 800, // We set this interval for optimal live preview
+        interval: 100, // We set this interval for optimal live preview
       },
       schedulePublish: true,
     },
