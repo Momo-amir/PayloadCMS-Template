@@ -36,7 +36,7 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
     accentThree: { wrapper: 'bg-accentthree text-black', chip: 'bg-accenttwo text-white' },
     dark: { wrapper: 'bg-black border-neutraltwo text-white', chip: 'bg-white text-black' },
     secondary: { wrapper: 'bg-secondary text-white border-border', chip: 'bg-white text-black' },
-    neutral: { wrapper: 'bg-neutral text-black border-border', chip: 'bg-white text-black' },
+    neutral: { wrapper: 'bg-border text-black border-border', chip: 'bg-white text-black' },
   }
 
   return (
