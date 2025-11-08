@@ -27,6 +27,15 @@ export const getBranding = unstable_cache(
 )
 
 export const toLogoProps = (branding: Branding | null) => {
+  // Get alt text from the media item itself, prioritizing logoLight
+  let alt: string | undefined = undefined
+
+  if (branding?.logoLight && typeof branding.logoLight === 'object') {
+    alt = branding.logoLight.alt || undefined
+  } else if (branding?.logoDark && typeof branding.logoDark === 'object') {
+    alt = branding.logoDark.alt || undefined
+  }
+
   return {
     lightSrc:
       branding?.logoLight && typeof branding.logoLight === 'object'
@@ -36,21 +45,29 @@ export const toLogoProps = (branding: Branding | null) => {
       branding?.logoDark && typeof branding.logoDark === 'object'
         ? mediaToURL(branding.logoDark)
         : undefined,
-    alt: branding?.logoAlt ?? undefined,
+    alt,
   }
 }
 
 export const toFaviconProps = (
   branding: Branding | null,
-): { lightHref: string; darkHref: string } => {
+): { lightHref: string; darkHref: string; appleTouchIcon: string } => {
+  const lightHref =
+    (branding?.faviconLight && typeof branding.faviconLight === 'object'
+      ? mediaToURL(branding.faviconLight)
+      : null) || '/assets/favicon-lightmode.svg'
+
+  const darkHref =
+    (branding?.faviconDark && typeof branding.faviconDark === 'object'
+      ? mediaToURL(branding.faviconDark)
+      : null) || '/assets/favicon-darkmode.svg'
+
+  // Prefer PNG for apple-touch-icon, fallback to light favicon
+  const appleTouchIcon = lightHref.endsWith('.png') ? lightHref : lightHref
+
   return {
-    lightHref:
-      (branding?.faviconLight && typeof branding.faviconLight === 'object'
-        ? mediaToURL(branding.faviconLight)
-        : null) || '/assets/favicon-lightmode.svg',
-    darkHref:
-      (branding?.faviconDark && typeof branding.faviconDark === 'object'
-        ? mediaToURL(branding.faviconDark)
-        : null) || '/assets/favicon-darkmode.svg',
+    lightHref,
+    darkHref,
+    appleTouchIcon,
   }
 }

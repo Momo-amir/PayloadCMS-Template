@@ -22,12 +22,13 @@ export const dynamic = 'force-dynamic'
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
   const branding = await getBranding()
-  const { lightHref, darkHref } = toFaviconProps(branding)
+  const { lightHref, darkHref, appleTouchIcon } = toFaviconProps(branding)
 
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
+        {/* Standard favicons with color scheme support */}
         <link
           href={darkHref}
           type={darkHref.endsWith('.png') ? 'image/png' : 'image/svg+xml'}
@@ -40,7 +41,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           rel="icon"
           type={lightHref.endsWith('.png') ? 'image/png' : 'image/svg+xml'}
           media="(prefers-color-scheme: light)"
+          sizes="32x32"
         />
+
+        {/* Apple touch icons - use PNG format when available, fallback to light favicon */}
+        <link href={appleTouchIcon} rel="apple-touch-icon" sizes="180x180" />
       </head>
       <body>
         <Providers>
