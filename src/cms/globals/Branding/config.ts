@@ -14,11 +14,26 @@ export const BrandingGlobal: GlobalConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'logoLight', type: 'upload', relationTo: 'media', label: 'Logo (Light)' },
-                { name: 'logoDark', type: 'upload', relationTo: 'media', label: 'Logo (Dark)' },
+                {
+                  name: 'logoLight',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Logo (Light)',
+                  admin: {
+                    description: "Alt text will be taken from the media item's alt field",
+                  },
+                },
+                {
+                  name: 'logoDark',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Logo (Dark)',
+                  admin: {
+                    description: "Alt text will be taken from the media item's alt field",
+                  },
+                },
               ],
             },
-            { name: 'logoAlt', type: 'text', label: 'Logo Alt' },
             {
               type: 'row',
               fields: [
@@ -27,12 +42,18 @@ export const BrandingGlobal: GlobalConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   label: 'Favicon (Light)',
+                  admin: {
+                    description: 'Used as favicon and apple-touch-icon',
+                  },
                 },
                 {
                   name: 'faviconDark',
                   type: 'upload',
                   relationTo: 'media',
                   label: 'Favicon (Dark)',
+                  admin: {
+                    description: 'Used as favicon and apple-touch-icon',
+                  },
                 },
               ],
             },
