@@ -1,3 +1,4 @@
+import { PeopleArchiveBlock } from './PeopleArchive/config'
 /* eslint-disable import/no-anonymous-default-export */
 import { UserLoginBlock } from './UserLogin/config'
 import { ComponentBlock } from '../types/ComponentBlock'
@@ -23,6 +24,7 @@ export default {
       CardBlock,
       CallToAction,
       UserLoginBlock,
+      PeopleArchiveBlock,
     ] satisfies ComponentBlock[])
   ),
 }

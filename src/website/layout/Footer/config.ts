@@ -1,11 +1,23 @@
 import type { GlobalConfig } from 'payload'
 import { link } from '@/cms/fields/link'
 import { revalidateFooter } from './hooks/revalidateFooter'
+import { generatePreviewPath } from '@/cms/utilities/generatePreviewPath'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
   access: {
     read: () => true,
+  },
+
+  admin: {
+    livePreview: {
+      url: ({ req }) =>
+        generatePreviewPath({
+          slug: 'home',
+          collection: 'pages',
+          req,
+        }),
+    },
   },
   fields: [
     {

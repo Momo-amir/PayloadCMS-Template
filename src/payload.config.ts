@@ -17,6 +17,7 @@ import { plugins } from './cms/plugins'
 import { BrandingGlobal } from './cms/globals/Branding/config'
 import { defaultLexical } from '@/cms/fields/defaultLexical'
 import { getServerSideURL } from './cms/utilities/getURL'
+import { People } from './cms/collections/People'
 
 import exports from './website/blocks/exports'
 
@@ -85,7 +86,7 @@ export default buildConfig({
     },
   }),
 
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections: [Pages, Posts, Media, Categories, Users, People],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer, BrandingGlobal],
   plugins: [
