@@ -41,7 +41,11 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
             <ul className={`flex gap-4 ${centered ? 'justify-center' : ''}`}>
               {links.map(({ link }, i) => (
                 <li key={i}>
-                  <CMSLink {...link} trackingSection="High Impact Hero" />
+                  <CMSLink
+                    {...link}
+                    trackingName={link?.label || `Hero CTA ${i + 1}`}
+                    trackingSection="High Impact Hero"
+                  />
                 </li>
               ))}
             </ul>

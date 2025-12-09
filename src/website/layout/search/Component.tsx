@@ -4,16 +4,24 @@ import { Label } from '@/website/components/elements/label'
 import React, { useState, useEffect } from 'react'
 import { useDebounce } from '@/cms/utilities/useDebounce'
 import { useRouter } from 'next/navigation'
+import { trackSearch } from '@/cms/utilities/analytics'
+import { usePrivacy } from '@/providers/Privacy'
 
-export const Search: React.FC = () => {
+export const Search: React.FC<{ resultsCount?: number }> = ({ resultsCount }) => {
   const [value, setValue] = useState('')
   const router = useRouter()
+  const { cookieConsent } = usePrivacy()
 
   const debouncedValue = useDebounce(value)
 
   useEffect(() => {
     router.push(`/search${debouncedValue ? `?q=${debouncedValue}` : ''}`)
-  }, [debouncedValue, router])
+
+    // Track search query when user stops typing
+    if (cookieConsent && debouncedValue) {
+      trackSearch(debouncedValue, resultsCount)
+    }
+  }, [debouncedValue, router, cookieConsent, resultsCount])
 
   return (
     <div>

@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { cn } from '@/cms/utilities/ui'
+import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 
 import { renderChildField, TwoBlockField } from './fields'
 
@@ -18,7 +19,11 @@ export const TwoBlock: React.FC<{
   )
 
   return (
-    <div className="container">
+    <TrackImpression
+      componentName="Two Column Block"
+      componentType="two-block"
+      className="container"
+    >
       <div className={gridClasses}>
         {[left, right].map((column, colIdx) => {
           const colClass = cn(
@@ -50,6 +55,6 @@ export const TwoBlock: React.FC<{
           )
         })}
       </div>
-    </div>
+    </TrackImpression>
   )
 }

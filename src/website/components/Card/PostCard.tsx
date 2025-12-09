@@ -14,6 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/website/components/elements/card'
+import { trackPostCardClick } from '@/cms/utilities/analytics'
+import { usePrivacy } from '@/providers/Privacy'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
 
@@ -24,9 +26,20 @@ export const PostCard: React.FC<{
   relationTo?: 'posts'
   showCategories?: boolean
   title?: string
+  position?: number
+  listContext?: string
 }> = (props) => {
   const { card, link } = useClickableCard({})
-  const { className, doc, relationTo, showCategories, title: titleFromProps } = props
+  const { cookieConsent } = usePrivacy()
+  const {
+    className,
+    doc,
+    relationTo,
+    showCategories,
+    title: titleFromProps,
+    position,
+    listContext = 'archive',
+  } = props
 
   const { slug, categories, meta, title } = doc || {}
   const { description, image: metaImage } = meta || {}
@@ -36,8 +49,22 @@ export const PostCard: React.FC<{
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href = `/${relationTo}/${slug}`
 
+  const handleClick = () => {
+    if (cookieConsent && title && slug) {
+      const categoryNames = categories
+        ?.filter((cat): cat is { title: string } => typeof cat === 'object' && 'title' in cat)
+        .map((cat) => cat.title)
+
+      trackPostCardClick(title, slug, categoryNames, position, listContext)
+    }
+  }
+
   return (
-    <article ref={card.ref} className={cn('group h-full hover:cursor-pointer', className)}>
+    <article
+      ref={card.ref}
+      className={cn('group h-full hover:cursor-pointer', className)}
+      onClick={handleClick}
+    >
       <CardComponent
         className={cn('h-full flex flex-col transition hover:shadow-md bg-card border-border')}
       >

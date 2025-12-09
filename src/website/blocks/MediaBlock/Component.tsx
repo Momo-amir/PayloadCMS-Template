@@ -7,6 +7,7 @@ import RichText from '@/website/components/RichText'
 import type { MediaBlock as MediaBlockProps } from '@/payload-types'
 
 import { Media } from '@/website/components/Media'
+import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 
 type Props = MediaBlockProps & {
   breakout?: boolean
@@ -43,8 +44,14 @@ export const MediaBlock: React.FC<Props> = (props) => {
   let caption
   if (media && typeof media === 'object') caption = media.caption
 
+  // Determine media type for tracking
+  const mediaType =
+    media && typeof media === 'object' && media.mimeType?.startsWith('video/') ? 'video' : 'image'
+
   return (
-    <div
+    <TrackImpression
+      componentName={`Media Block (${mediaType})`}
+      componentType="media"
       className={cn(
         '',
         {
@@ -82,6 +89,6 @@ export const MediaBlock: React.FC<Props> = (props) => {
           <RichText data={caption} enableGutter={false} />
         </div>
       )}
-    </div>
+    </TrackImpression>
   )
 }

@@ -68,14 +68,14 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
         <div className="  max-w-none text-center">
           <h1 className="mb-8 lg:mb-16">Search</h1>
 
-          <div className="max-w-[50rem] mx-auto">
-            <Search />
+          <div className="max-w-200 mx-auto">
+            <Search resultsCount={posts.totalDocs} />
           </div>
         </div>
       </div>
 
       {posts.totalDocs > 0 ? (
-        <CollectionArchive posts={posts.docs as CardPostData[]} />
+        <CollectionArchive posts={posts.docs as CardPostData[]} listContext="search" />
       ) : (
         <div className="container">No results found.</div>
       )}

@@ -4,14 +4,7 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react'
-import {
-  trackButtonClick,
-  trackComponentImpression,
-  trackScrollDepth,
-  trackLinkClick,
-  analyticsEvent,
-  type AnalyticsEventParams,
-} from '@/cms/utilities/analytics'
+import { track, trackButtonClick } from '@/cms/utilities/analytics'
 import { usePrivacy } from '@/providers/Privacy'
 
 /**
@@ -72,7 +65,10 @@ export const useTrackImpression = (
             // Start timer when component becomes visible
             visibilityTimer.current = setTimeout(() => {
               if (!hasTracked.current) {
-                trackComponentImpression(componentName, componentType)
+                track('component_impression', {
+                  component_name: componentName,
+                  component_type: componentType,
+                })
                 hasTracked.current = true
               }
             }, minVisibleTime)
@@ -130,7 +126,10 @@ export const useTrackScrollDepth = () => {
       milestones.forEach((milestone) => {
         if (scrollPercentage >= milestone && !trackedDepths.current.has(milestone)) {
           trackedDepths.current.add(milestone)
-          trackScrollDepth(milestone)
+          track('scroll_depth', {
+            depth_percentage: milestone,
+            page: window.location.pathname,
+          })
         }
       })
     }
@@ -158,7 +157,11 @@ export const useTrackLink = (linkText: string, linkUrl: string, isExternal = fal
 
   return useCallback(() => {
     if (!cookieConsent) return
-    trackLinkClick(linkText, linkUrl, isExternal)
+    track('link_click', {
+      link_text: linkText,
+      link_url: linkUrl,
+      link_type: isExternal ? 'external' : 'internal',
+    })
   }, [linkText, linkUrl, isExternal, cookieConsent])
 }
 
@@ -174,9 +177,9 @@ export const useTrackEvent = (eventName: string) => {
   const { cookieConsent } = usePrivacy()
 
   return useCallback(
-    (params?: AnalyticsEventParams) => {
+    (params?: unknown) => {
       if (!cookieConsent) return
-      analyticsEvent(eventName, params)
+      track(eventName, params)
     },
     [eventName, cookieConsent],
   )
@@ -206,7 +209,7 @@ export const useTrackTimeSpent = (componentName: string) => {
 
       const timeSpent = Math.round((Date.now() - start) / 1000) // in seconds
 
-      analyticsEvent('time_spent', {
+      track('time_spent', {
         component_name: componentName,
         duration_seconds: timeSpent,
       })

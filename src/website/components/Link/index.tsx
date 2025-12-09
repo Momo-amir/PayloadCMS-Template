@@ -1,9 +1,10 @@
+'use client'
+
 import { Button, type ButtonProps } from '@/website/components/elements/button'
 import { cn } from '@/cms/utilities/ui'
 import Link from 'next/link'
 import React from 'react'
 import { trackButtonClick } from '@/cms/utilities/analytics'
-import { usePrivacy } from '@/providers/Privacy'
 
 import type { Page, Post } from '@/payload-types'
 
@@ -20,10 +21,13 @@ export type CMSLinkType = {
     value: Page | Post | string | number
   } | null
   size?: ButtonProps['size'] | null
-  trackingSection?: string // Optional: specify which section this link is in (e.g., "Hero", "Footer")
   type?: 'custom' | 'reference' | null
   url?: string | null
   useCustomColorTheme?: boolean | null
+  // Analytics tracking (optional)
+  trackingName?: string
+  trackingSection?: string
+  enableTracking?: boolean
 }
 
 export type CMSLinkReference = NonNullable<CMSLinkType['reference']>
@@ -40,12 +44,12 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     onClick,
     reference,
     size: sizeFromProps,
-    trackingSection,
     url,
     useCustomColorTheme,
+    trackingName,
+    trackingSection,
+    enableTracking = true,
   } = props
-
-  const { cookieConsent } = usePrivacy()
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
@@ -56,6 +60,18 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   if (!href) return null
 
+  // Handle click with optional tracking
+  const handleClick = () => {
+    // Track if tracking is enabled and trackingName is provided
+    if (enableTracking && trackingName) {
+      trackButtonClick(trackingName, trackingSection, href || undefined)
+    }
+    // Call original onClick if provided
+    if (onClick) {
+      onClick()
+    }
+  }
+
   const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
@@ -65,19 +81,6 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   // Combine className with color palette only when custom theme is enabled
   const linkClassName = cn(className, hasColorPalette ? colorPalette : '')
-
-  // Automatic tracking handler
-  const handleClick = () => {
-    // Track the button/link click if consent is given
-    if (cookieConsent && label) {
-      trackButtonClick(label, trackingSection, href || '')
-    }
-
-    // Call custom onClick if provided
-    if (onClick) {
-      onClick()
-    }
-  }
 
   /* Ensure we don't break any styles set by richText */
   if (effectiveAppearance === 'inline') {

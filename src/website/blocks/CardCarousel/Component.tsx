@@ -6,6 +6,7 @@ import Card from '@/website/components/Card/CustomCard'
 import { cn } from '@/cms/utilities/ui'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
 import { Button } from '@site/components/elements/button'
+import { useTrackImpression } from '@/cms/hooks/useAnalytics'
 
 type Props = CardCarouselBlockType & { className?: string }
 
@@ -36,6 +37,12 @@ export const CardCarouselBlock: React.FC<Props> = ({
   const [currentIndex, setCurrentIndex] = useState(0)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
+
+  // Track when carousel becomes visible
+  const carouselRef = useTrackImpression(
+    `Card Carousel (${cards.length} cards)`,
+    'carousel',
+  ) as React.RefObject<HTMLElement>
 
   const perView = getColumnsPerView(cards.length, containerWidth)
   const pageCount = Math.ceil(cards.length / perView)
@@ -98,7 +105,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
   const offset = -(currentIndex * containerWidth)
 
   return (
-    <section className={cn('container relative')}>
+    <section ref={carouselRef} className={cn('container relative')}>
       {heading && <h1 className="text-5xl text-center font-semibold mb-10">{heading}</h1>}
       {description && (
         <div className="w-1/2 mx-auto">
@@ -113,13 +120,13 @@ export const CardCarouselBlock: React.FC<Props> = ({
           onClick={prev}
           disabled={currentIndex === 0}
           className={cn(
-            'hidden lg:flex flex-shrink-0',
-            'min-[90rem]:absolute min-[90rem]:left-[-4rem] min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
+            'hidden lg:flex shrink-0',
+            'min-[90rem]:absolute min-[90rem]:-left-16 min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
           )}
         />
         <div ref={containerRef} className="overflow-hidden w-full">
           <div
-            className="slide-track flex transition-transform duration-500 ease-in-out"
+            className="slide-track flex transition-transform duration-500 ease-in-out gap-x-4"
             style={{
               width: trackWidth,
               transform: `translateX(${offset}px)`,
@@ -142,7 +149,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
                   : 'default'
 
               return (
-                <div key={card.id ?? i} className="slide px-2" style={{ width: slideWidth }}>
+                <div key={card.id ?? i} className="slide " style={{ width: slideWidth }}>
                   <Card card={card} variant={variant} className="h-full" />
                 </div>
               )
@@ -157,8 +164,8 @@ export const CardCarouselBlock: React.FC<Props> = ({
           onClick={next}
           disabled={currentIndex >= pageCount - 1}
           className={cn(
-            'hidden lg:flex flex-shrink-0',
-            'min-[90rem]:absolute min-[90rem]:right-[-4rem] min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
+            'hidden lg:flex shrink-0',
+            'min-[90rem]:absolute min-[90rem]:-right-16 min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
           )}
         />
       </div>

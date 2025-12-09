@@ -1,13 +1,15 @@
 'use client'
 
 import { cn } from '@/cms/utilities/ui'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 
 import type { Props as MediaProps } from '../types'
 
 import { getClientSideURL } from '@/cms/utilities/getURL'
 import { Button } from '../../elements/button'
 import { IconPlayerPlayFilled, IconPlayerPauseFilled } from '@tabler/icons-react'
+import { trackVideoInteraction } from '@/cms/utilities/analytics'
+import { usePrivacy } from '@/providers/Privacy'
 
 export const VideoMedia: React.FC<MediaProps> = (props) => {
   const {
@@ -22,7 +24,28 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isPlaying, setIsPlaying] = useState(autoplay)
-  // const [showFallback] = useState<boolean>()
+  const { cookieConsent } = usePrivacy()
+  const videoTitle =
+    typeof resource === 'object' && resource?.filename ? resource.filename : 'Video'
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !cookieConsent) return
+
+    const handlePlay = () => trackVideoInteraction('play', videoTitle, 0)
+    const handlePause = () => trackVideoInteraction('pause', videoTitle)
+    const handleEnded = () => trackVideoInteraction('complete', videoTitle, 100)
+
+    video.addEventListener('play', handlePlay)
+    video.addEventListener('pause', handlePause)
+    video.addEventListener('ended', handleEnded)
+
+    return () => {
+      video.removeEventListener('play', handlePlay)
+      video.removeEventListener('pause', handlePause)
+      video.removeEventListener('ended', handleEnded)
+    }
+  }, [cookieConsent, videoTitle])
 
   const handleTogglePlay = () => {
     const { current: video } = videoRef

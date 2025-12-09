@@ -3,6 +3,8 @@ import { cn } from '@/cms/utilities/ui'
 import RichText from '@/website/components/RichText'
 import { CMSLink } from '@/website/components/Link'
 import type { ContentBlock as ContentBlockProps } from '@/payload-types'
+import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
+
 export const ContentBlock: React.FC<ContentBlockProps & { enableGutter?: boolean }> = (props) => {
   const enableGutter = props.enableGutter ?? true
   const { section } = props
@@ -15,7 +17,11 @@ export const ContentBlock: React.FC<ContentBlockProps & { enableGutter?: boolean
   }
 
   return (
-    <div className={cn({ 'my-16': enableGutter, container: enableGutter })}>
+    <TrackImpression
+      componentName="Content Block"
+      componentType="content"
+      className={cn({ 'my-16': enableGutter, container: enableGutter })}
+    >
       <div className={cn('grid grid-cols-4 lg:grid-cols-12 gap-y-8', { 'gap-x-12': enableGutter })}>
         {section &&
           section.length > 0 &&
@@ -31,11 +37,18 @@ export const ContentBlock: React.FC<ContentBlockProps & { enableGutter?: boolean
               >
                 {richText && <RichText data={richText} enableGutter={false} />}
 
-                {enableLink && <CMSLink {...link} className="min-w-full md:min-w-0" />}
+                {enableLink && (
+                  <CMSLink
+                    {...link}
+                    className="min-w-full md:min-w-0"
+                    trackingName={link?.label || 'Content Block CTA'}
+                    trackingSection="Content Block"
+                  />
+                )}
               </div>
             )
           })}
       </div>
-    </div>
+    </TrackImpression>
   )
 }

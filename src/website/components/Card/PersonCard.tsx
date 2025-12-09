@@ -11,6 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/website/components/elements/card'
+import { trackButtonClick } from '@/cms/utilities/analytics'
+import { usePrivacy } from '@/providers/Privacy'
 
 export type CardPersonData = Pick<Person, 'firstName' | 'lastName' | 'title' | 'email' | 'image'>
 
@@ -19,10 +21,17 @@ export const PersonCard: React.FC<{
   doc?: CardPersonData
 }> = (props) => {
   const { className, doc } = props
+  const { cookieConsent } = usePrivacy()
 
   const { firstName, lastName, title, email, image } = doc || {}
 
   const fullName = `${firstName} ${lastName}`
+
+  const handleEmailClick = () => {
+    if (cookieConsent && email) {
+      trackButtonClick(`${fullName} Email`, 'Person Card', `mailto:${email}`)
+    }
+  }
 
   return (
     <article className={cn('group h-full', className)}>
@@ -47,7 +56,11 @@ export const PersonCard: React.FC<{
 
         {email && (
           <CardContent className="pt-0 text-center">
-            <a href={`mailto:${email}`} className="text-sm text-primary hover:underline">
+            <a
+              href={`mailto:${email}`}
+              className="text-sm text-primary hover:underline"
+              onClick={handleEmailClick}
+            >
               {email}
             </a>
           </CardContent>
