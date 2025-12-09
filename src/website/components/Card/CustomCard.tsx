@@ -79,6 +79,7 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
                     'font-bold pointer-events-none flex items-center',
                     cardVariant[variant].wrapper,
                   )}
+                  trackingSection={title + '-Card Component'}
                 >
                   <IconArrowRight
                     size={24}

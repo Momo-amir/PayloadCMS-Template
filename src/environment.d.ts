@@ -5,6 +5,10 @@ declare global {
       DATABASE_URI: string
       NEXT_PUBLIC_SERVER_URL: string
       VERCEL_PROJECT_PRODUCTION_URL: string
+
+      // Analytics Environment Variables
+      NEXT_PUBLIC_GA_MEASUREMENT_ID?: string // Google Analytics Measurement ID (e.g., G-XXXXXXXXXX)
+      NEXT_PUBLIC_GTM_MEASUREMENT_ID?: string // Google Tag Manager Container ID (e.g., GTM-XXXXXXX)
     }
   }
 }
