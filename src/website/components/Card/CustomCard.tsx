@@ -103,6 +103,7 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
                   ref={linkRef.ref}
                   href={href}
                   className={cn('font-bold flex items-center gap-2', cardVariant[variant].wrapper)}
+                  {...linkRef.props}
                 >
                   {link.label && <span>{link.label}</span>}
                   <IconArrowRight

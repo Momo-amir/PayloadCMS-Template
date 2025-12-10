@@ -10,6 +10,10 @@ type UseClickableCardType<T extends HTMLElement> = {
   }
   link: {
     ref: RefObject<HTMLAnchorElement | null>
+    props: {
+      target?: string
+      rel?: string
+    }
   }
 }
 
@@ -69,7 +73,10 @@ function useClickableCard<T extends HTMLElement>({
             try {
               // Treat non-http(s) protocols as external
               if (typeof resolvedExternal !== 'boolean') {
-                if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(hrefFromAnchor) && !/^https?:/i.test(hrefFromAnchor)) {
+                if (
+                  /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(hrefFromAnchor) &&
+                  !/^https?:/i.test(hrefFromAnchor)
+                ) {
                   resolvedExternal = true
                 } else {
                   const u = new URL(hrefFromAnchor, window.location.href)
@@ -122,12 +129,15 @@ function useClickableCard<T extends HTMLElement>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [card, link, router])
 
+  const linkProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
+
   return {
     card: {
       ref: card,
     },
     link: {
       ref: link,
+      props: linkProps,
     },
   }
 }

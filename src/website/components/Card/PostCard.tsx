@@ -105,7 +105,7 @@ export const PostCard: React.FC<{
           <CardHeader>
             {titleToUse && (
               <CardTitle className="text-xl">
-                <Link href={href} ref={link.ref} className="">
+                <Link href={href} ref={link.ref} className="" {...link.props}>
                   {titleToUse}
                 </Link>
               </CardTitle>
