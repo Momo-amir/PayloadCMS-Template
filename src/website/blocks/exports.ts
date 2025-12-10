@@ -1,3 +1,4 @@
+import { RichTextBlockBlock } from "./RichTextBlock/config";
 import { PeopleArchiveBlock } from './PeopleArchive/config'
 /* eslint-disable import/no-anonymous-default-export */
 import { UserLoginBlock } from './UserLogin/config'
@@ -25,6 +26,7 @@ export default {
       CallToAction,
       UserLoginBlock,
       PeopleArchiveBlock,
+    RichTextBlockBlock,
     ] satisfies ComponentBlock[])
   ),
 }

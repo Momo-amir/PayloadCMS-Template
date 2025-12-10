@@ -5,9 +5,8 @@ import { CMSLink } from '@/website/components/Link'
 import { Media } from '@/website/components/Media'
 import RichText from '@/website/components/RichText'
 import { useHeaderThemeOverride } from '@/providers/Theme/LocalTheme/LocalTheme'
+import { useTrackImpression } from '@/cms/hooks/useAnalytics'
 import React from 'react'
-
-import { useRef } from 'react'
 
 export const HighImpactHero: React.FC<Page['hero']> = ({
   links,
@@ -18,7 +17,14 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
 }) => {
   const forced = theme === 'dark' ? 'dark' : 'light'
   useHeaderThemeOverride(forced)
-  const heroRef = useRef<HTMLDivElement>(null)
+
+  // Track when hero becomes visible
+  const heroRef = useTrackImpression(
+    'High Impact Hero',
+    'hero',
+    0.3,
+    2000,
+  ) as React.RefObject<HTMLDivElement>
 
   return (
     <div
@@ -29,13 +35,17 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
       <div
         className={`container mb-8 z-10 relative flex items-center w-full mt-20 sm:mt-16 ${centered ? 'justify-center' : ''}`}
       >
-        <div className={`max-w-[36.5rem] hero-rich-text ${centered ? 'text-center' : ''}`}>
+        <div className={`max-w-146 hero-rich-text ${centered ? 'text-center' : ''}`}>
           {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
           {Array.isArray(links) && links.length > 0 && (
             <ul className={`flex gap-4 ${centered ? 'justify-center' : ''}`}>
               {links.map(({ link }, i) => (
                 <li key={i}>
-                  <CMSLink {...link} />
+                  <CMSLink
+                    {...link}
+                    trackingName={link?.label || `Hero CTA ${i + 1}`}
+                    trackingSection="High Impact Hero"
+                  />
                 </li>
               ))}
             </ul>

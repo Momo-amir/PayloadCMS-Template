@@ -3,7 +3,20 @@ import type { Person, PeopleArchiveBlock as PeopleArchiveProps } from '@/payload
 import configPromise from '@/payload.config'
 import { getPayload } from 'payload'
 import RichText from '@/website/components/RichText'
+import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 import { PersonCard } from '@/website/components/Card/PersonCard'
+
+const columnClass = (cardCount: number) => {
+  switch (cardCount) {
+    case 1:
+      return 'md:grid-cols-1'
+    case 2:
+      return 'md:grid-cols-2'
+    case 3:
+    default:
+      return 'md:grid-cols-2 lg:grid-cols-3' // 3+ cards always use 3 columns
+  }
+}
 
 export const PeopleArchive: React.FC<
   PeopleArchiveProps & {
@@ -40,27 +53,29 @@ export const PeopleArchive: React.FC<
 
   return (
     <div className="my-16" id={`block-${id}`}>
-      {introContent && (
-        <div className="container mb-16">
-          <RichText className="ms-0 max-w-3xl" data={introContent} enableGutter={false} />
+      <TrackImpression componentName="People Archive" componentType="people-archive">
+        {introContent && (
+          <div className="container mb-16">
+            <RichText className="ms-0 max-w-3xl" data={introContent} enableGutter={false} />
+          </div>
+        )}
+        <div className="container">
+          <div className={`grid grid-cols-1 ${columnClass(people.length)} gap-6`}>
+            {people && people.length > 0 ? (
+              people.map((person, index) => {
+                if (typeof person === 'object' && person !== null) {
+                  return <PersonCard key={index} doc={person} />
+                }
+                return null
+              })
+            ) : (
+              <div className="col-span-full">
+                <p className="text-center text-muted-foreground">No people found.</p>
+              </div>
+            )}
+          </div>
         </div>
-      )}
-      <div className="container">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {people && people.length > 0 ? (
-            people.map((person, index) => {
-              if (typeof person === 'object' && person !== null) {
-                return <PersonCard key={index} doc={person} />
-              }
-              return null
-            })
-          ) : (
-            <div className="col-span-full">
-              <p className="text-center text-muted-foreground">No people found.</p>
-            </div>
-          )}
-        </div>
-      </div>
+      </TrackImpression>
     </div>
   )
 }

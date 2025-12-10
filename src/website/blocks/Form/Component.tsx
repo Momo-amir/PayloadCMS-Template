@@ -11,6 +11,8 @@ import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical
 import { fields } from './fields'
 import { getClientSideURL } from '@/cms/utilities/getURL'
 import { cn } from '@/cms/utilities/ui'
+import { trackFormSubmit } from '@/cms/utilities/analytics'
+import { usePrivacy } from '@/providers/Privacy'
 
 export type FormBlockType = {
   blockName?: string
@@ -18,6 +20,7 @@ export type FormBlockType = {
   enableIntro: boolean
   form?: FormType | null
   introContent?: SerializedEditorState
+  isInDarkTheme?: boolean
 }
 
 export const FormBlock: React.FC<
@@ -27,7 +30,8 @@ export const FormBlock: React.FC<
 > = (props) => {
   const enableGutter = props.enableGutter ?? true
 
-  const { enableIntro, form: formFromProps, introContent } = props
+  const { enableIntro, form: formFromProps, introContent, isInDarkTheme = false } = props
+  const { cookieConsent } = usePrivacy()
 
   // Safely derive form fields to avoid destructuring null/undefined during live preview to avoid silently breaking the preview
   const {
@@ -99,11 +103,21 @@ export const FormBlock: React.FC<
               status: res.status,
             })
 
+            // Track failed form submission
+            if (cookieConsent) {
+              trackFormSubmit(formFromProps?.title || 'Form', formID || undefined, false)
+            }
+
             return
           }
 
           setIsLoading(false)
           setHasSubmitted(true)
+
+          // Track successful form submission
+          if (cookieConsent) {
+            trackFormSubmit(formFromProps?.title || 'Form', formID || undefined, true)
+          }
 
           if (confirmationType === 'redirect' && redirect) {
             const { url } = redirect
@@ -123,17 +137,22 @@ export const FormBlock: React.FC<
 
       void submitForm()
     },
-    [router, formID, redirect, confirmationType],
+    [formID, cookieConsent, confirmationType, redirect, formFromProps?.title, router],
   )
 
   const isFormConfigured = Boolean(formID)
 
   return (
-    <div className={cn('lg:max-w-[48rem]', { container: enableGutter })}>
+    <div className={cn('lg:max-w-3xl', { container: enableGutter })}>
       {enableIntro && introContent && !hasSubmitted && (
         <RichText className="mb-8 lg:mb-12" data={introContent} enableGutter={false} />
       )}
-      <div className="p-4 lg:p-6 border border-border rounded-[0.8rem]">
+      <div
+        className={cn(
+          'p-4 lg:p-6 border border-border rounded-[0.8rem]',
+          isInDarkTheme && 'bg-white text-black',
+        )}
+      >
         {!isFormConfigured ? (
           <div className="text-sm text-muted-foreground">
             Select a form in this block to preview it.
@@ -171,7 +190,7 @@ export const FormBlock: React.FC<
                     })}
                 </div>
 
-                <Button form={formID} type="submit" variant="default">
+                <Button form={formID} type="submit" variant="outline" className="cursor-pointer">
                   {submitButtonLabel || 'Submit'}
                 </Button>
               </form>

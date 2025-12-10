@@ -5,10 +5,11 @@ import type { Page } from '@/payload-types'
 import { CMSLink } from '@/website/components/Link'
 import { Media } from '@/website/components/Media'
 import RichText from '@/website/components/RichText'
+import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 
 export const MediumImpactHero: React.FC<Page['hero']> = ({ links, media, richText }) => {
   return (
-    <div className="">
+    <TrackImpression componentName="Medium Impact Hero" componentType="hero">
       <div className="container mb-8">
         {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
 
@@ -17,7 +18,11 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({ links, media, richTex
             {links.map(({ link }, i) => {
               return (
                 <li key={i}>
-                  <CMSLink {...link} />
+                  <CMSLink
+                    {...link}
+                    trackingName={link?.label || `Hero CTA ${i + 1}`}
+                    trackingSection="Medium Impact Hero"
+                  />
                 </li>
               )
             })}
@@ -41,6 +46,6 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({ links, media, richTex
           </div>
         )}
       </div>
-    </div>
+    </TrackImpression>
   )
 }

@@ -1,6 +1,6 @@
 # Kollab Payload Template
 
-Pick one setup path below. Docker is recommended and supports both development and production with minimal host dependencies.
+A comprehensive Next.js + Payload CMS template with built-in GDPR-compliant Google Analytics.
 
 ## Table of Contents
 
@@ -10,10 +10,9 @@ Pick one setup path below. Docker is recommended and supports both development a
 - [Local (host)](#local-host)
   - [Development (Local)](#development-local)
   - [Production (Local)](#production-local)
+- [Analytics Setup](#analytics-setup)
 - [Kollab CLI](#kollab-cli)
 - [Personalization](#personalization)
-
----
 
 ## Docker (recommended)
 
@@ -135,6 +134,51 @@ yarn start
 ```
 
 This produces an optimized build. Migrations should be generated and applied as part of your deployment process.
+
+---
+
+## Analytics & Tracking
+
+### How It Works
+
+The template includes **automatic, GDPR-compliant tracking** that helps you understand how users interact with your website:
+
+- **Automatic tracking** on all CMS links and buttons (no extra code needed)
+- **Cookie consent banner** appears for GDPR regions, blocks tracking until accepted
+- **Google Consent Mode v2** ensures privacy-compliant analytics
+- **Custom event tracking** via simple React hooks for forms, videos, downloads, etc.
+
+### What You Can Track
+
+Out of the box, the system tracks:
+
+- **Button clicks** - Every CTA, link, and navigation action
+- **Page views** - User navigation patterns
+- **Component visibility** - Which sections users actually see
+- **Form interactions** - Submissions, field focus, errors
+- **Video engagement** - Play, pause, completion rates
+- **File downloads** - Track PDF, image, and document downloads
+- **Search queries** - What users are looking for
+- **Scroll depth** - How far users read content
+
+### Why It's Valuable
+
+1. **Understand user behavior** - See which CTAs work, which content engages, and where users drop off
+2. **Optimize conversions** - Data-driven decisions on layout, copy, and CTAs
+3. **Client reporting** - Professional analytics dashboards showing real impact
+4. **Privacy-compliant** - Automatic GDPR consent management builds trust
+5. **Zero configuration** - Works automatically with your components
+
+### Quick Setup
+
+1. Get your Google Analytics ID from [analytics.google.com](https://analytics.google.com/)
+2. Add to `.env.local`:
+   ```bash
+   NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+   ```
+3. Deploy - tracking works automatically on all CMS components
+
+**Full Documentation:** [docs/ANALYTICS.md](./docs/ANALYTICS.md)
 
 ---
 

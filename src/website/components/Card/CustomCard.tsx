@@ -13,7 +13,9 @@ import type { CardBlock as CardBlockType } from '@/payload-types'
 import React from 'react'
 import { IconArrowRight } from '@tabler/icons-react'
 import { Media as MediaComponent } from '../Media'
-import { CMSLink } from '@/website/components/Link'
+import Link from 'next/link'
+import { trackCardClick } from '@/cms/utilities/analytics'
+import { usePrivacy } from '@/providers/Privacy'
 
 type CardItem = CardBlockType['cards'][number]
 
@@ -27,7 +29,28 @@ type CardProps = {
 
 export const Card: React.FC<CardProps> = ({ card, className, variant = 'default' }) => {
   const { title, description, tag, link, media } = card
-  const { card: cardRef } = useClickableCard<HTMLDivElement>({ newTab: link?.newTab ?? false })
+  const { card: cardRef, link: linkRef } = useClickableCard<HTMLDivElement>({
+    newTab: link?.newTab ?? false,
+  })
+  const { cookieConsent } = usePrivacy()
+
+  const getHref = (): string => {
+    if (!link) return ''
+    if (link.type === 'reference' && typeof link.reference?.value === 'object') {
+      const slug = link.reference.value.slug
+      const relationTo = link.reference.relationTo
+      return relationTo !== 'pages' ? `/${relationTo}/${slug}` : `/${slug}`
+    }
+    return link.url || ''
+  }
+
+  const href = getHref()
+
+  const handleClick = () => {
+    if (cookieConsent && title && href) {
+      trackCardClick(title, 'custom-card', href)
+    }
+  }
 
   //Card variants - Different looks for this type of card
   const cardVariant: Record<CardVariant, { wrapper: string; chip: string }> = {
@@ -40,7 +63,11 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
   }
 
   return (
-    <article ref={cardRef.ref} className={cn('group h-full hover:cursor-pointer', className)}>
+    <article
+      ref={cardRef.ref}
+      className={cn('group h-full hover:cursor-pointer', className)}
+      onClick={handleClick}
+    >
       <CardComponent
         className={cn(
           'h-full flex flex-col transition hover:shadow-md',
@@ -71,20 +98,18 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
               {description && <CardDescription>{description}</CardDescription>}
             </CardContent>
             <CardFooter className="mt-auto">
-              {link ? (
-                <CMSLink
-                  {...link}
-                  appearance="inline"
-                  className={cn(
-                    'font-bold pointer-events-none flex items-center',
-                    cardVariant[variant].wrapper,
-                  )}
+              {link && href ? (
+                <Link
+                  ref={linkRef.ref}
+                  href={href}
+                  className={cn('font-bold flex items-center gap-2', cardVariant[variant].wrapper)}
                 >
+                  {link.label && <span>{link.label}</span>}
                   <IconArrowRight
                     size={24}
-                    className="mx-auto group-hover:translate-x-1 transition-transform ease-in-out "
+                    className="group-hover:translate-x-1 transition-transform ease-in-out"
                   />
-                </CMSLink>
+                </Link>
               ) : null}
             </CardFooter>
           </>
