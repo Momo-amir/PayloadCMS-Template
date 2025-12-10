@@ -4,7 +4,7 @@ import useClickableCard from '@/cms/utilities/useClickableCard'
 import Link from 'next/link'
 import React, { Fragment } from 'react'
 
-import type { Post } from '@/payload-types'
+import type { Post, Category } from '@/payload-types'
 
 import { Media } from '@/website/components/Media'
 import {
@@ -52,7 +52,7 @@ export const PostCard: React.FC<{
   const handleClick = () => {
     if (cookieConsent && title && slug) {
       const categoryNames = categories
-        ?.filter((cat): cat is { title: string } => typeof cat === 'object' && 'title' in cat)
+        ?.filter((cat): cat is Category => typeof cat === 'object' && 'title' in cat)
         .map((cat) => cat.title)
 
       trackPostCardClick(title, slug, categoryNames, position, listContext)
@@ -66,11 +66,11 @@ export const PostCard: React.FC<{
       onClick={handleClick}
     >
       <CardComponent
-        className={cn('h-full flex flex-col transition hover:shadow-md bg-card border-border')}
+        className={cn('h-full flex flex-col transition hover:shadow-md bg-white border-border')}
       >
         <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
           {!metaImage && (
-            <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground bg-muted">
+            <div className="flex h-full w-full items-center justify-center text-sm text-white bg-accent">
               No image
             </div>
           )}

@@ -1,7 +1,6 @@
 'use client'
 
 import { Button, type ButtonProps } from '@/website/components/elements/button'
-import { cn } from '@/cms/utilities/ui'
 import Link from 'next/link'
 import React from 'react'
 import { trackButtonClick } from '@/cms/utilities/analytics'
@@ -38,14 +37,12 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     appearance = 'inline',
     children,
     className,
-    colorPalette,
     label,
     newTab,
     onClick,
     reference,
     size: sizeFromProps,
     url,
-    useCustomColorTheme,
     trackingName,
     trackingSection,
     enableTracking = true,
@@ -62,11 +59,9 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   // Handle click with optional tracking
   const handleClick = () => {
-    // Track if tracking is enabled and trackingName is provided
     if (enableTracking && trackingName) {
       trackButtonClick(trackingName, trackingSection, href || undefined)
     }
-    // Call original onClick if provided
     if (onClick) {
       onClick()
     }
@@ -75,22 +70,9 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
-  // Only apply colorPalette when useCustomColorTheme is true AND colorPalette has a value
-  const hasColorPalette = useCustomColorTheme === true && colorPalette && colorPalette.trim() !== ''
-  const effectiveAppearance = hasColorPalette ? 'default' : appearance
-
-  // Combine className with color palette only when custom theme is enabled
-  const linkClassName = cn(className, hasColorPalette ? colorPalette : '')
-
-  /* Ensure we don't break any styles set by richText */
-  if (effectiveAppearance === 'inline') {
+  if (appearance === 'inline') {
     return (
-      <Link
-        className={linkClassName}
-        href={href || url || ''}
-        onClick={handleClick}
-        {...newTabProps}
-      >
+      <Link className={className} href={href || url || ''} onClick={handleClick} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>
@@ -98,7 +80,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   }
 
   return (
-    <Button asChild className={linkClassName} size={size} variant={effectiveAppearance}>
+    <Button asChild className={className} size={size} variant={appearance}>
       <Link href={href || url || ''} onClick={handleClick} {...newTabProps}>
         {label && label}
         {children && children}

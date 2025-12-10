@@ -35,12 +35,10 @@ export const PersonCard: React.FC<{
 
   return (
     <article className={cn('group h-full', className)}>
-      <CardComponent
-        className={cn('h-full flex flex-col transition hover:shadow-md bg-card border-border')}
-      >
+      <CardComponent className={cn('h-full flex flex-col transition   ')}>
         <div className="relative w-full aspect-square overflow-hidden rounded-t-lg">
           {!image && (
-            <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground bg-muted">
+            <div className="flex h-full w-full items-center justify-center text-sm bg-accent text-white">
               No image
             </div>
           )}
@@ -49,13 +47,13 @@ export const PersonCard: React.FC<{
           )}
         </div>
 
-        <CardHeader className="text-center">
+        <CardHeader className="">
           <CardTitle className="text-xl">{fullName}</CardTitle>
-          {title && <p className="text-sm text-muted-foreground font-medium">{title}</p>}
+          {title && <p className="text-sm  ">{title}</p>}
         </CardHeader>
 
         {email && (
-          <CardContent className="pt-0 text-center">
+          <CardContent className="pt-0 border-none ">
             <a
               href={`mailto:${email}`}
               className="text-sm text-primary hover:underline"

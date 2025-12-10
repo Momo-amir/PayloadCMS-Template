@@ -6,6 +6,18 @@ import RichText from '@/website/components/RichText'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 import { PersonCard } from '@/website/components/Card/PersonCard'
 
+const columnClass = (cardCount: number) => {
+  switch (cardCount) {
+    case 1:
+      return 'md:grid-cols-1'
+    case 2:
+      return 'md:grid-cols-2'
+    case 3:
+    default:
+      return 'md:grid-cols-2 lg:grid-cols-3' // 3+ cards always use 3 columns
+  }
+}
+
 export const PeopleArchive: React.FC<
   PeopleArchiveProps & {
     id?: string
@@ -48,7 +60,7 @@ export const PeopleArchive: React.FC<
           </div>
         )}
         <div className="container">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className={`grid grid-cols-1 ${columnClass(people.length)} gap-6`}>
             {people && people.length > 0 ? (
               people.map((person, index) => {
                 if (typeof person === 'object' && person !== null) {

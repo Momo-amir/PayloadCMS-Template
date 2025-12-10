@@ -20,6 +20,7 @@ export type FormBlockType = {
   enableIntro: boolean
   form?: FormType | null
   introContent?: SerializedEditorState
+  isInDarkTheme?: boolean
 }
 
 export const FormBlock: React.FC<
@@ -29,7 +30,7 @@ export const FormBlock: React.FC<
 > = (props) => {
   const enableGutter = props.enableGutter ?? true
 
-  const { enableIntro, form: formFromProps, introContent } = props
+  const { enableIntro, form: formFromProps, introContent, isInDarkTheme = false } = props
   const { cookieConsent } = usePrivacy()
 
   // Safely derive form fields to avoid destructuring null/undefined during live preview to avoid silently breaking the preview
@@ -146,7 +147,12 @@ export const FormBlock: React.FC<
       {enableIntro && introContent && !hasSubmitted && (
         <RichText className="mb-8 lg:mb-12" data={introContent} enableGutter={false} />
       )}
-      <div className="p-4 lg:p-6 border border-border rounded-[0.8rem]">
+      <div
+        className={cn(
+          'p-4 lg:p-6 border border-border rounded-[0.8rem]',
+          isInDarkTheme && 'bg-white text-black',
+        )}
+      >
         {!isFormConfigured ? (
           <div className="text-sm text-muted-foreground">
             Select a form in this block to preview it.
@@ -184,7 +190,7 @@ export const FormBlock: React.FC<
                     })}
                 </div>
 
-                <Button form={formID} type="submit" variant="default">
+                <Button form={formID} type="submit" variant="outline" className="cursor-pointer">
                   {submitButtonLabel || 'Submit'}
                 </Button>
               </form>
