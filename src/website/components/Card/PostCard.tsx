@@ -66,7 +66,9 @@ export const PostCard: React.FC<{
       onClick={handleClick}
     >
       <CardComponent
-        className={cn('h-full flex flex-col transition hover:shadow-md bg-white border-border')}
+        className={cn(
+          'h-full flex flex-col transition hover:shadow-md bg-base text-primary border-border',
+        )}
       >
         <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
           {!metaImage && (
