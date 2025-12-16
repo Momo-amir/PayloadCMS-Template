@@ -2,7 +2,7 @@ import { getCachedGlobal } from '@/cms/utilities/getGlobals'
 import Link from 'next/link'
 import React from 'react'
 import {
-  IconBrandFacebookFilled,
+  IconBrandFacebook,
   IconBrandTwitter,
   IconBrandInstagram,
   IconBrandLinkedin,
@@ -19,7 +19,7 @@ import { Logo } from '@/website/components/elements/Logo'
 import { getBranding, toLogoProps } from '@/cms/utilities/branding'
 
 const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  facebook: IconBrandFacebookFilled,
+  facebook: IconBrandFacebook,
   twitter: IconBrandTwitter,
   instagram: IconBrandInstagram,
   linkedin: IconBrandLinkedin,
