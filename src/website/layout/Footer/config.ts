@@ -27,7 +27,8 @@ export const Footer: GlobalConfig = {
         {
           name: 'cvr',
           type: 'text',
-          label: 'CVR Number',
+          localized: true,
+          label: { en: 'CVR Number', da: 'CVR-nummer' },
           admin: {
             width: '33%',
           },
@@ -35,7 +36,8 @@ export const Footer: GlobalConfig = {
         {
           name: 'tel',
           type: 'text',
-          label: 'Phone Number',
+          localized: true,
+          label: { en: 'Phone Number', da: 'Telefonnummer' },
           admin: {
             width: '33%',
           },
@@ -43,7 +45,8 @@ export const Footer: GlobalConfig = {
         {
           name: 'contact',
           type: 'email',
-          label: 'Email Address',
+          localized: true,
+          label: { en: 'Email Address', da: 'E-mailadresse' },
           admin: {
             width: '33%',
           },
@@ -70,7 +73,7 @@ export const Footer: GlobalConfig = {
     {
       name: 'socialLinks',
       type: 'array',
-      label: 'Social Links',
+      label: { en: 'Social Links', da: 'Sociale links' },
       fields: [
         {
           type: 'row',
@@ -78,16 +81,16 @@ export const Footer: GlobalConfig = {
             {
               name: 'platform',
               type: 'select',
-              label: 'Social Platform',
+              label: { en: 'Social Platform', da: 'Social platform' },
               required: true,
               options: [
-                { label: 'Facebook', value: 'facebook' },
-                { label: 'Twitter/X', value: 'twitter' },
-                { label: 'Instagram', value: 'instagram' },
-                { label: 'LinkedIn', value: 'linkedin' },
-                { label: 'YouTube', value: 'youtube' },
-                { label: 'GitHub', value: 'github' },
-                { label: 'TikTok', value: 'tiktok' },
+                { label: { en: 'Facebook', da: 'Facebook' }, value: 'facebook' },
+                { label: { en: 'Twitter/X', da: 'Twitter/X' }, value: 'twitter' },
+                { label: { en: 'Instagram', da: 'Instagram' }, value: 'instagram' },
+                { label: { en: 'LinkedIn', da: 'LinkedIn' }, value: 'linkedin' },
+                { label: { en: 'YouTube', da: 'YouTube' }, value: 'youtube' },
+                { label: { en: 'GitHub', da: 'GitHub' }, value: 'github' },
+                { label: { en: 'TikTok', da: 'TikTok' }, value: 'tiktok' },
               ],
               admin: {
                 width: '50%',
@@ -96,7 +99,7 @@ export const Footer: GlobalConfig = {
             {
               name: 'url',
               type: 'text',
-              label: 'URL',
+              label: { en: 'URL', da: 'URL' },
               required: true,
               admin: {
                 width: '50%',
@@ -107,7 +110,7 @@ export const Footer: GlobalConfig = {
         {
           name: 'newTab',
           type: 'checkbox',
-          label: 'Open in new tab',
+          label: { en: 'Open in new tab', da: 'Åbn i ny fane' },
           defaultValue: true,
         },
       ],
@@ -120,14 +123,17 @@ export const Footer: GlobalConfig = {
     {
       name: 'themeMode',
       type: 'select',
-      label: 'Force Light or Dark Mode',
+      label: { en: 'Force Light or Dark Mode', da: 'Tving lyst eller mørkt tema' },
       defaultValue: 'dark',
       options: [
-        { label: 'Light', value: 'light' },
-        { label: 'Dark', value: 'dark' },
+        { label: { en: 'Light', da: 'Lyst' }, value: 'light' },
+        { label: { en: 'Dark', da: 'Mørkt' }, value: 'dark' },
       ],
       admin: {
-        description: 'By default the footer is using dark mode, but you can override that here.',
+        description: {
+          en: 'By default the footer is using dark mode, but you can override that here.',
+          da: 'Som standard bruger footeren mørk tilstand, men du kan tilsidesætte det her.',
+        },
         width: '50%',
       },
     },

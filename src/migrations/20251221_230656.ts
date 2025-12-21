@@ -2,7 +2,7 @@ import { Page } from '@/payload-types'
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 import { TypedLocale } from 'payload'
 
-export async function up({ db, payload, _req }: MigrateUpArgs): Promise<void> {
+export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   // Destructive fallback migration: truncate pages/posts locale tables and seed minimal pages
   // (Backups strongly recommended before running this in production.)
 
@@ -83,6 +83,6 @@ export async function up({ db, payload, _req }: MigrateUpArgs): Promise<void> {
   // Migration code
 }
 
-export async function down({ _db, _payload, _req }: MigrateDownArgs): Promise<void> {
+export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   // No-op down migration for destructive reset. Restore from backups if needed.
 }
