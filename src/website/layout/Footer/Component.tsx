@@ -28,8 +28,8 @@ const socialIcons: Record<string, React.ComponentType<{ className?: string }>> =
   tiktok: IconBrandTiktok,
 }
 
-export async function Footer() {
-  const footerData = (await getCachedGlobal('footer', 1)()) as Footer
+export async function Footer({ locale }: { locale?: string } = {}) {
+  const footerData = (await getCachedGlobal('footer', 1, locale)()) as Footer
   const branding = await getBranding()
   const logoProps = toLogoProps(branding)
   const navItems = footerData?.navItems || []
