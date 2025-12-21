@@ -43,18 +43,20 @@ export const Pages: CollectionConfig<'pages'> = {
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt', 'status'],
     livePreview: {
-      url: ({ data, req }) =>
+      url: ({ data, req, locale }) =>
         generatePreviewPath({
           slug: data?.slug,
           collection: 'pages',
           req,
+          locale,
         }),
     },
-    preview: (data, { req }) =>
+    preview: (data, { req, locale }) =>
       generatePreviewPath({
         slug: data?.slug as string,
         collection: 'pages',
         req,
+        locale,
       }),
     useAsTitle: 'title',
   },
@@ -62,6 +64,7 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
     },
     {
@@ -75,8 +78,7 @@ export const Pages: CollectionConfig<'pages'> = {
           fields: [
             {
               name: 'layout',
-              type: 'blocks',
-              blocks: layoutBlocks,
+              type: 'blocks',              localized: true,              blocks: layoutBlocks,
               required: true,
               admin: {
                 initCollapsed: true,
@@ -88,6 +90,7 @@ export const Pages: CollectionConfig<'pages'> = {
         {
           name: 'meta',
           label: 'SEO',
+          localized: true,
           fields: [
             OverviewField({
               titlePath: 'meta.title',
@@ -128,6 +131,7 @@ export const Pages: CollectionConfig<'pages'> = {
         if (Array.isArray(row.fields) && row.fields[1]) {
           row.fields[1].label = 'Website Link (Slug)'
         }
+        ;(field as any).localized = true
         return field
       },
     }),

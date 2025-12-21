@@ -11,11 +11,12 @@ export const Footer: GlobalConfig = {
 
   admin: {
     livePreview: {
-      url: ({ req }) =>
+      url: ({ req, locale }) =>
         generatePreviewPath({
-          slug: 'home',
+          slug: 'forside',
           collection: 'pages',
           req,
+          locale,
         }),
     },
   },

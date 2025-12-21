@@ -27,6 +27,7 @@ export const FormBlock: ComponentBlock = {
     },
     {
       name: 'introContent',
+      localized: true,
       type: 'richText',
       admin: {
         condition: (_, { enableIntro }) => Boolean(enableIntro),

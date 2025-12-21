@@ -2,9 +2,11 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import sharp from 'sharp' // sharp-import
 import path from 'path'
-import { buildConfig, PayloadRequest } from 'payload'
+import { buildConfig, LocalizationConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { da } from '@payloadcms/translations/languages/da'
+import { en } from '@payloadcms/translations/languages/en'
 
 import { Categories } from './cms/collections/Categories'
 import { Media } from './cms/collections/Media'
@@ -20,6 +22,7 @@ import { getServerSideURL } from './cms/utilities/getURL'
 import { People } from './cms/collections/People'
 
 import exports from './website/blocks/exports'
+import localization from './i18n/localization'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -74,6 +77,7 @@ export default buildConfig({
           height: 900,
         },
       ],
+      
     },
   },
   // This config helps us configure global or default features that the other editors can inherit
@@ -131,4 +135,11 @@ export default buildConfig({
           },
         })
       : undefined,
+
+        i18n: {
+    supportedLanguages: { da, en },
+    fallbackLanguage: 'da',
+  },
+
+  localization: localization as LocalizationConfig,
 })

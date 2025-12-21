@@ -6,7 +6,7 @@ import { unstable_cache } from 'next/cache'
 export const dynamic = 'force-dynamic'
 
 const getPostsSitemap = unstable_cache(
-  async (): Promise<ISitemapField[]> => {
+  async (locale: string): Promise<ISitemapField[]> => {
     const payload = await getPayload({ config })
     const SITE_URL =
       process.env.NEXT_PUBLIC_SERVER_URL ||
@@ -15,6 +15,7 @@ const getPostsSitemap = unstable_cache(
 
     const results = await payload.find({
       collection: 'posts',
+      locale,
       overrideAccess: false,
       draft: false,
       depth: 0,
@@ -37,7 +38,10 @@ const getPostsSitemap = unstable_cache(
       ? results.docs
           .filter((post) => Boolean(post?.slug))
           .map((post) => ({
-            loc: `${SITE_URL}/posts/${post?.slug}`,
+            loc:
+              locale && locale !== 'da'
+                ? `${SITE_URL}/${locale}/posts/${post?.slug}`
+                : `${SITE_URL}/posts/${post?.slug}`,
             lastmod: post.updatedAt?.toString() || dateFallback,
           }))
       : []
@@ -50,8 +54,9 @@ const getPostsSitemap = unstable_cache(
   },
 )
 
-export async function GET() {
-  const sitemap = await getPostsSitemap()
+export async function GET(_req: Request, { params }: { params: { locale?: string } }) {
+  const locale = params?.locale || 'da'
+  const sitemap = await getPostsSitemap(locale)
 
   return getServerSideSitemap(sitemap)
 }

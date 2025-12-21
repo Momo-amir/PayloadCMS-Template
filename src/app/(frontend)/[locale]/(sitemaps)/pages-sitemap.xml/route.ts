@@ -6,7 +6,7 @@ import { unstable_cache } from 'next/cache'
 export const dynamic = 'force-dynamic'
 
 const getPagesSitemap = unstable_cache(
-  async (): Promise<ISitemapField[]> => {
+  async (locale: 'da' | 'en' | 'all' | undefined): Promise<ISitemapField[]> => {
     const payload = await getPayload({ config })
     const SITE_URL =
       process.env.NEXT_PUBLIC_SERVER_URL ||
@@ -15,6 +15,7 @@ const getPagesSitemap = unstable_cache(
 
     const results = await payload.find({
       collection: 'pages',
+      locale,
       overrideAccess: false,
       draft: false,
       depth: 0,
@@ -35,11 +36,11 @@ const getPagesSitemap = unstable_cache(
 
     const defaultSitemap = [
       {
-        loc: `${SITE_URL}/search`,
+        loc: locale && locale !== 'da' ? `${SITE_URL}/${locale}/search` : `${SITE_URL}/search`,
         lastmod: dateFallback,
       },
       {
-        loc: `${SITE_URL}/posts`,
+        loc: locale && locale !== 'da' ? `${SITE_URL}/${locale}/posts` : `${SITE_URL}/posts`,
         lastmod: dateFallback,
       },
     ]
@@ -48,8 +49,16 @@ const getPagesSitemap = unstable_cache(
       ? results.docs
           .filter((page) => Boolean(page?.slug))
           .map((page) => {
+            const loc =
+              page?.slug === 'forside'
+                ? locale && locale !== 'da'
+                  ? `${SITE_URL}/${locale}/`
+                  : `${SITE_URL}/`
+                : locale && locale !== 'da'
+                  ? `${SITE_URL}/${locale}/${page?.slug}`
+                  : `${SITE_URL}/${page?.slug}`
             return {
-              loc: page?.slug === 'home' ? `${SITE_URL}/` : `${SITE_URL}/${page?.slug}`,
+              loc,
               lastmod: page.updatedAt?.toString() || dateFallback,
             }
           })
@@ -63,8 +72,9 @@ const getPagesSitemap = unstable_cache(
   },
 )
 
-export async function GET() {
-  const sitemap = await getPagesSitemap()
+export async function GET(_req: Request, { params }: { params: { locale?: string } }) {
+  const locale = (params?.locale as 'da' | 'en' | 'all' | undefined) || 'da'
+  const sitemap = await getPagesSitemap(locale)
 
   return getServerSideSitemap(sitemap)
 }

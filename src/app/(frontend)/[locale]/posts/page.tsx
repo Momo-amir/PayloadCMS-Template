@@ -4,18 +4,27 @@ import { CollectionArchive } from '@/website/components/CollectionArchive'
 import { PageRange } from '@/website/components/PageRange'
 import { Pagination } from '@/website/components/Pagination/index'
 import configPromise from '@/payload.config'
-import { getPayload } from 'payload'
+import { getPayload, TypedLocale } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
-export default async function Page() {
+type Args = {
+  params: {
+    locale?: TypedLocale
+  }
+}
+
+export default async function Page({ params }: Args) {
+  const { locale = 'da' } = params
+
   const payload = await getPayload({ config: configPromise })
 
   const posts = await payload.find({
     collection: 'posts',
+    locale,
     depth: 1,
     limit: 12,
     overrideAccess: false,

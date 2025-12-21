@@ -21,15 +21,16 @@ export const dynamicParams = true // Allow any slug to be rendered dynamically
 type Args = {
   params: Promise<{
     slug?: string
+    locale?: TypedLocale
   }>
 }
 
 export default async function Post({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = '' } = await paramsPromise
+  const { slug = '', locale = 'da' } = await paramsPromise
   const url = '/posts/' + slug
   // Use cached data when not in draft/preview; bypass cache in preview to ensure freshness
-  const post = draft ? await queryPostBySlug({ slug }) : await getPostBySlugCached(slug)()
+  const post = draft ? await queryPostBySlug({ slug, locale }) : await getPostBySlugCached(slug, locale)()
 
   if (!post) return <PayloadRedirects url={url} />
 
@@ -67,7 +68,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   return generateMeta({ doc: post })
 }
 
-const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
+const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: TypedLocale }) => {
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
@@ -75,6 +76,7 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
   const result = await payload.find({
     collection: 'posts',
     draft,
+    locale,
     limit: 1,
     overrideAccess: draft,
     pagination: false,
@@ -87,6 +89,30 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
 
   return result.docs?.[0] || null
 })
+
+// Cached getter for non-preview usage; tag per post slug so hooks can revalidate precisely
+const getPostBySlugCached = (slug: string, locale: TypedLocale) =>
+  unstable_cache(
+    async () => {
+      const payload = await getPayload({ config: configPromise })
+      const result = await payload.find({
+        collection: 'posts',
+        draft: false,
+        locale,
+        limit: 1,
+        overrideAccess: false,
+        pagination: false,
+        where: {
+          slug: {
+            equals: slug,
+          },
+        },
+      })
+      return result.docs?.[0] || null
+    },
+    ['post-by-slug', slug, locale],
+    { tags: [`post:${slug}:${locale}`] },
+  )
 
 // Cached getter for non-preview usage; tag per post slug so hooks can revalidate precisely
 const getPostBySlugCached = (slug: string) =>
