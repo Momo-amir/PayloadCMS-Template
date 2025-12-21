@@ -11,7 +11,7 @@ const localization = {
   ],
   defaultLocale: 'da',
   fallback: true,
-  defaultLocalePublishOption: 'active',
+  defaultLocalePublishOption: 'all',
 }
 
 export default localization

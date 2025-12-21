@@ -78,7 +78,9 @@ export const Pages: CollectionConfig<'pages'> = {
           fields: [
             {
               name: 'layout',
-              type: 'blocks',              localized: true,              blocks: layoutBlocks,
+              type: 'blocks',
+              localized: true,
+              blocks: layoutBlocks,
               required: true,
               admin: {
                 initCollapsed: true,
@@ -126,12 +128,13 @@ export const Pages: CollectionConfig<'pages'> = {
     },
     slugField({
       overrides: (field) => {
-        type SlugRowLike = { fields?: Array<{ label?: string }> }
+        type SlugRowLike = { fields?: Array<Record<string, any>> }
         const row = field as unknown as SlugRowLike
-        if (Array.isArray(row.fields) && row.fields[1]) {
-          row.fields[1].label = 'Website Link (Slug)'
+        if (Array.isArray(row.fields)) {
+          const inner = row.fields.find((f) => (f as any).name === 'slug')
+          if (inner) (inner as any).localized = true
+          if (row.fields[1]) row.fields[1].label = 'Website Link (Slug)'
         }
-        ;(field as any).localized = true
         return field
       },
     }),
