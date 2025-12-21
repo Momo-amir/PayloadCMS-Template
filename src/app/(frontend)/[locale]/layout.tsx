@@ -16,23 +16,41 @@ import { draftMode } from 'next/headers'
 import { GoogleAnalytics } from '@/cms/components/Analytics/GoogleAnalytics'
 import { GoogleTagManager } from '@/cms/components/Analytics/GoogleTagManager'
 import { PrivacyBanner } from '@/cms/components/PrivacyBanner'
+import { NextIntlClientProvider } from 'next-intl'
+import localization from "@/i18n/localization";
+import {getMessages, setRequestLocale} from 'next-intl/server';
 
 import './globals.css'
 import { getServerSideURL } from '@/cms/utilities/getURL'
 import { getBranding, toFaviconProps } from '@/cms/utilities/branding'
+import { TypedLocale } from 'payload'
+import { notFound } from 'next/navigation'
+import { routing } from '@/i18n/routing'
 
 export const dynamic = 'force-dynamic'
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children, params }: { children: React.ReactNode, params: Promise <{ locale: TypedLocale }> }) {
+
   const { isEnabled } = await draftMode()
   const branding = await getBranding()
   const { lightHref, darkHref, appleTouchIcon } = toFaviconProps(branding)
+
+
+  const {locale} = await params;
+  const currentLocale = localization.locales.find((location) => location.code === locale) || localization.locales[0];
+
+  if (!routing.locales.includes(locale as any)) {
+    notFound();
+  }
+
+  setRequestLocale(locale);
+  const messages = await getMessages();
 
   return (
     <PrivacyProvider>
       <html
         className={cn(GeistSans.variable, GeistMono.variable)}
-        lang="en"
+        lang={locale}
         suppressHydrationWarning
       >
         <head>
@@ -60,12 +78,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <link href="https://www.googletagmanager.com" rel="preconnect" />
           <link href="https://www.google-analytics.com" rel="preconnect" />
 
-          {/* Google Analytics */}
-          <GoogleAnalytics />
+
         </head>
         <body>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+          {/* Google Analytics */}
+          <GoogleAnalytics />
           <GoogleTagManager />
-          <Providers>
+           <Providers>
             <AdminBar
               adminBarProps={{
                 preview: isEnabled,
@@ -77,6 +97,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Footer />
             <PrivacyBanner iconUrl={darkHref} />
           </Providers>
+          </NextIntlClientProvider>
+       
         </body>
       </html>
     </PrivacyProvider>

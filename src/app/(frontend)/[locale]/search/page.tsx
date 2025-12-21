@@ -2,7 +2,7 @@ import type { Metadata } from 'next/types'
 
 import { CollectionArchive } from '@/website/components/CollectionArchive'
 import configPromise from '@/payload.config'
-import { getPayload } from 'payload'
+import { getPayload, TypedLocale } from 'payload'
 import React from 'react'
 import { Search } from '@/website/layout/search/Component'
 import PageClient from './page.client'
@@ -14,13 +14,16 @@ type Args = {
   searchParams: Promise<{
     q: string
   }>
+  params: Promise<{ locale: TypedLocale }>
 }
-export default async function Page({ searchParams: searchParamsPromise }: Args) {
+export default async function Page({ searchParams: searchParamsPromise, params }: Args) {
   const { q: query } = await searchParamsPromise
   const payload = await getPayload({ config: configPromise })
+  const { locale } = await params
 
   const posts = await payload.find({
     collection: 'search',
+    locale,
     depth: 1,
     limit: 12,
     select: {
@@ -66,7 +69,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       <PageClient />
       <div className="container mb-16">
         <div className="  max-w-none text-center">
-          <h1 className="mb-8 lg:mb-16">Search</h1>
+          <h1 className="mb-8 lg:mb-16">{locale === 'da' ? 'Søg' : 'Search'}</h1>
 
           <div className="max-w-200 mx-auto">
             <Search resultsCount={posts.totalDocs} />
@@ -77,7 +80,9 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       {posts.totalDocs > 0 ? (
         <CollectionArchive posts={posts.docs as CardPostData[]} listContext="search" />
       ) : (
-        <div className="container">No results found.</div>
+        <div className="container">
+          {locale === 'da' ? 'Ingen resultater fundet.' : 'No results found'}
+        </div>
       )}
     </div>
   )

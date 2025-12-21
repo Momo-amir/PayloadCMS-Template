@@ -1,4 +1,5 @@
 import { PayloadRequest, CollectionSlug } from 'payload'
+import localization from '@/i18n/localization'
 
 const collectionPrefixMap: Partial<Record<CollectionSlug, string>> = {
   posts: '/posts',
@@ -7,19 +8,38 @@ const collectionPrefixMap: Partial<Record<CollectionSlug, string>> = {
 
 type Props = {
   collection: keyof typeof collectionPrefixMap
-  slug: string
+  slug?: string | null
   req: PayloadRequest
+  locale?: string | { code: string } | null
 }
 
-export const generatePreviewPath = ({ collection, slug }: Props) => {
+const getRequestLocale = (req: PayloadRequest): string | undefined => {
+  const anyReq = req as unknown as { locale?: string; i18n?: { language?: string } }
+  return anyReq?.locale || anyReq?.i18n?.language
+}
+
+export const generatePreviewPath = ({ collection, slug, req, locale }: Props) => {
+  const resolvedLocale =
+    (typeof locale === 'string' ? locale : locale?.code) ||
+    getRequestLocale(req) ||
+    localization.defaultLocale
+  const resolvedSlug = typeof slug === 'string' ? slug : ''
+
+  const pathWithoutLocale =
+    collection === 'pages' && (resolvedSlug === 'home' || resolvedSlug === 'forside')
+      ? ''
+      : `${collectionPrefixMap[collection]}/${resolvedSlug}`
+
+  const path = pathWithoutLocale ? `/${resolvedLocale}${pathWithoutLocale}` : `/${resolvedLocale}`
+
   const encodedParams = new URLSearchParams({
-    slug,
+    slug: resolvedSlug,
     collection,
-    path: `${collectionPrefixMap[collection]}/${slug}`,
+    path,
     previewSecret: process.env.PREVIEW_SECRET || '',
   })
 
-  const url = `/next/preview?${encodedParams.toString()}`
+  const url = `/${resolvedLocale}/next/preview?${encodedParams.toString()}`
 
   return url
 }

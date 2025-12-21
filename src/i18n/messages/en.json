@@ -1,0 +1,23 @@
+{
+  "date-published": "Date Published",
+  "author": "Author",
+  "page-not-found": "Page Not Found",
+  "go-home": "Go Home",
+  "loading": "Loading",
+  "posts": "Posts",
+  "post": "Post",
+  "showing": "Showing",
+  "of": "of",
+  "search": "Search",
+  "dashboard": "Dashboard",
+  "previous": "Previous",
+  "next": "Next",
+  "more-pages": "More Pages",
+  "submit": "Submit",
+
+  "plugin-redirects:fromUrl": "From URL",
+  "plugin-redirects:toUrlType": "To URL Type",
+  "plugin-redirects:internalLink": "Internal Link",
+  "plugin-redirects:customUrl": "Custom URL",
+  "plugin-redirects:documentToRedirect": "Document to redirect"
+}

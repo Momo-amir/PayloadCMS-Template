@@ -3,6 +3,7 @@ import { useLocalTheme } from '@/providers/Theme/LocalTheme/LocalTheme'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useTheme } from '@/providers/Theme'
+import { LocaleSwitcher } from '@/website/components/LocaleSwitcher/LocaleSwitcher.client'
 
 import canUseDOM from '@/cms/utilities/canUseDOM'
 import { cn } from '@/cms/utilities/ui'
@@ -83,11 +84,12 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) =
           />
         </Link>
         <HeaderNav data={data} />
-        <div className="ml-3 md:ml-auto">
+        <div className="ml-3 md:ml-auto flex flex-row  items-center gap-x-2 ">
           <Link href="/search">
             <span className="sr-only">Search</span>
             <IconSearch className="w-5 text-primary hover:scale-110 transition-transform duration-100 ease-in-out" />
           </Link>
+          <LocaleSwitcher />
         </div>
       </div>
     </header>

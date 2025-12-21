@@ -17,6 +17,7 @@ export const CallToAction: ComponentBlock = {
   fields: [
     {
       name: 'richText',
+      localized: true,
       type: 'richText',
       defaultValue: EMPTY_LEXICAL_CONTENT,
       editor: lexicalEditor({

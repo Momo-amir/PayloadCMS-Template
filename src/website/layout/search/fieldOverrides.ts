@@ -4,6 +4,7 @@ export const searchFields: Field[] = [
   {
     name: 'slug',
     type: 'text',
+    localized: true,
     index: true,
     admin: {
       readOnly: true,

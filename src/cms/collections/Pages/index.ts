@@ -27,6 +27,10 @@ blockExports.blocks.forEach((block) => {
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
+  labels: {
+    singular: { en: 'Page', da: 'Side' },
+    plural: { en: 'Pages', da: 'Sider' },
+  },
   access: {
     create: authenticated,
     delete: authenticated,
@@ -43,18 +47,20 @@ export const Pages: CollectionConfig<'pages'> = {
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt', 'status'],
     livePreview: {
-      url: ({ data, req }) =>
+      url: ({ data, req, locale }) =>
         generatePreviewPath({
           slug: data?.slug,
           collection: 'pages',
           req,
+          locale,
         }),
     },
-    preview: (data, { req }) =>
+    preview: (data, { req, locale }) =>
       generatePreviewPath({
         slug: data?.slug as string,
         collection: 'pages',
         req,
+        locale,
       }),
     useAsTitle: 'title',
   },
@@ -62,6 +68,7 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
     },
     {
@@ -76,6 +83,7 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
+              localized: true,
               blocks: layoutBlocks,
               required: true,
               admin: {
@@ -88,6 +96,7 @@ export const Pages: CollectionConfig<'pages'> = {
         {
           name: 'meta',
           label: 'SEO',
+          localized: true,
           fields: [
             OverviewField({
               titlePath: 'meta.title',
@@ -123,10 +132,13 @@ export const Pages: CollectionConfig<'pages'> = {
     },
     slugField({
       overrides: (field) => {
-        type SlugRowLike = { fields?: Array<{ label?: string }> }
+        type SlugRowField = { name?: string; localized?: boolean; label?: string }
+        type SlugRowLike = { fields?: SlugRowField[] }
         const row = field as unknown as SlugRowLike
-        if (Array.isArray(row.fields) && row.fields[1]) {
-          row.fields[1].label = 'Website Link (Slug)'
+        if (Array.isArray(row.fields)) {
+          const inner = row.fields.find((f) => f?.name === 'slug')
+          if (inner) inner.localized = true
+          if (row.fields[1]) row.fields[1].label = 'Website Link (Slug)'
         }
         return field
       },

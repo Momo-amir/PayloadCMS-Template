@@ -29,6 +29,11 @@ import { slugField } from 'payload'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
+  labels: {
+    singular: { en: 'Post', da: 'Artikel' },
+    plural: { en: 'Posts', da: 'Artikler' },
+  },
+
   access: {
     create: authenticated,
     delete: authenticated,
@@ -50,18 +55,20 @@ export const Posts: CollectionConfig<'posts'> = {
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt', 'status'],
     livePreview: {
-      url: ({ data, req }) =>
+      url: ({ data, req, locale }) =>
         generatePreviewPath({
           slug: data?.slug,
           collection: 'posts',
           req,
+          locale,
         }),
     },
-    preview: (data, { req }) =>
+    preview: (data, { req, locale }) =>
       generatePreviewPath({
         slug: data?.slug as string,
         collection: 'posts',
         req,
+        locale,
       }),
     useAsTitle: 'title',
   },
@@ -69,6 +76,7 @@ export const Posts: CollectionConfig<'posts'> = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
     },
     {
@@ -79,10 +87,12 @@ export const Posts: CollectionConfig<'posts'> = {
             {
               name: 'heroImage',
               type: 'upload',
+              localized: true,
               relationTo: 'media',
             },
             {
               name: 'content',
+              localized: true,
               type: 'richText',
               editor: lexicalEditor({
                 features: ({ rootFeatures }) => {
@@ -135,6 +145,7 @@ export const Posts: CollectionConfig<'posts'> = {
         {
           name: 'meta',
           label: 'SEO',
+          localized: true,
           fields: [
             OverviewField({
               titlePath: 'meta.title',
@@ -215,10 +226,13 @@ export const Posts: CollectionConfig<'posts'> = {
     },
     slugField({
       overrides: (field) => {
-        type SlugRowLike = { fields?: Array<{ label?: string }> }
+        type SlugRowField = { name?: string; localized?: boolean; label?: string }
+        type SlugRowLike = { fields?: SlugRowField[] }
         const row = field as unknown as SlugRowLike
-        if (Array.isArray(row.fields) && row.fields[1]) {
-          row.fields[1].label = 'Website Link (Slug)'
+        if (Array.isArray(row.fields)) {
+          const inner = row.fields.find((f) => f?.name === 'slug')
+          if (inner) inner.localized = true
+          if (row.fields[1]) row.fields[1].label = 'Website Link (Slug)'
         }
         return field
       },

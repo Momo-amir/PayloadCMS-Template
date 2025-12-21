@@ -6,6 +6,7 @@ import { useDebounce } from '@/cms/utilities/useDebounce'
 import { useRouter } from 'next/navigation'
 import { trackSearch } from '@/cms/utilities/analytics'
 import { usePrivacy } from '@/providers/Privacy'
+import { useTranslations } from 'next-intl'
 
 export const Search: React.FC<{ resultsCount?: number }> = ({ resultsCount }) => {
   const [value, setValue] = useState('')
@@ -13,6 +14,7 @@ export const Search: React.FC<{ resultsCount?: number }> = ({ resultsCount }) =>
   const { cookieConsent } = usePrivacy()
 
   const debouncedValue = useDebounce(value)
+  const t = useTranslations()
 
   useEffect(() => {
     router.push(`/search${debouncedValue ? `?q=${debouncedValue}` : ''}`)
@@ -31,17 +33,17 @@ export const Search: React.FC<{ resultsCount?: number }> = ({ resultsCount }) =>
         }}
       >
         <Label htmlFor="search" className="sr-only">
-          Search
+          {t('search')}
         </Label>
         <Input
           id="search"
           onChange={(event) => {
             setValue(event.target.value)
           }}
-          placeholder="Search"
+          placeholder={t('search')}
         />
         <button type="submit" className="sr-only">
-          submit
+          {t('submit')}
         </button>
       </form>
     </div>

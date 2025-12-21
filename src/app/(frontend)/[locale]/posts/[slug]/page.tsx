@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { RelatedPosts } from '@/website/blocks/RelatedPosts/Component'
 import { PayloadRedirects } from '@/cms/components/PayloadRedirects'
 import configPromise from '@/payload.config'
-import { getPayload } from 'payload'
+import { getPayload, TypedLocale } from 'payload'
 import { draftMode } from 'next/headers'
 import { unstable_cache } from 'next/cache'
 import React, { cache } from 'react'
@@ -21,15 +21,18 @@ export const dynamicParams = true // Allow any slug to be rendered dynamically
 type Args = {
   params: Promise<{
     slug?: string
+    locale?: TypedLocale
   }>
 }
 
 export default async function Post({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = '' } = await paramsPromise
+  const { slug = '', locale = 'da' } = await paramsPromise
   const url = '/posts/' + slug
   // Use cached data when not in draft/preview; bypass cache in preview to ensure freshness
-  const post = draft ? await queryPostBySlug({ slug }) : await getPostBySlugCached(slug)()
+  const post = draft
+    ? await queryPostBySlug({ slug, locale })
+    : await getPostBySlugCached(slug, locale)()
 
   if (!post) return <PayloadRedirects url={url} />
 
@@ -61,13 +64,15 @@ export default async function Post({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { isEnabled: draft } = await draftMode()
-  const { slug = '' } = await paramsPromise
-  const post = draft ? await queryPostBySlug({ slug }) : await getPostBySlugCached(slug)()
+  const { slug = '', locale = 'da' } = await paramsPromise
+  const post = draft
+    ? await queryPostBySlug({ slug, locale })
+    : await getPostBySlugCached(slug, locale)()
 
   return generateMeta({ doc: post })
 }
 
-const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
+const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: TypedLocale }) => {
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
@@ -75,6 +80,7 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
   const result = await payload.find({
     collection: 'posts',
     draft,
+    locale,
     limit: 1,
     overrideAccess: draft,
     pagination: false,
@@ -89,13 +95,15 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
 })
 
 // Cached getter for non-preview usage; tag per post slug so hooks can revalidate precisely
-const getPostBySlugCached = (slug: string) =>
+const getPostBySlugCached = (slug: string, locale?: TypedLocale) =>
   unstable_cache(
     async () => {
       const payload = await getPayload({ config: configPromise })
       const result = await payload.find({
         collection: 'posts',
         draft: false,
+        // Include locale only when provided
+        ...(locale ? { locale } : {}),
         limit: 1,
         overrideAccess: false,
         pagination: false,
@@ -107,6 +115,6 @@ const getPostBySlugCached = (slug: string) =>
       })
       return result.docs?.[0] || null
     },
-    ['post-by-slug', slug],
-    { tags: [`post:${slug}`] },
+    ['post-by-slug', slug, locale ?? 'default'],
+    { tags: [`post:${slug}${locale ? `:${locale}` : ''}`] },
   )

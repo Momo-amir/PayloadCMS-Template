@@ -25,6 +25,7 @@ export const Banner: ComponentBlock = {
     },
     {
       name: 'content',
+      localized: true,
       type: 'richText',
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {

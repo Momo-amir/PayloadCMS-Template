@@ -1,5 +1,8 @@
 import { withPayload } from '@payloadcms/next/withPayload'
+import createNextIntlPlugin from 'next-intl/plugin'
 import redirects from './redirects.js'
+
+const withNextIntl = createNextIntlPlugin()
 
 const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
@@ -25,6 +28,12 @@ const nextConfig = {
   redirects,
   output: 'standalone',
 
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
+  },
+
   // Essential webpack config for PayloadCMS
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
@@ -40,4 +49,4 @@ const nextConfig = {
   },
 }
 
-export default withPayload(nextConfig, { devBundleServerPackages: false })
+export default withNextIntl(withPayload(nextConfig, { devBundleServerPackages: false }))

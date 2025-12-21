@@ -83,6 +83,7 @@ export const plugins: Plugin[] = [
   searchPlugin({
     collections: ['posts'],
     beforeSync: beforeSyncWithSearch,
+    localize: true,
     searchOverrides: {
       fields: ({ defaultFields }) => {
         return [...defaultFields, ...searchFields]

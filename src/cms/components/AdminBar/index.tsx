@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation'
 import './index.scss'
 
 import { getClientSideURL } from '@/cms/utilities/getURL'
+import localization from '@/i18n/localization'
 
 const baseClass = 'admin-bar'
 
@@ -36,6 +37,11 @@ export const AdminBar: React.FC<{
 }> = (props) => {
   const { adminBarProps } = props || {}
   const segments = useSelectedLayoutSegments()
+  const localeSegment = segments?.[0]
+  const locale = (localeSegment && localization.locales.some((l) => l.code === localeSegment)
+    ? localeSegment
+    : localization.defaultLocale) as string
+  const localePrefix = `/${locale}`
   const [show, setShow] = useState(false)
   const collection = (
     collectionLabels[segments?.[1] as keyof typeof collectionLabels] ? segments[1] : 'pages'
@@ -71,8 +77,8 @@ export const AdminBar: React.FC<{
           logo={<Title />}
           onAuthChange={onAuthChange}
           onPreviewExit={() => {
-            fetch('/next/exit-preview').then(() => {
-              router.push('/')
+            fetch(`${localePrefix}/next/exit-preview`).then(() => {
+              router.push(localePrefix)
               router.refresh()
             })
           }}

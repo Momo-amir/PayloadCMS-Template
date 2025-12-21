@@ -17,6 +17,7 @@ export const PeopleArchiveBlock: ComponentBlock = {
   fields: [
     {
       name: 'introContent',
+      localized: true,
       type: 'richText',
       defaultValue: EMPTY_LEXICAL_CONTENT,
       editor: lexicalEditor({
