@@ -89,13 +89,14 @@ const queryPageBySlug = cache(async ({ slug, locale }: { slug: string; locale: T
 })
 
 // Cached getter for non-preview usage; tag per page slug so hooks can revalidate precisely
-const getPageBySlugCached = (slug: string, locale: TypedLocale) =>
+const getPageBySlugCached = (slug: string, locale?: TypedLocale) =>
   unstable_cache(
     async () => {
       const payload = await getPayload({ config: configPromise })
       const result = await payload.find({
         collection: 'pages',
-        locale,
+        // Include locale only when provided
+        ...(locale ? { locale } : {}),
         draft: false,
         limit: 1,
         pagination: false,
@@ -108,6 +109,6 @@ const getPageBySlugCached = (slug: string, locale: TypedLocale) =>
       })
       return result.docs?.[0] || null
     },
-    ['page-by-slug', slug, locale],
-    { tags: [`page:${slug}:${locale}`] },
+    ['page-by-slug', slug, locale ?? 'default'],
+    { tags: [`page:${slug}${locale ? `:${locale}` : ''}`] },
   )
