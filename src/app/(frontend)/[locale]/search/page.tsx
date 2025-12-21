@@ -80,7 +80,9 @@ export default async function Page({ searchParams: searchParamsPromise, params }
       {posts.totalDocs > 0 ? (
         <CollectionArchive posts={posts.docs as CardPostData[]} listContext="search" />
       ) : (
-        <div className="container">No results found.</div>
+        <div className="container">
+          {locale === 'da' ? 'Ingen resultater fundet.' : 'No results found'}
+        </div>
       )}
     </div>
   )

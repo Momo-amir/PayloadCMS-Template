@@ -1,6 +1,12 @@
 import { getRequestConfig } from 'next-intl/server'
 import { routing } from './routing'
 import da from './messages/da.json'
+import en from './messages/en.json'
+
+const messagesMap = {
+  da,
+  en,
+}
 
 type Messages = typeof da
 
@@ -14,8 +20,9 @@ export default getRequestConfig(async (params) => {
   if (!locale || !routing.locales.includes(locale as any)) {
     locale = routing.defaultLocale
   }
+
   return {
     locale,
-    messages: (await import(`./messages/${locale}.json`)).default,
+    messages: messagesMap[locale as keyof typeof messagesMap] || da,
   }
 })
