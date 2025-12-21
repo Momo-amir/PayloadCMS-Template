@@ -1,6 +1,4 @@
-import { Page } from '@/payload-types'
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
-import { TypedLocale } from 'payload'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
