@@ -28,6 +28,12 @@ const nextConfig = {
   redirects,
   output: 'standalone',
 
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
+  },
+
   // Essential webpack config for PayloadCMS
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

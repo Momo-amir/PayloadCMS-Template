@@ -29,6 +29,11 @@ import { slugField } from 'payload'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
+  labels: {
+    singular: { en: 'Post', da: 'Artikel' },
+    plural: { en: 'Posts', da: 'Artikler' },
+  },
+
   access: {
     create: authenticated,
     delete: authenticated,
@@ -221,11 +226,12 @@ export const Posts: CollectionConfig<'posts'> = {
     },
     slugField({
       overrides: (field) => {
-        type SlugRowLike = { fields?: Array<Record<string, any>> }
+        type SlugRowField = { name?: string; localized?: boolean; label?: string }
+        type SlugRowLike = { fields?: SlugRowField[] }
         const row = field as unknown as SlugRowLike
         if (Array.isArray(row.fields)) {
-          const inner = row.fields.find((f) => (f as any).name === 'slug')
-          if (inner) (inner as any).localized = true
+          const inner = row.fields.find((f) => f?.name === 'slug')
+          if (inner) inner.localized = true
           if (row.fields[1]) row.fields[1].label = 'Website Link (Slug)'
         }
         return field

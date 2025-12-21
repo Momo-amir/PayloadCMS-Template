@@ -5,6 +5,10 @@ import { authenticated } from '../../access/authenticated'
 
 export const People: CollectionConfig = {
   slug: 'people',
+  labels: {
+    singular: { en: 'Person', da: 'Person' },
+    plural: { en: 'People', da: 'Personer' },
+  },
   access: {
     create: authenticated,
     delete: authenticated,

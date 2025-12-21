@@ -77,7 +77,6 @@ export default buildConfig({
           height: 900,
         },
       ],
-      
     },
   },
   // This config helps us configure global or default features that the other editors can inherit
@@ -136,9 +135,9 @@ export default buildConfig({
         })
       : undefined,
 
-        i18n: {
+  i18n: {
     supportedLanguages: { da, en },
-    fallbackLanguage: 'da',
+    fallbackLanguage: 'en',
   },
 
   localization: localization as LocalizationConfig,

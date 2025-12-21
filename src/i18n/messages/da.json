@@ -13,5 +13,11 @@
   "previous": "Forrige",
   "next": "Næste",
   "more-pages": "Flere sider",
-  "submit": "Indsend"
+  "submit": "Indsend",
+
+  "plugin-redirects:fromUrl": "Fra URL",
+  "plugin-redirects:toUrlType": "Til URL-type",
+  "plugin-redirects:internalLink": "Intern link",
+  "plugin-redirects:customUrl": "Brugerdefineret URL",
+  "plugin-redirects:documentToRedirect": "Dokument der skal omdirigeres"
 }

@@ -13,5 +13,11 @@
   "previous": "Previous",
   "next": "Next",
   "more-pages": "More Pages",
-  "submit": "Submit"
+  "submit": "Submit",
+
+  "plugin-redirects:fromUrl": "From URL",
+  "plugin-redirects:toUrlType": "To URL Type",
+  "plugin-redirects:internalLink": "Internal Link",
+  "plugin-redirects:customUrl": "Custom URL",
+  "plugin-redirects:documentToRedirect": "Document to redirect"
 }

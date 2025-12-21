@@ -6,6 +6,10 @@ import { canEditUserRoles } from '../../access/canEditUserRoles'
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  labels: {
+    singular: { en: 'User', da: 'Bruger' },
+    plural: { en: 'Users', da: 'Brugere' },
+  },
   auth: {
     depth: 0,
   },
