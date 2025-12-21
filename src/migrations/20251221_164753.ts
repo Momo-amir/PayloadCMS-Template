@@ -60,64 +60,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "_pages_v" DROP COLUMN "version_slug";
   ALTER TABLE "posts" DROP COLUMN "slug";
   ALTER TABLE "_posts_v" DROP COLUMN "version_slug";`)
-
-  const translations = {
-    slug: {
-      home: 'forside',
-      about: 'om-os',
-      cases: 'projekter',
-      'dashboard-spot': 'kontrolpanel-spot',
-      'ui-library': 'ui-bibliotek',
-    },
-
-    title: {
-      home: 'Forside',
-      about: 'Om Os',
-      cases: 'Projekter',
-      'dashboard-spot': 'Kontrolpanel Spot',
-      'ui-library': 'UI Bibliotek',
-    },
-  }
-
-  function translate(
-    page: Page,
-    translations: Record<string, Record<string, string>>,
-  ): Record<string, any> {
-    return {
-      slug:
-        translations.slug && translations.slug[page.slug!]
-          ? translations.slug[page.slug!]
-          : page.slug,
-      title:
-        translations.title && translations.title[page.title!]
-          ? translations.title[page.title!]
-          : page.title,
-    }
-  }
-
-  const pages = await payload
-    .find({
-      collection: 'pages',
-      where: {},
-      limit: 0,
-    })
-    .then((result) => result.docs)
-
-  for (const page of pages) {
-    const translated = translate(page, translations)
-    for (const locale of ['da', 'en']) {
-      await payload.update({
-        collection: 'pages',
-        locale: locale as TypedLocale,
-        id: page.id,
-        data: {
-          ...page,
-          slug: locale === 'da' ? translated.slug : page.slug,
-          title: locale === 'da' ? translated.title : page.title,
-        },
-      })
-    }
-  }
 }
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
