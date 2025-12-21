@@ -27,6 +27,7 @@ import { RowLabel as RowLabel_7373a88fa654e3a8434219cb2baf21de } from '@/website
 import { RowLabel as RowLabel_4a97e2b05ef1b763469c9aa243cbe4d9 } from '@/website/layout/Footer/RowLabel'
 import { default as default_f35af700d9bc2f6ea0d0bb55cff83959 } from '@/cms/components/DashboardGraphics/DashboardIcon.tsx'
 import { default as default_9816f1c9af89c198c60ebc88ed9c0d24 } from '@/cms/components/DashboardGraphics/DashboardLogo.tsx'
+import { CollectionCards as CollectionCards_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
 
 export const importMap = {
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -57,5 +58,6 @@ export const importMap = {
   "@/website/layout/Header/RowLabel#RowLabel": RowLabel_7373a88fa654e3a8434219cb2baf21de,
   "@/website/layout/Footer/RowLabel#RowLabel": RowLabel_4a97e2b05ef1b763469c9aa243cbe4d9,
   "@/cms/components/DashboardGraphics/DashboardIcon.tsx#default": default_f35af700d9bc2f6ea0d0bb55cff83959,
-  "@/cms/components/DashboardGraphics/DashboardLogo.tsx#default": default_9816f1c9af89c198c60ebc88ed9c0d24
+  "@/cms/components/DashboardGraphics/DashboardLogo.tsx#default": default_9816f1c9af89c198c60ebc88ed9c0d24,
+  "@payloadcms/ui/rsc#CollectionCards": CollectionCards_ab83ff7e88da8d3530831f296ec4756a
 }
