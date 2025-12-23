@@ -56,7 +56,8 @@ COPY tsconfig.json ./tsconfig.json
 # scss-loader is needed since the node modules for the payload/ui have not been updated to the latest scss
 COPY scss-loader.mjs ./scss-loader.mjs
 ENV NODE_OPTIONS="--import ./scss-loader.mjs --no-deprecation"
-COPY src ./src
+# Copy source from builder and set ownership so the runtime user can read files (migrations, etc.)
+COPY --from=builder --chown=nextjs:nodejs /app/src ./src
 COPY --chown=nextjs:nodejs docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
