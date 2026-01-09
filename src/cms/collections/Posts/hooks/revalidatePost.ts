@@ -25,9 +25,9 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 
       // Revalidate all locale-specific paths
       paths.forEach((path) => revalidatePath(path))
-      
+
       revalidateTag('posts-sitemap')
-      
+
       // Invalidate cached post detail fetch for all locales
       revalidateTag(`post:${doc.slug}`)
       revalidateTag(`post:${doc.slug}:da`)
@@ -42,7 +42,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 
       oldPaths.forEach((path) => revalidatePath(path))
       revalidateTag('posts-sitemap')
-      
+
       // Invalidate cached post detail fetch for previous slug (all locales)
       revalidateTag(`post:${previousDoc.slug}`)
       revalidateTag(`post:${previousDoc.slug}:da`)
@@ -55,11 +55,11 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 export const revalidateDelete: CollectionAfterDeleteHook<Post> = ({ doc, req: { context } }) => {
   if (!context.disableRevalidate && doc?.slug) {
     const paths = getLocalizedPostPaths(doc.slug)
-    
+
     // Revalidate all locale-specific paths
     paths.forEach((path) => revalidatePath(path))
     revalidateTag('posts-sitemap')
-    
+
     // Invalidate cached post detail fetch for all locales
     revalidateTag(`post:${doc.slug}`)
     revalidateTag(`post:${doc.slug}:da`)

@@ -7,7 +7,7 @@ import type { Page } from '@/payload-types'
 // Helper to get localized paths for revalidation
 const getLocalizedPaths = (slug: string): string[] => {
   const paths: string[] = []
-  
+
   // Handle home page mappings: 'forside' for da, 'home' for en
   if (slug === 'forside') {
     paths.push('/') // Danish default at root
@@ -22,7 +22,7 @@ const getLocalizedPaths = (slug: string): string[] => {
     paths.push(`/${slug}`) // Danish (default locale, no prefix)
     paths.push(`/en/${slug}`) // English (with prefix)
   }
-  
+
   return paths
 }
 
@@ -39,9 +39,9 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
 
       // Revalidate all locale-specific paths
       paths.forEach((path) => revalidatePath(path))
-      
+
       revalidateTag('pages-sitemap')
-      
+
       // Invalidate cached page detail fetch for all locales
       revalidateTag(`page:${doc.slug}`)
       revalidateTag(`page:${doc.slug}:da`)
@@ -56,7 +56,7 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
 
       oldPaths.forEach((path) => revalidatePath(path))
       revalidateTag('pages-sitemap')
-      
+
       // Invalidate cached page detail fetch for previous slug (all locales)
       revalidateTag(`page:${previousDoc.slug}`)
       revalidateTag(`page:${previousDoc.slug}:da`)
@@ -69,11 +69,11 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
 export const revalidateDelete: CollectionAfterDeleteHook<Page> = ({ doc, req: { context } }) => {
   if (!context.disableRevalidate && doc?.slug) {
     const paths = getLocalizedPaths(doc.slug)
-    
+
     // Revalidate all locale-specific paths
     paths.forEach((path) => revalidatePath(path))
     revalidateTag('pages-sitemap')
-    
+
     // Invalidate cached page detail fetch for all locales
     revalidateTag(`page:${doc.slug}`)
     revalidateTag(`page:${doc.slug}:da`)
