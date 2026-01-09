@@ -4,6 +4,14 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 
 import type { Post } from '@/payload-types'
 
+// Helper to get localized paths for posts
+const getLocalizedPostPaths = (slug: string): string[] => {
+  return [
+    `/posts/${slug}`, // Danish (default locale, no prefix)
+    `/en/posts/${slug}`, // English (with prefix)
+  ]
+}
+
 export const revalidatePost: CollectionAfterChangeHook<Post> = ({
   doc,
   previousDoc,
@@ -11,39 +19,51 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 }) => {
   if (!context.disableRevalidate) {
     if (doc._status === 'published') {
-      const path = `/posts/${doc.slug}`
+      const paths = getLocalizedPostPaths(doc.slug)
 
-      payload.logger.info(`Revalidating post at path: ${path}`)
+      payload.logger.info(`Revalidating post at paths: ${paths.join(', ')}`)
 
-      revalidatePath(path)
+      // Revalidate all locale-specific paths
+      paths.forEach((path) => revalidatePath(path))
+      
       revalidateTag('posts-sitemap')
-      // Invalidate cached post detail fetch
+      
+      // Invalidate cached post detail fetch for all locales
       revalidateTag(`post:${doc.slug}`)
+      revalidateTag(`post:${doc.slug}:da`)
+      revalidateTag(`post:${doc.slug}:en`)
     }
 
-    // If the post was previously published, we need to revalidate the old path
+    // If the post was previously published, we need to revalidate the old paths
     if (previousDoc._status === 'published' && doc._status !== 'published') {
-      const oldPath = `/posts/${previousDoc.slug}`
+      const oldPaths = getLocalizedPostPaths(previousDoc.slug)
 
-      payload.logger.info(`Revalidating old post at path: ${oldPath}`)
+      payload.logger.info(`Revalidating old post at paths: ${oldPaths.join(', ')}`)
 
-      revalidatePath(oldPath)
+      oldPaths.forEach((path) => revalidatePath(path))
       revalidateTag('posts-sitemap')
-      // Invalidate cached post detail fetch for previous slug
+      
+      // Invalidate cached post detail fetch for previous slug (all locales)
       revalidateTag(`post:${previousDoc.slug}`)
+      revalidateTag(`post:${previousDoc.slug}:da`)
+      revalidateTag(`post:${previousDoc.slug}:en`)
     }
   }
   return doc
 }
 
 export const revalidateDelete: CollectionAfterDeleteHook<Post> = ({ doc, req: { context } }) => {
-  if (!context.disableRevalidate) {
-    const path = `/posts/${doc?.slug}`
-
-    revalidatePath(path)
+  if (!context.disableRevalidate && doc?.slug) {
+    const paths = getLocalizedPostPaths(doc.slug)
+    
+    // Revalidate all locale-specific paths
+    paths.forEach((path) => revalidatePath(path))
     revalidateTag('posts-sitemap')
-    // Invalidate cached post detail fetch
-    if (doc?.slug) revalidateTag(`post:${doc.slug}`)
+    
+    // Invalidate cached post detail fetch for all locales
+    revalidateTag(`post:${doc.slug}`)
+    revalidateTag(`post:${doc.slug}:da`)
+    revalidateTag(`post:${doc.slug}:en`)
   }
 
   return doc

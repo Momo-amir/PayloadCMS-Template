@@ -4,6 +4,28 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 
 import type { Page } from '@/payload-types'
 
+// Helper to get localized paths for revalidation
+const getLocalizedPaths = (slug: string): string[] => {
+  const paths: string[] = []
+  
+  // Handle home page mappings: 'forside' for da, 'home' for en
+  if (slug === 'forside') {
+    paths.push('/') // Danish default at root
+    paths.push('/en/home') // English at /en/home or /en
+    paths.push('/en') // English home also accessible without slug
+  } else if (slug === 'home') {
+    paths.push('/en/home') // English at /en/home
+    paths.push('/en') // English home also accessible without slug
+    paths.push('/') // Danish might also map here
+  } else {
+    // For other pages, revalidate both locale paths
+    paths.push(`/${slug}`) // Danish (default locale, no prefix)
+    paths.push(`/en/${slug}`) // English (with prefix)
+  }
+  
+  return paths
+}
+
 export const revalidatePage: CollectionAfterChangeHook<Page> = ({
   doc,
   previousDoc,
@@ -11,38 +33,51 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
 }) => {
   if (!context.disableRevalidate) {
     if (doc._status === 'published') {
-      const path = doc.slug === 'forside' ? '/' : `/${doc.slug}`
+      const paths = getLocalizedPaths(doc.slug)
 
-      payload.logger.info(`Revalidating page at path: ${path}`)
+      payload.logger.info(`Revalidating page at paths: ${paths.join(', ')}`)
 
-      revalidatePath(path)
+      // Revalidate all locale-specific paths
+      paths.forEach((path) => revalidatePath(path))
+      
       revalidateTag('pages-sitemap')
-      // Invalidate cached page detail fetch
+      
+      // Invalidate cached page detail fetch for all locales
       revalidateTag(`page:${doc.slug}`)
+      revalidateTag(`page:${doc.slug}:da`)
+      revalidateTag(`page:${doc.slug}:en`)
     }
 
-    // If the page was previously published, we need to revalidate the old path
+    // If the page was previously published, we need to revalidate the old paths
     if (previousDoc?._status === 'published' && doc._status !== 'published') {
-      const oldPath = previousDoc.slug === 'forside' ? '/' : `/${previousDoc.slug}`
+      const oldPaths = getLocalizedPaths(previousDoc.slug)
 
-      payload.logger.info(`Revalidating old page at path: ${oldPath}`)
+      payload.logger.info(`Revalidating old page at paths: ${oldPaths.join(', ')}`)
 
-      revalidatePath(oldPath)
+      oldPaths.forEach((path) => revalidatePath(path))
       revalidateTag('pages-sitemap')
-      // Invalidate cached page detail fetch for previous slug
+      
+      // Invalidate cached page detail fetch for previous slug (all locales)
       revalidateTag(`page:${previousDoc.slug}`)
+      revalidateTag(`page:${previousDoc.slug}:da`)
+      revalidateTag(`page:${previousDoc.slug}:en`)
     }
   }
   return doc
 }
 
 export const revalidateDelete: CollectionAfterDeleteHook<Page> = ({ doc, req: { context } }) => {
-  if (!context.disableRevalidate) {
-    const path = doc?.slug === 'forside' ? '/' : `/${doc?.slug}`
-    revalidatePath(path)
+  if (!context.disableRevalidate && doc?.slug) {
+    const paths = getLocalizedPaths(doc.slug)
+    
+    // Revalidate all locale-specific paths
+    paths.forEach((path) => revalidatePath(path))
     revalidateTag('pages-sitemap')
-    // Invalidate cached page detail fetch
-    if (doc?.slug) revalidateTag(`page:${doc.slug}`)
+    
+    // Invalidate cached page detail fetch for all locales
+    revalidateTag(`page:${doc.slug}`)
+    revalidateTag(`page:${doc.slug}:da`)
+    revalidateTag(`page:${doc.slug}:en`)
   }
 
   return doc
