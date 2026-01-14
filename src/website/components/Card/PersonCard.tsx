@@ -13,6 +13,7 @@ import {
 } from '@/website/components/elements/card'
 import { trackButtonClick } from '@/cms/utilities/analytics'
 import { usePrivacy } from '@/providers/Privacy'
+import { useTranslations } from 'next-intl'
 
 export type CardPersonData = Pick<Person, 'firstName' | 'lastName' | 'title' | 'email' | 'image'>
 
@@ -33,13 +34,15 @@ export const PersonCard: React.FC<{
     }
   }
 
+  const t = useTranslations()
+
   return (
     <article className={cn('group h-full', className)}>
       <CardComponent className={cn('h-full flex flex-col transition bg-base  ')}>
         <div className="relative w-full aspect-square overflow-hidden rounded-t-lg">
           {!image && (
             <div className="flex h-full w-full items-center justify-center text-sm bg-accent text-white">
-              No image
+              {t('no-image')}
             </div>
           )}
           {image && typeof image !== 'string' && (

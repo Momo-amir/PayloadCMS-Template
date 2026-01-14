@@ -4,6 +4,7 @@ import { usePrivacy } from '@/providers/Privacy'
 import Link from 'next/link'
 import Image from 'next/image'
 import * as React from 'react'
+import { useTranslations } from 'next-intl'
 
 type PrivacyBannerProps = {
   iconUrl: string
@@ -14,6 +15,8 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
   const [animateOut, setAnimateOut] = React.useState(false)
 
   const { showConsent, updateCookieConsent } = usePrivacy()
+
+  const t = useTranslations()
 
   const handleCloseBanner = () => {
     setAnimateOut(true)
@@ -40,17 +43,15 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
       {/* Branding Logo */}
       <div className="mb-4 flex items-center gap-2">
         <Image src={iconUrl} alt="Logo" width={24} height={24} className="w-6 h-6" />
-        <span className="text-h3 font-medium ">Cookie Preferences</span>
+        <span className="text-h3 font-medium ">{t('cookie-consent:title')}</span>
       </div>
 
       <p className="text-sm leading-relaxed mb-4">
-        We use cookies, subject to your consent, to analyze the use of our website and to ensure you
-        get the best experience. Third parties with whom we collaborate can also install cookies in
-        order to show you personalized content. Read our{' '}
+        {t('cookie-consent:message')}{' '}
         <Link className="underline hover:opacity-80" href="/privacy-policy" prefetch={false}>
-          privacy policy
+          {t('cookie-consent:privacy-policy')}
         </Link>{' '}
-        for more information.
+        {t('cookie-consent:more-info')}
       </p>
       <div className="flex gap-3">
         <button
@@ -61,7 +62,7 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
           }}
           type="button"
         >
-          Dismiss
+          {t('cookie-consent:decline')}
         </button>
         <button
           className="flex-1 px-4 py-2 text-sm font-medium bg-white text-black hover:bg-white/90 rounded-md transition-colors cursor-pointer"
@@ -71,7 +72,7 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
           }}
           type="button"
         >
-          Accept
+          {t('cookie-consent:accept')}
         </button>
       </div>
     </div>

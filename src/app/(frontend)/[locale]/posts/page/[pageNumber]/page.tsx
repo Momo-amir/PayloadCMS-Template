@@ -8,6 +8,7 @@ import { getPayload, TypedLocale } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 600
@@ -24,6 +25,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   const payload = await getPayload({ config: configPromise })
 
   const sanitizedPageNumber = Number(pageNumber)
+  const t = await getTranslations()
 
   if (!Number.isInteger(sanitizedPageNumber)) notFound()
 
@@ -41,8 +43,8 @@ export default async function Page({ params: paramsPromise }: Args) {
     <div className="pt-24 pb-24">
       <PageClient />
       <div className="container mb-16">
-        <div className="  dark: -invert max-w-none">
-          <h1>Posts</h1>
+        <div className="   max-w-none">
+          <h1>{t('post')}</h1>
         </div>
       </div>
 

@@ -14,10 +14,23 @@
   "next": "Next",
   "more-pages": "More Pages",
   "submit": "Submit",
+  "no-results": "Search produced no results.",
+  "untitled-category": "Untitled category",
+  "light": "Light",
+  "dark": "Dark",
+  "auto": "Auto",
+  "no-image": "No image",
 
   "plugin-redirects:fromUrl": "From URL",
   "plugin-redirects:toUrlType": "To URL Type",
   "plugin-redirects:internalLink": "Internal Link",
   "plugin-redirects:customUrl": "Custom URL",
-  "plugin-redirects:documentToRedirect": "Document to redirect"
+  "plugin-redirects:documentToRedirect": "Document to redirect",
+
+  "cookie-consent:title": "Cookie Preferences",
+  "cookie-consent:message": "We use cookies, subject to your consent, to analyze the use of our website and to ensure you get the best experience. Third parties with whom we collaborate can also install cookies in order to show you personalized content. Read our",
+  "cookie-consent:privacy-policy": "privacy policy",
+  "cookie-consent:more-info": "for more information.",
+  "cookie-consent:accept": "Accept",
+  "cookie-consent:decline": "Dismiss all non-essential"
 }

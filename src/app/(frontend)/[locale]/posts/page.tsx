@@ -7,6 +7,7 @@ import configPromise from '@/payload.config'
 import { getPayload, TypedLocale } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
+import { getTranslations } from 'next-intl/server'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 600
@@ -36,13 +37,14 @@ export default async function Page({ params }: Args) {
       meta: true,
     },
   })
+  const t = await getTranslations()
 
   return (
     <div className="pt-24 pb-24">
       <PageClient />
       <div className="container mb-16">
-        <div className="  dark: -invert max-w-none">
-          <h1>Posts</h1>
+        <div className="max-w-none">
+          <h1>{t('post')}</h1>
         </div>
       </div>
 

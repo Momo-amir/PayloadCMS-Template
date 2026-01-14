@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from '@/website/components/elements/select'
 import React, { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 import type { Theme } from './types'
 
@@ -17,6 +18,7 @@ import { themeLocalStorageKey } from './types'
 export const ThemeSelector: React.FC = () => {
   const { setTheme } = useTheme()
   const [value, setValue] = useState('')
+  const t = useTranslations()
 
   const onThemeChange = (themeToSet: Theme & 'auto') => {
     if (themeToSet === 'auto') {
@@ -39,9 +41,9 @@ export const ThemeSelector: React.FC = () => {
         <SelectValue placeholder="Theme" />
       </SelectTrigger>
       <SelectContent className="bg-base border border-border text-primary">
-        <SelectItem value="auto">Auto</SelectItem>
-        <SelectItem value="light">Light</SelectItem>
-        <SelectItem value="dark">Dark</SelectItem>
+        <SelectItem value="auto">{t('auto')}</SelectItem>
+        <SelectItem value="light">{t('light')}</SelectItem>
+        <SelectItem value="dark">{t('dark')}</SelectItem>
       </SelectContent>
     </Select>
   )

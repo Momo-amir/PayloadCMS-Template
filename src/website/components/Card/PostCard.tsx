@@ -16,6 +16,7 @@ import {
 } from '@/website/components/elements/card'
 import { trackPostCardClick } from '@/cms/utilities/analytics'
 import { usePrivacy } from '@/providers/Privacy'
+import { useTranslations } from 'next-intl'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
 
@@ -49,6 +50,8 @@ export const PostCard: React.FC<{
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href = `/${relationTo}/${slug}`
 
+  const t = useTranslations()
+
   const handleClick = () => {
     if (cookieConsent && title && slug) {
       const categoryNames = categories
@@ -73,7 +76,7 @@ export const PostCard: React.FC<{
         <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
           {!metaImage && (
             <div className="flex h-full w-full items-center justify-center text-sm text-white bg-accent">
-              No image
+              {t('no-image')}
             </div>
           )}
           {metaImage && typeof metaImage !== 'string' && (
@@ -85,7 +88,7 @@ export const PostCard: React.FC<{
               {categories?.map((category, index) => {
                 if (typeof category === 'object') {
                   const { title: titleFromCategory } = category
-                  const categoryTitle = titleFromCategory || 'Untitled category'
+                  const categoryTitle = titleFromCategory || t('untitled-category')
                   const isLast = index === categories.length - 1
 
                   return (

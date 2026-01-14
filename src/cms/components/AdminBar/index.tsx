@@ -12,6 +12,7 @@ import './index.scss'
 
 import { getClientSideURL } from '@/cms/utilities/getURL'
 import localization from '@/i18n/localization'
+import { useTranslations } from 'next-intl'
 
 const baseClass = 'admin-bar'
 
@@ -30,7 +31,10 @@ const collectionLabels = {
   },
 }
 
-const Title: React.FC = () => <span>Dashboard</span>
+const Title: React.FC = () => {
+  const t = useTranslations()
+  return <span>{t('dashboard')}</span>
+}
 
 export const AdminBar: React.FC<{
   adminBarProps?: PayloadAdminBarProps
@@ -38,9 +42,11 @@ export const AdminBar: React.FC<{
   const { adminBarProps } = props || {}
   const segments = useSelectedLayoutSegments()
   const localeSegment = segments?.[0]
-  const locale = (localeSegment && localization.locales.some((l) => l.code === localeSegment)
-    ? localeSegment
-    : localization.defaultLocale) as string
+  const locale = (
+    localeSegment && localization.locales.some((l) => l.code === localeSegment)
+      ? localeSegment
+      : localization.defaultLocale
+  ) as string
   const localePrefix = `/${locale}`
   const [show, setShow] = useState(false)
   const collection = (
