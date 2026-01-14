@@ -12,12 +12,6 @@ export const routing = defineRouting({
   localePrefix: 'as-needed',
   // Disable automatic locale detection (both cookie and accept-language)
   // We'll handle cookie detection manually in middleware
-  localeDetection: false,
-  // Configure the locale cookie that will be set when user selects a locale
-  localeCookie: {
-    name: 'NEXT_LOCALE',
-    sameSite: 'lax',
-  },
 })
 
 export const { Link, redirect, usePathname } = createNavigation(routing)

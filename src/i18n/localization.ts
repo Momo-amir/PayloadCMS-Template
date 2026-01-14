@@ -7,6 +7,7 @@ const localization = {
     {
       code: 'en',
       label: 'English',
+      fallbackLocale: 'da', // Fallback to Danish when English content is missing
     },
   ],
   defaultLocale: 'da',

@@ -81,6 +81,7 @@ const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: T
     collection: 'posts',
     draft,
     locale,
+    fallbackLocale: 'da',
     limit: 1,
     overrideAccess: draft,
     pagination: false,
@@ -103,7 +104,7 @@ const getPostBySlugCached = (slug: string, locale?: TypedLocale) =>
         collection: 'posts',
         draft: false,
         // Include locale only when provided
-        ...(locale ? { locale } : {}),
+        ...(locale ? { locale, fallbackLocale: 'da' } : {}),
         limit: 1,
         overrideAccess: false,
         pagination: false,

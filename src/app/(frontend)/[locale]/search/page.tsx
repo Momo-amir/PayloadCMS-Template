@@ -24,6 +24,7 @@ export default async function Page({ searchParams: searchParamsPromise, params }
   const posts = await payload.find({
     collection: 'search',
     locale,
+    fallbackLocale: 'da',
     depth: 1,
     limit: 12,
     select: {

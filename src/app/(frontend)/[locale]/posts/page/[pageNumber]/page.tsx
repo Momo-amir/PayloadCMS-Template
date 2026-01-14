@@ -30,6 +30,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   const posts = await payload.find({
     collection: 'posts',
     locale,
+    fallbackLocale: 'da',
     depth: 1,
     limit: 12,
     page: sanitizedPageNumber,
