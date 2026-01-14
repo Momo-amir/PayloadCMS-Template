@@ -25,11 +25,7 @@ type Args = {
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
 
-  const localeSlugs = {
-    da: 'forside',
-    en: 'home',
-  }
-  const { locale = 'da', slug = localeSlugs[locale] } = await paramsPromise
+  const { locale = 'da', slug = 'forside' } = await paramsPromise
   const url = '/' + slug
 
   // Use cached data when not in draft/preview; bypass cache in preview to ensure freshness
@@ -58,7 +54,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { isEnabled: draft } = await draftMode()
-  const { locale = 'da', slug = locale === 'en' ? 'home' : 'forside' } = await paramsPromise
+  const { locale = 'da', slug = 'forside' } = await paramsPromise
   const page = draft
     ? await queryPageBySlug({ slug, locale })
     : await getPageBySlugCached(slug, locale)()
@@ -74,6 +70,7 @@ const queryPageBySlug = cache(async ({ slug, locale }: { slug: string; locale: T
   const result = await payload.find({
     collection: 'pages',
     locale,
+    fallbackLocale: 'da',
     draft,
     limit: 1,
     pagination: false,
@@ -96,7 +93,7 @@ const getPageBySlugCached = (slug: string, locale?: TypedLocale) =>
       const result = await payload.find({
         collection: 'pages',
         // Include locale only when provided
-        ...(locale ? { locale } : {}),
+        ...(locale ? { locale, fallbackLocale: 'da' } : {}),
         draft: false,
         limit: 1,
         pagination: false,
