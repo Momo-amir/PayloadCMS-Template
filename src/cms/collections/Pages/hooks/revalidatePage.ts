@@ -8,15 +8,10 @@ import type { Page } from '@/payload-types'
 const getLocalizedPaths = (slug: string): string[] => {
   const paths: string[] = []
 
-  // Handle home page mappings: 'forside' for da, 'home' for en
-  if (slug === 'forside') {
+  // Handle home page: accessible at root for default locale and /en for English
+  if (slug === 'home') {
     paths.push('/') // Danish default at root
-    paths.push('/en/home') // English at /en/home or /en
-    paths.push('/en') // English home also accessible without slug
-  } else if (slug === 'home') {
-    paths.push('/en/home') // English at /en/home
-    paths.push('/en') // English home also accessible without slug
-    paths.push('/') // Danish might also map here
+    paths.push('/en') // English at /en
   } else {
     // For other pages, revalidate both locale paths
     paths.push(`/${slug}`) // Danish (default locale, no prefix)

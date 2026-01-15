@@ -13,7 +13,7 @@ export const Header: GlobalConfig = {
     livePreview: {
       url: ({ req, locale }) =>
         generatePreviewPath({
-          slug: 'forside',
+          slug: 'home',
           collection: 'pages',
           req,
           locale,

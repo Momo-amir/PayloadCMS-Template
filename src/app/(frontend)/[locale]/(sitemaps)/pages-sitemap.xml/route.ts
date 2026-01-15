@@ -50,7 +50,7 @@ const getPagesSitemap = unstable_cache(
           .filter((page) => Boolean(page?.slug))
           .map((page) => {
             const loc =
-              page?.slug === 'forside'
+              page?.slug === 'home'
                 ? locale && locale !== 'da'
                   ? `${SITE_URL}/${locale}/`
                   : `${SITE_URL}/`

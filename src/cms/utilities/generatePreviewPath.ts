@@ -26,7 +26,7 @@ export const generatePreviewPath = ({ collection, slug, req, locale }: Props) =>
   const resolvedSlug = typeof slug === 'string' ? slug : ''
 
   const pathWithoutLocale =
-    collection === 'pages' && (resolvedSlug === 'home' || resolvedSlug === 'forside')
+    collection === 'pages' && resolvedSlug === 'home'
       ? ''
       : `${collectionPrefixMap[collection]}/${resolvedSlug}`
 
