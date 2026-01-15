@@ -27,6 +27,16 @@ export const plugins: Plugin[] = [
   redirectsPlugin({
     collections: ['pages', 'posts'],
     overrides: {
+      labels: {
+        singular: {
+          en: 'Redirect',
+          da: 'Omdirigering',
+        },
+        plural: {
+          en: 'Redirects',
+          da: 'Omdirigeringer',
+        },
+      },
       // @ts-expect-error - This is a valid override, mapped fields don't resolve to the same type
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
@@ -59,6 +69,16 @@ export const plugins: Plugin[] = [
       payment: false,
     },
     formOverrides: {
+      labels: {
+        singular: {
+          en: 'Form',
+          da: 'Formular',
+        },
+        plural: {
+          en: 'Forms',
+          da: 'Formularer',
+        },
+      },
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
           if ('name' in field && field.name === 'confirmationMessage') {
@@ -79,12 +99,34 @@ export const plugins: Plugin[] = [
         })
       },
     },
+    formSubmissionOverrides: {
+      labels: {
+        singular: {
+          en: 'Form Submission',
+          da: 'Formularindsendelse',
+        },
+        plural: {
+          en: 'Form Submissions',
+          da: 'Formularindsendelser',
+        },
+      },
+    },
   }),
   searchPlugin({
     collections: ['posts'],
     beforeSync: beforeSyncWithSearch,
     localize: true,
     searchOverrides: {
+      labels: {
+        singular: {
+          en: 'Search Result',
+          da: 'Søgeresultat',
+        },
+        plural: {
+          en: 'Search Results',
+          da: 'Søgeresultater',
+        },
+      },
       fields: ({ defaultFields }) => {
         return [...defaultFields, ...searchFields]
       },

@@ -138,6 +138,14 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { da, en },
     fallbackLanguage: 'en',
+    translations: {
+      da: {
+        general: {
+          noResults:
+            'Ingen {{label}} fundet. Enten findes der endnu ingen {{label}}, eller også matcher ingen af de filtre angivet ovenfor.',
+        },
+      },
+    },
   },
 
   localization: localization as LocalizationConfig,
