@@ -5,6 +5,7 @@ import { UserLogin } from './Component'
 export const UserLoginBlock: ComponentBlock = {
   slug: 'UserLogin',
   component: UserLogin,
+  imageURL: '/assets/block-icons/password-user.svg',
   interfaceName: 'UserLoginBlock',
   showOnPage: true,
   fields: [

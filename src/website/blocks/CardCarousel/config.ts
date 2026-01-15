@@ -5,6 +5,7 @@ import { CardCarouselBlock as CardCarouselBlockComponent } from './Component'
 export const CardCarouselBlock: ComponentBlock = {
   slug: 'cardCarouselBlock',
   component: CardCarouselBlockComponent,
+  imageURL: '/assets/block-icons/carousel-horizontal-main.svg',
   interfaceName: 'CardCarouselBlock',
   labels: {
     singular: 'Card Carousel',

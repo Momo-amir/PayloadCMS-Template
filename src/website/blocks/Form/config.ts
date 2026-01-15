@@ -12,6 +12,7 @@ import { ComponentBlock } from '@/website/types/ComponentBlock'
 export const FormBlock: ComponentBlock = {
   slug: 'formBlock',
   component: FormBlockComponent,
+  imageURL: '/assets/block-icons/subtitles-edit.svg',
   interfaceName: 'FormBlock',
   fields: [
     {

@@ -5,6 +5,7 @@ import { CardBlock as CardBlockComponent } from './Component'
 export const CardBlock: ComponentBlock = {
   slug: 'cardBlock',
   component: CardBlockComponent,
+  imageURL: '/assets/block-icons/cards.svg',
   interfaceName: 'CardBlock',
   labels: {
     singular: 'Card Layout',

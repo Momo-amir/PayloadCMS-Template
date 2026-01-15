@@ -11,6 +11,7 @@ import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 export const Archive: ComponentBlock = {
   slug: 'archive',
   component: ArchiveBlock,
+  imageURL: '/assets/block-icons/archive.svg',
   interfaceName: 'ArchiveBlock',
   fields: [
     {

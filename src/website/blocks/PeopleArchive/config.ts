@@ -12,6 +12,7 @@ import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 export const PeopleArchiveBlock: ComponentBlock = {
   slug: 'PeopleArchive',
   component: PeopleArchive,
+  imageURL: '/assets/block-icons/users.svg',
   interfaceName: 'PeopleArchiveBlock',
   showOnPage: true,
   fields: [

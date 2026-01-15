@@ -1,4 +1,4 @@
-import { RichTextBlockBlock } from "./RichTextBlock/config";
+import { RichTextBlockBlock } from './RichTextBlock/config'
 import { PeopleArchiveBlock } from './PeopleArchive/config'
 /* eslint-disable import/no-anonymous-default-export */
 import { UserLoginBlock } from './UserLogin/config'
@@ -11,6 +11,7 @@ import { CardCarouselBlock } from './CardCarousel/config'
 import { CardBlock } from './CardBlock/config'
 import { CallToAction } from './CallToAction/config'
 import { Archive } from './ArchiveBlock/config'
+import { Columns } from './Columns/config'
 
 export default {
   // Yes, both the types should be here for ideal intellisense
@@ -26,7 +27,8 @@ export default {
       CallToAction,
       UserLoginBlock,
       PeopleArchiveBlock,
-    RichTextBlockBlock,
+      RichTextBlockBlock,
+      Columns,
     ] satisfies ComponentBlock[])
   ),
 }
