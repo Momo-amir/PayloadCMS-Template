@@ -39,7 +39,7 @@ export const Header: GlobalConfig = {
     {
       name: 'navItems',
       type: 'array',
-      label: { en: 'Navigation Items', da: 'Navigationspunkter' },
+      label: { en: 'Navigation Items', da: 'Menupunkt' },
       fields: [
         link({
           appearances: false,
