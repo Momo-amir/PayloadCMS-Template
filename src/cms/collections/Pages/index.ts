@@ -130,8 +130,19 @@ export const Pages: CollectionConfig<'pages'> = {
         position: 'sidebar',
       },
     },
-
-    slugField(),
+    slugField({
+      overrides: (field) => {
+        type SlugRowField = { name?: string; localized?: boolean; label?: string }
+        type SlugRowLike = { fields?: SlugRowField[] }
+        const row = field as unknown as SlugRowLike
+        if (Array.isArray(row.fields)) {
+          const inner = row.fields.find((f) => f?.name === 'slug')
+          if (inner) inner.localized = true
+          if (row.fields[1]) row.fields[1].label = 'Website Link (Slug)'
+        }
+        return field
+      },
+    }),
   ],
   hooks: {
     afterChange: [revalidatePage],
