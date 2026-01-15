@@ -1,6 +1,11 @@
 # Localization Documentation
 
 This project uses **PayloadCMS** for backend content localization and **next-intl** for frontend internationalization. The default locale is Danish (`da`), with English (`en`) as a fallback locale.
+All projects built with this template have localization as an opt-in feature, meaning the language switcher in the header can be toggled on or off from the PayloadCMS admin dashboard. 
+
+Don't want localization? Simply turn off the language switcher and the website will behave as a single-locale site. DO NOT remove the localization configuration or middleware as that will break the site and is not necessary. 
+
+We this way allow the website owner to decide if/when they want to offer multiple languages down the line without any code changes.
 
 ## Table of Contents
 
