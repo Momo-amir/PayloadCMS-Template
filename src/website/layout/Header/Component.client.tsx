@@ -89,7 +89,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) =
             <span className="sr-only">Search</span>
             <IconSearch className="w-5 text-primary hover:scale-110 transition-transform duration-100 ease-in-out" />
           </Link>
-          <LocaleSwitcher />
+          {data.showLanguageSwitcher && <LocaleSwitcher />}
         </div>
       </div>
     </header>
