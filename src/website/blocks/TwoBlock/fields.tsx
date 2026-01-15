@@ -35,8 +35,6 @@ export function renderChildField(
       return <ArchiveBlock key={key} {...field} {...sharedProps} />
     case 'cta':
       return <CallToActionBlock key={key} {...field} {...sharedProps} />
-    case 'content':
-      return <ContentBlock key={key} {...field} {...sharedProps} /> // Temporarily kept for backward compatibility
     case 'richTextBlock':
       return <RichTextBlock key={key} {...field} {...sharedProps} />
     case 'formBlock':

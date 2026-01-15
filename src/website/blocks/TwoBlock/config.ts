@@ -10,6 +10,7 @@ import { TwoBlock } from './Component'
 export const TwoBlockBlock: ComponentBlock = {
   slug: 'twoBlock',
   component: TwoBlock,
+  imageURL: '/assets/block-icons/columns-2.svg',
   interfaceName: 'TwoColumnBlock',
   labels: {
     singular: 'Two-Column Layout',

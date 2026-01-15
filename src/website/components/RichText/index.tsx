@@ -12,11 +12,13 @@ import {
 } from '@payloadcms/richtext-lexical/react'
 
 import { CodeBlock, CodeBlockProps } from '@/website/blocks/Code/Component'
+import { ColumnsBlock } from '@/website/blocks/Columns/Component'
 
 import type {
   BannerBlock as BannerBlockProps,
   CallToActionBlock as CTABlockProps,
   MediaBlock as MediaBlockProps,
+  ColumnsBlock as ColumnsBlockProps,
 } from '@/payload-types'
 import { BannerBlock } from '@/website/blocks/Banner/Component'
 import { CallToActionBlock } from '@/website/blocks/CallToAction/Component'
@@ -24,7 +26,9 @@ import { cn } from '@/cms/utilities/ui'
 
 type NodeTypes =
   | DefaultNodeTypes
-  | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
+  | SerializedBlockNode<
+      CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps | ColumnsBlockProps
+    >
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const { value, relationTo } = linkNode.fields.doc!
@@ -52,6 +56,7 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
     ),
     code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
     cta: ({ node }) => <CallToActionBlock {...node.fields} />,
+    columns: ({ node }) => <ColumnsBlock className="col-start-1 col-span-3" {...node.fields} />,
   },
 })
 
