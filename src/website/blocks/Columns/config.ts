@@ -13,6 +13,7 @@ export const Columns: ComponentBlock = {
   component: ColumnsBlock,
   imageURL: '/assets/block-icons/layout-columns.svg',
   interfaceName: 'ColumnsBlock',
+  showOnPage: false,
   labels: {
     singular: 'Columns Layout',
     plural: 'Columns Layouts',
