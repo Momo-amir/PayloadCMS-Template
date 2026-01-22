@@ -1,6 +1,5 @@
 import { Archive } from '../ArchiveBlock/config'
 import { CallToAction } from '../CallToAction/config'
-import { Content } from '../Content/config' // Temporarily kept for backward compatibility
 import { FormBlock } from '../Form/config'
 import { MediaBlock } from '../MediaBlock/config'
 import { RichTextBlockBlock } from '../RichTextBlock/config'
