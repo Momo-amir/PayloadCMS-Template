@@ -20,14 +20,14 @@ export const TwoBlockBlock: ComponentBlock = {
     {
       name: 'left',
       type: 'blocks',
-      blocks: [Archive, CallToAction, Content, FormBlock, MediaBlock, RichTextBlockBlock], // Content kept for backward compatibility
+      blocks: [Archive, CallToAction, FormBlock, MediaBlock, RichTextBlockBlock],
       label: 'Left Column',
       maxRows: 1,
     },
     {
       name: 'right',
       type: 'blocks',
-      blocks: [Archive, CallToAction, Content, FormBlock, MediaBlock, RichTextBlockBlock], // Content kept for backward compatibility
+      blocks: [Archive, CallToAction, FormBlock, MediaBlock, RichTextBlockBlock],
       label: 'Right Column',
       maxRows: 1,
     },
