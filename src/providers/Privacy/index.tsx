@@ -8,6 +8,8 @@ type Privacy = {
   country?: string
   showConsent?: boolean
   updateCookieConsent: (accepted: boolean) => void
+  openConsentBanner: () => void
+  bannerRequestId: number
 }
 
 const Context = createContext<Privacy>({
@@ -15,6 +17,8 @@ const Context = createContext<Privacy>({
   country: undefined,
   showConsent: undefined,
   updateCookieConsent: () => false,
+  openConsentBanner: () => false,
+  bannerRequestId: 0,
 })
 
 type CookieConsent = {
@@ -43,6 +47,7 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [showConsent, setShowConsent] = useState<boolean | undefined>()
   const [cookieConsent, setCookieConsent] = useState<boolean | undefined>()
   const [country, setCountry] = useState<string | undefined>()
+  const [bannerRequestId, setBannerRequestId] = useState(0)
 
   const updateCookieConsent = useCallback(
     (accepted: boolean) => {
@@ -82,8 +87,22 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setShowConsent(true)
   }, [updateCookieConsent])
 
+  const openConsentBanner = useCallback(() => {
+    setShowConsent(true)
+    setBannerRequestId((current) => current + 1)
+  }, [])
+
   return (
-    <Context value={{ cookieConsent, country, showConsent, updateCookieConsent }}>
+    <Context
+      value={{
+        cookieConsent,
+        country,
+        showConsent,
+        updateCookieConsent,
+        openConsentBanner,
+        bannerRequestId,
+      }}
+    >
       {children}
     </Context>
   )

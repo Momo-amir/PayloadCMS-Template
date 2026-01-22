@@ -71,8 +71,14 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
   if (appearance === 'inline') {
+    const inlineClassName = ['hover:cursor-pointer', className].filter(Boolean).join(' ')
     return (
-      <Link className={className} href={href || url || ''} onClick={handleClick} {...newTabProps}>
+      <Link
+        className={inlineClassName}
+        href={href || url || ''}
+        onClick={handleClick}
+        {...newTabProps}
+      >
         {label && label}
         {children && children}
       </Link>

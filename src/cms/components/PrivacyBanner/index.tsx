@@ -14,7 +14,7 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
   const [closeBanner, setCloseBanner] = React.useState(false)
   const [animateOut, setAnimateOut] = React.useState(false)
 
-  const { showConsent, updateCookieConsent } = usePrivacy()
+  const { showConsent, updateCookieConsent, bannerRequestId } = usePrivacy()
 
   const t = useTranslations()
 
@@ -29,6 +29,13 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
       }, 300)
     }
   }, [animateOut])
+
+  React.useEffect(() => {
+    if (showConsent) {
+      setCloseBanner(false)
+      setAnimateOut(false)
+    }
+  }, [showConsent, bannerRequestId])
 
   if (!showConsent || closeBanner) {
     return null

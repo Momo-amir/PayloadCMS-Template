@@ -32,5 +32,6 @@
   "cookie-consent:privacy-policy": "privacy policy",
   "cookie-consent:more-info": "for more information.",
   "cookie-consent:accept": "Accept",
-  "cookie-consent:decline": "Dismiss all non-essential"
+  "cookie-consent:decline": "Dismiss all non-essential",
+  "cookie-consent:settings": "Cookie settings"
 }

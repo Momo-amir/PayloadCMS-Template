@@ -32,5 +32,6 @@
   "cookie-consent:privacy-policy": "privatlivspolitik",
   "cookie-consent:more-info": "for mere information.",
   "cookie-consent:accept": "Acceptér",
-  "cookie-consent:decline": "Kun nødvendige"
+  "cookie-consent:decline": "Kun nødvendige",
+  "cookie-consent:settings": "Cookieindstillinger"
 }

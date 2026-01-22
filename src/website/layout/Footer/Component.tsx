@@ -17,6 +17,7 @@ import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/website/components/Link'
 import { Logo } from '@/website/components/elements/Logo'
 import { getBranding, toLogoProps } from '@/cms/utilities/branding'
+import { ConsentLink } from './ConsentLink'
 
 const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   facebook: IconBrandFacebook,
@@ -76,6 +77,7 @@ export async function Footer({ locale }: { locale?: string } = {}) {
                 return <CMSLink key={i} {...link} appearance={'link'} size={'lg'} />
               })}
             </nav>
+            <ConsentLink />
             {/* Social Links */}
             {socialLinks.length > 0 && (
               <div className="flex md:flex-row gap-x-2">
