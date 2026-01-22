@@ -61,40 +61,25 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   )
 
   useEffect(() => {
-    ;(async () => {
-      const consent = getLocalStorage()
-      if (consent) {
-        setCountry(consent.country)
-        setCookieConsent(consent.accepted || false)
+    const consent = getLocalStorage()
+    if (consent) {
+      setCountry(consent.country)
+      setCookieConsent(consent.accepted || false)
 
-        // Update consent mode with stored preference
-        updateConsent('update', {
-          analytics_storage: consent.accepted ? 'granted' : 'denied',
-          ad_storage: consent.accepted ? 'granted' : 'denied',
-          ad_user_data: consent.accepted ? 'granted' : 'denied',
-          ad_personalization: consent.accepted ? 'granted' : 'denied',
-        })
-        return
-      }
+      // Update consent mode with stored preference
+      updateConsent('update', {
+        analytics_storage: consent.accepted ? 'granted' : 'denied',
+        ad_storage: consent.accepted ? 'granted' : 'denied',
+        ad_user_data: consent.accepted ? 'granted' : 'denied',
+        ad_personalization: consent.accepted ? 'granted' : 'denied',
+      })
+      setShowConsent(false)
+      return
+    }
 
-      try {
-        const gdpr = await fetch('/api/locate').then((res) => res.json())
-
-        setCountry(gdpr.country || '')
-
-        // Auto-accept for non-GDPR regions
-        if (!gdpr.isGDPR) {
-          setCookieConsent(true)
-          updateCookieConsent(true)
-        }
-
-        setShowConsent(gdpr.isGDPR || false)
-      } catch (error) {
-        console.error('Error fetching location data:', error)
-        // Default to showing consent banner on error (privacy-first approach)
-        setShowConsent(true)
-      }
-    })()
+    // Treat everyone as GDPR by default and always show the banner until a choice is made.
+    setCountry('GDPR')
+    setShowConsent(true)
   }, [updateCookieConsent])
 
   return (
