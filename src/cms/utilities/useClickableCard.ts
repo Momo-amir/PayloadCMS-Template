@@ -37,21 +37,13 @@ function useClickableCard<T extends HTMLElement>({
 
   const handleMouseDown = useCallback(
     (e: MouseEvent) => {
-      if (e.target) {
-        const target = e.target as Element
+      if (!e.target) return
+      const target = e.target as Element
+      const parent = target.closest('a')
 
-        const timeNow = +new Date()
-        const parent = target?.closest('a')
-
-        pressedButton.current = e.button
-
-        if (!parent) {
-          hasActiveParent.current = false
-          timeDown.current = timeNow
-        } else {
-          hasActiveParent.current = true
-        }
-      }
+      pressedButton.current = e.button
+      hasActiveParent.current = !!parent
+      if (!parent) timeDown.current = Date.now()
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [router, card, link, timeDown],
@@ -61,43 +53,39 @@ function useClickableCard<T extends HTMLElement>({
     (e: MouseEvent) => {
       const anchor = link.current
       const hrefFromAnchor = anchor?.getAttribute('href') || anchor?.href || ''
-      if (hrefFromAnchor) {
-        const timeNow = +new Date()
-        const difference = timeNow - timeDown.current
+      if (!hrefFromAnchor) return
+      if (Date.now() - timeDown.current > 250) return
+      if (hasActiveParent.current || pressedButton.current !== 0 || e.ctrlKey) return
 
-        if (difference <= 250) {
-          if (!hasActiveParent.current && pressedButton.current === 0 && !e.ctrlKey) {
-            // Decide external intelligently if not provided
-            let resolvedExternal = external
-            let to = hrefFromAnchor
-            try {
-              // Treat non-http(s) protocols as external
-              if (typeof resolvedExternal !== 'boolean') {
-                if (
-                  /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(hrefFromAnchor) &&
-                  !/^https?:/i.test(hrefFromAnchor)
-                ) {
-                  resolvedExternal = true
-                } else {
-                  const u = new URL(hrefFromAnchor, window.location.href)
-                  resolvedExternal = u.origin !== window.location.origin
-                  // Build relative for internal navigation
-                  to = `${u.pathname}${u.search}${u.hash}`
-                }
-              }
-            } catch {
-              // Fallback: assume internal
-              resolvedExternal = false
-            }
-
-            if (resolvedExternal) {
-              const target = newTab ? '_blank' : '_self'
-              window.open(hrefFromAnchor, target)
-            } else {
-              router.push(to, { scroll })
-            }
+      // Decide external intelligently if not provided
+      let resolvedExternal = external
+      let to = hrefFromAnchor
+      try {
+        // Treat non-http(s) protocols as external
+        if (typeof resolvedExternal !== 'boolean') {
+          if (
+            /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(hrefFromAnchor) &&
+            !/^https?:/i.test(hrefFromAnchor)
+          ) {
+            resolvedExternal = true
+          } else {
+            const u = new URL(hrefFromAnchor, window.location.href)
+            resolvedExternal = u.origin !== window.location.origin
+            // Build relative for internal navigation
+            to = `${u.pathname}${u.search}${u.hash}`
           }
         }
+      } catch {
+        // Fallback: assume internal
+        resolvedExternal = false
+      }
+
+      if (newTab) {
+        window.open(hrefFromAnchor, '_blank')
+      } else if (resolvedExternal) {
+        window.open(hrefFromAnchor, '_self')
+      } else {
+        router.push(to, { scroll })
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
