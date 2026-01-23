@@ -53,6 +53,7 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     (accepted: boolean) => {
       setCookieConsent(accepted)
       setLocalStorage(accepted, country || '')
+      setShowConsent(false)
 
       // Update Google Consent Mode
       updateConsent('update', {
