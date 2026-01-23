@@ -64,10 +64,14 @@ export const GoogleAnalytics: React.FC = () => {
 `,
         }}
         id="google-consent-mode"
+        strategy="beforeInteractive"
       />
 
       {/* Google Analytics */}
-      <Script defer src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementID}`} />
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementID}`}
+        strategy="afterInteractive"
+      />
       <Script
         dangerouslySetInnerHTML={{
           __html: `
@@ -78,8 +82,8 @@ export const GoogleAnalytics: React.FC = () => {
     allow_ad_personalization_signals: ${cookieConsent ? 'true' : 'false'}
   });`,
         }}
-        defer
         id="google-analytics"
+        strategy="afterInteractive"
       />
     </React.Fragment>
   )
