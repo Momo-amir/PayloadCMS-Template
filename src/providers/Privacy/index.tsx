@@ -51,6 +51,7 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateCookieConsent = useCallback(
     (accepted: boolean) => {
+      console.log('[privacy] updateCookieConsent', { accepted, country })
       setCookieConsent(accepted)
       setLocalStorage(accepted, country || '')
       setShowConsent(false)
@@ -69,6 +70,7 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   useEffect(() => {
     const consent = getLocalStorage()
     if (consent) {
+      console.log('[privacy] loaded consent', consent)
       setCountry(consent.country)
       setCookieConsent(consent.accepted || false)
 
@@ -84,6 +86,7 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
 
     // Treat everyone as GDPR by default and always show the banner until a choice is made.
+    console.log('[privacy] no stored consent, showing banner')
     setCountry('GDPR')
     setShowConsent(true)
   }, [updateCookieConsent])
