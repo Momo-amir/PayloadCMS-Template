@@ -14,10 +14,17 @@ export function track(event: string, value?: unknown): void {
   if (typeof window === 'undefined') return
 
   try {
+    const params = typeof value === 'object' && value !== null ? value : undefined
+
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', event, params)
+      return
+    }
+
     window.dataLayer = window.dataLayer || []
     window.dataLayer.push({
       event,
-      ...(typeof value === 'object' && value !== null ? value : {}),
+      ...(params ? params : {}),
     })
   } catch (error) {
     console.error('Analytics error:', error)
@@ -96,9 +103,14 @@ export const updateConsent = (
   if (typeof window === 'undefined') return
 
   try {
-    if (typeof window.gtag === 'function') {
-      window.gtag('consent', command, params)
+    if (typeof window.gtag !== 'function') {
+      window.dataLayer = window.dataLayer || []
+      window.gtag = (...args: unknown[]) => {
+        window.dataLayer?.push(args)
+      }
     }
+
+    window.gtag('consent', command, params)
   } catch (error) {
     console.error('Consent update error:', error)
   }
