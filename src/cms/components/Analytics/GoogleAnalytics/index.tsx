@@ -11,6 +11,7 @@ const gaMeasurementID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
 export const GoogleAnalytics: React.FC = () => {
   const pathname = usePathname()
   const { cookieConsent } = usePrivacy()
+  const gaScriptId = 'google-analytics-gtag'
 
   // Update consent mode when user makes a choice
   React.useEffect(() => {
@@ -39,6 +40,30 @@ export const GoogleAnalytics: React.FC = () => {
     })
   }, [pathname, cookieConsent])
 
+  React.useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (!gaMeasurementID) return
+    if (document.getElementById(gaScriptId)) return
+
+    const script = document.createElement('script')
+    script.async = true
+    script.id = gaScriptId
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${gaMeasurementID}`
+    document.head.appendChild(script)
+  }, [])
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined' || !window.gtag) return
+    if (!gaMeasurementID) return
+
+    window.gtag('js', new Date())
+    window.gtag('config', gaMeasurementID, {
+      send_page_view: false,
+      allow_google_signals: cookieConsent ? true : false,
+      allow_ad_personalization_signals: cookieConsent ? true : false,
+    })
+  }, [cookieConsent])
+
   if (!gaMeasurementID) {
     return null
   }
@@ -64,26 +89,6 @@ export const GoogleAnalytics: React.FC = () => {
 `,
         }}
         id="google-consent-mode"
-        strategy="beforeInteractive"
-      />
-
-      {/* Google Analytics */}
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementID}`}
-        strategy="afterInteractive"
-      />
-      <Script
-        dangerouslySetInnerHTML={{
-          __html: `
-  gtag('js', new Date());
-  gtag('config', '${gaMeasurementID}', { 
-    send_page_view: false,
-    allow_google_signals: ${cookieConsent ? 'true' : 'false'},
-    allow_ad_personalization_signals: ${cookieConsent ? 'true' : 'false'}
-  });`,
-        }}
-        id="google-analytics"
-        strategy="afterInteractive"
       />
     </React.Fragment>
   )
