@@ -57,6 +57,14 @@ export const AnalyticsAggregates: CollectionConfig = {
         description: 'Aggregated event data (no PII)',
       },
     },
+    {
+      name: 'metadata_hash',
+      type: 'text',
+      index: true,
+      admin: {
+        description: 'MD5 hash of metadata for accurate duplicate detection',
+      },
+    },
   ],
   timestamps: true,
 }

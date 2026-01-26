@@ -2,6 +2,7 @@
 
 import React, { createContext, use, useCallback, useEffect, useState } from 'react'
 import { updateAnalyticsConsent } from '@/cms/utilities/analytics-server'
+import { getConsentFromCookie, setConsentCookie } from '@/cms/utilities/consent-cookie'
 
 type Privacy = {
   cookieConsent?: boolean
@@ -29,44 +30,44 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateCookieConsent = useCallback(async (accepted: boolean) => {
     try {
-      // Update consent on server (sets HttpOnly cookie)
-      const response = await fetch('/api/consent', {
+      // 1. Set first-party cookie (readable by track() function)
+      setConsentCookie(accepted)
+
+      // 2. Update in-memory state (React context)
+      setCookieConsent(accepted)
+
+      // 3. Update analytics client consent status
+      updateAnalyticsConsent(accepted)
+
+      // 4. Persist to server database (for audit trail)
+      await fetch('/api/consent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ analytics: accepted }),
       })
 
-      if (response.ok) {
-        setCookieConsent(accepted)
-        // Update analytics client consent status
-        updateAnalyticsConsent(accepted)
-        setShowConsent(false)
-      }
+      // 5. Hide banner
+      setShowConsent(false)
     } catch (error) {
       console.error('Failed to update consent:', error)
     }
   }, [])
 
   useEffect(() => {
-    // Check if user already has consent set (via server-side cookie)
-    fetch('/api/consent')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.analytics !== undefined) {
-          // User has made a choice (accepted OR rejected)
-          // Sync analytics client with consent status
-          updateAnalyticsConsent(data.analytics)
-          setCookieConsent(data.analytics)
-          setShowConsent(false) // Don't show banner - choice already made
-        } else {
-          // First visit - no choice made yet
-          setShowConsent(true)
-        }
-      })
-      .catch(() => {
-        // Error fetching consent - show banner to be safe
-        setShowConsent(true)
-      })
+    // Check first-party cookie for existing consent
+    const consentState = getConsentFromCookie()
+
+    if (consentState) {
+      // User has made a choice - sync to in-memory state
+      const hasConsent = consentState.analytics
+      setCookieConsent(hasConsent)
+      updateAnalyticsConsent(hasConsent)
+      setShowConsent(false) // Don't show banner
+    } else {
+      // No consent cookie found - first visit or expired
+      // Show banner for user to make choice
+      setShowConsent(true)
+    }
 
     setCountry('GDPR')
   }, [])

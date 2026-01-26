@@ -14,16 +14,19 @@ export default async function EventTrackerGraph({ req }: WidgetServerProps) {
   const { payload } = req
 
   try {
-    // Get all analytics aggregates
-    const { docs: aggregates } = await payload.find({
-      collection: 'analytics-aggregates',
-      limit: 5000,
-      sort: 'date',
-    })
-
     // Get date 30 days ago
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    // Get analytics aggregates from last 30 days only
+    const { docs: aggregates } = await payload.find({
+      collection: 'analytics-aggregates',
+      where: {
+        date: { greater_than_equal: thirtyDaysAgo.toISOString() },
+      },
+      limit: 1000,
+      sort: 'date',
+    })
 
     // Group by date
     const dateMap = new Map<string, DataPoint>()

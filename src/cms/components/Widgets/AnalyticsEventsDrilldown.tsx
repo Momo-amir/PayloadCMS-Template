@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 interface EventData {
   name: string
   count: number
-  parameters: Map<string, Map<string, number>>
+  parameters: Record<string, Record<string, number>>
 }
 
 interface DrilldownProps {
@@ -50,15 +50,15 @@ export default function AnalyticsEventsDrilldown({ events, totalCount }: Drilldo
     items = events.map((e) => ({ label: e.name, count: e.count }))
     title = 'Event Names'
   } else if (currentView === 'parameters' && selectedEvent) {
-    items = Array.from(selectedEvent.parameters.entries()).map(([key, values]) => {
-      const count = Array.from(values.values()).reduce((sum, c) => sum + c, 0)
+    items = Object.entries(selectedEvent.parameters).map(([key, values]) => {
+      const count = Object.values(values).reduce((sum, c) => sum + c, 0)
       return { label: key, count }
     })
     title = selectedEvent.name
   } else if (currentView === 'values' && selectedEvent && selectedParameter) {
-    const paramValues = selectedEvent.parameters.get(selectedParameter)
+    const paramValues = selectedEvent.parameters[selectedParameter]
     if (paramValues) {
-      items = Array.from(paramValues.entries()).map(([value, count]) => ({ label: value, count }))
+      items = Object.entries(paramValues).map(([value, count]) => ({ label: value, count }))
     }
     title = selectedParameter
   }

@@ -9,8 +9,9 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
   useHeaderThemeOverride('dark')
 
   useEffect(() => {
-    // Track generic page view
-    trackPageView(document.title, document.referrer)
+    // Track generic page view with post title
+    const postTitle = post.title || post.slug || 'Unknown Post'
+    trackPageView(postTitle, document.referrer)
 
     // Track specific post view
     const categories = post.categories

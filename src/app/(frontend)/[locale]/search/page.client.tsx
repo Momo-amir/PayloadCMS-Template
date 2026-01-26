@@ -1,8 +1,21 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { track } from '@/cms/utilities/analytics-server'
+import { useSearchParams } from 'next/navigation'
 
 const PageClient: React.FC = () => {
-  /* Force the header to be dark mode while we have an image behind it */
+  const searchParams = useSearchParams()
+  const query = searchParams.get('q')
+
+  useEffect(() => {
+    // Track search with query term
+    if (query) {
+      track('search', {
+        search_term: query,
+      })
+    }
+  }, [query])
+
   return <React.Fragment />
 }
 

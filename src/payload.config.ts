@@ -26,6 +26,16 @@ import { ConsentTokens } from './cms/collections/ConsentTokens'
 import { AnalyticsAggregates } from './cms/collections/AnalyticsAggregates'
 import { AnalyticsConfig } from './cms/globals/AnalyticsConfig/config'
 
+// Analytics jobs
+import {
+  aggregateEventTask,
+  forwardToGA4Task,
+  forwardToMatomoTask,
+} from './cms/jobs/analytics-tasks'
+import { processAnalyticsEventWorkflow } from './cms/jobs/analytics-workflow'
+import { cleanupOldJobsTask } from './cms/jobs/cleanup-task'
+import { cleanupJobsWorkflow } from './cms/jobs/cleanup-workflow'
+
 import exports from './website/blocks/exports'
 import localization from './i18n/localization'
 
@@ -62,14 +72,14 @@ export default buildConfig({
         {
           slug: 'analytics-events',
           ComponentPath: '@/cms/components/widgets/AnalyticsEventsWidget.tsx#default',
-          minWidth: 'medium',
-          maxWidth: 'full',
+          minWidth: 'medium' as const,
+          maxWidth: 'full' as const,
         },
         {
           slug: 'analytics-overview',
           ComponentPath: '@/cms/components/widgets/EventTrackerGraph.tsx#default',
-          minWidth: 'medium',
-          maxWidth: 'full',
+          minWidth: 'medium' as const,
+          maxWidth: 'full' as const,
         },
       ],
     },
@@ -135,7 +145,19 @@ export default buildConfig({
         return authHeader === `Bearer ${process.env.CRON_SECRET}`
       },
     },
-    tasks: [],
+    // Analytics processing tasks
+    tasks: [aggregateEventTask, forwardToGA4Task, forwardToMatomoTask, cleanupOldJobsTask],
+    // Analytics workflow
+    workflows: [processAnalyticsEventWorkflow, cleanupJobsWorkflow],
+    // Auto-run processes queued jobs every 5 minutes
+    // To run cleanup, queue it manually or via external cron
+    autoRun: [
+      {
+        cron: '*/5 * * * *', // Process analytics events every 5 minutes
+        limit: 100,
+        queue: 'default',
+      },
+    ],
   },
 
   //Email config - using nodemailer TODO hook up to sendgrid or similar - when ready hooks available with req.payload.sendEmail() etc

@@ -7,6 +7,40 @@ import { cookies } from 'next/headers'
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
 const RATE_LIMIT = 100
 const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+let lastCleanup = Date.now()
+
+// Cleanup old rate limit entries (runs on each request, max once per minute)
+function cleanupRateLimitMap() {
+  const now = Date.now()
+  // Only cleanup if more than 1 minute has passed since last cleanup
+  if (now - lastCleanup < 60000) return
+
+  lastCleanup = now
+  for (const [ip, record] of rateLimitMap.entries()) {
+    if (now > record.resetAt) {
+      rateLimitMap.delete(ip)
+    }
+  }
+
+  // Log memory stats in dev
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[Analytics] Rate limit map size: ${rateLimitMap.size} entries`)
+  }
+}
+
+// Analytics config type
+type AnalyticsConfig = {
+  enabled?: boolean | null
+  store_aggregates?: boolean | null
+  ga4_enabled?: boolean | null
+  matomo_enabled?: boolean | null
+  anonymize_ip?: boolean | null
+}
+
+// Cache analytics config (changes rarely)
+let cachedConfig: AnalyticsConfig | null = null
+let configCacheTime = 0
+const CONFIG_CACHE_TTL = 60000 // 1 minute
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
@@ -67,6 +101,9 @@ function sanitizeEventData(data: unknown): Record<string, unknown> {
 
 export async function POST(request: NextRequest) {
   try {
+    // Lazy cleanup of rate limit map
+    cleanupRateLimitMap()
+
     const payload = await getPayload({ config })
 
     // Get client IP for rate limiting
@@ -107,7 +144,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No events provided' }, { status: 400 })
     }
 
-    const analyticsConfig = await payload.findGlobal({ slug: 'analytics-config' })
+    // Get analytics config with caching
+    const now = Date.now()
+    if (!cachedConfig || now - configCacheTime > CONFIG_CACHE_TTL) {
+      cachedConfig = await payload.findGlobal({ slug: 'analytics-config' })
+      configCacheTime = now
+    }
+    const analyticsConfig = cachedConfig
 
     if (!analyticsConfig?.enabled) {
       return NextResponse.json({ success: true }) // Silently accept but don't process
@@ -116,123 +159,33 @@ export async function POST(request: NextRequest) {
     const country = analyticsConfig?.anonymize_ip ? getCountryFromIP(ip) : null
     const today = new Date().toISOString().split('T')[0]! // YYYY-MM-DD (always defined)
 
-    // Process each event
+    // Queue each event using Payload's native job system
+    // Jobs will be processed by autoRun cron (every 5 minutes)
     for (const event of events) {
       if (!event || !event.event_name) continue // Skip invalid events
 
       const normalizedPath = normalizeURL(event.page_path || '')
       const sanitizedData = sanitizeEventData(event.event_data || {})
 
-      // Store aggregate if enabled
-      if (analyticsConfig?.store_aggregates) {
-        // Find or create aggregate record
-        const existing = await payload.find({
-          collection: 'analytics-aggregates',
-          where: {
-            and: [
-              { event_name: { equals: event.event_name } },
-              { page_path: { equals: normalizedPath } },
-              { date: { equals: today } },
-              { country: { equals: country || 'unknown' } },
-            ],
-          },
-          limit: 1,
-        })
-
-        const existingDoc = existing.docs[0]
-        if (existingDoc?.id) {
-          // Increment existing
-          await payload.update({
-            collection: 'analytics-aggregates',
-            id: existingDoc.id,
-            data: {
-              count: (existingDoc.count || 0) + 1,
-            },
-          })
-        } else {
-          // Create new
-          await payload.create({
-            collection: 'analytics-aggregates',
-            data: {
-              event_name: event.event_name,
-              page_path: normalizedPath,
-              count: 1,
-              date: today,
-              country: country || 'unknown',
-              metadata: sanitizedData,
-            },
-            draft: false,
-          })
-        }
-      }
-
-      // Forward to Matomo if enabled
-      if (analyticsConfig?.matomo_enabled) {
-        const matomoUrl = process.env.MATOMO_URL
-        const matomoSiteId = process.env.MATOMO_SITE_ID
-
-        if (matomoUrl && matomoSiteId) {
-          try {
-            const params = new URLSearchParams({
-              idsite: matomoSiteId,
-              rec: '1',
-              action_name: event.event_name,
-              url: normalizedPath,
-            })
-
-            await fetch(`${matomoUrl}/matomo.php?${params.toString()}`, {
-              method: 'GET',
-            })
-          } catch (error) {
-            console.error('Matomo forward error:', error)
-          }
-        }
-      }
-
-      // Forward to GA4 if enabled
-      if (analyticsConfig?.ga4_enabled) {
-        const ga4MeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
-        const ga4ApiSecret = process.env.GA4_API_SECRET
-
-        if (ga4MeasurementId && ga4ApiSecret) {
-          try {
-            const ga4Payload = {
-              client_id: consentToken.substring(0, 32),
-              events: [
-                {
-                  name: event.event_name,
-                  params: {
-                    ...sanitizedData,
-                    page_location: normalizedPath,
-                    engagement_time_msec: '100', // Required by GA4
-                  },
-                },
-              ],
-            }
-
-            const ga4Response = await fetch(
-              `https://www.google-analytics.com/mp/collect?measurement_id=${ga4MeasurementId}&api_secret=${ga4ApiSecret}`,
-              {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(ga4Payload),
-              },
-            )
-
-            if (!ga4Response.ok) {
-              const errorText = await ga4Response.text()
-              console.error('GA4 forward failed:', ga4Response.status, errorText)
-            } else {
-              console.log('GA4 event sent:', event.event_name)
-            }
-          } catch (error) {
-            console.error('GA4 forward error:', error)
-          }
-        }
-      }
+      // Queue workflow job (includes aggregation + GA4 + Matomo)
+      await payload.jobs.queue({
+        workflow: 'processAnalyticsEvent',
+        input: {
+          event_name: event.event_name,
+          page_path: normalizedPath,
+          event_data: sanitizedData,
+          country: country || 'unknown',
+          date: today,
+          consent_token: consentToken,
+          store_aggregates: analyticsConfig?.store_aggregates || false,
+          ga4_enabled: analyticsConfig?.ga4_enabled || false,
+          matomo_enabled: analyticsConfig?.matomo_enabled || false,
+        },
+      })
     }
 
-    return NextResponse.json({ success: true })
+    // Return immediately (jobs process async via cron)
+    return NextResponse.json({ success: true, queued: events.length }, { status: 201 })
   } catch (error) {
     console.error('Analytics API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

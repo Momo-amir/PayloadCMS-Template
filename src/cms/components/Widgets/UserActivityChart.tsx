@@ -39,6 +39,7 @@ export default function UserActivityChart({ data, maxValue }: UserActivityChartP
 
   // Calculate points for each line
   const getYPosition = (value: number) => {
+    if (maxValue === 0) return padding.top + innerHeight / 2
     const normalized = value / maxValue
     return padding.top + innerHeight - normalized * innerHeight
   }
@@ -49,11 +50,12 @@ export default function UserActivityChart({ data, maxValue }: UserActivityChartP
   }
 
   const createPath = (dataKey: 'total' | 'pageViews' | 'interactions' | 'impressions') => {
+    if (data.length === 0) return ''
     return data
       .map((point, index) => {
         const x = getXPosition(index)
         const y = getYPosition(point[dataKey])
-        return `${index === 0 ? 'M' : 'L'} ${x} ${y}`
+        return `${index === 0 ? 'M' : 'L'} ${x},${y}`
       })
       .join(' ')
   }

@@ -4,6 +4,8 @@
  * Keeps the SAME API so your components don't need changes
  */
 
+import { getConsentFromCookie } from './consent-cookie'
+
 interface AnalyticsEvent {
   event_name: string
   event_data?: Record<string, unknown>
@@ -14,14 +16,14 @@ class AnalyticsClient {
   private queue: AnalyticsEvent[] = []
   private flushInterval: NodeJS.Timeout | null = null
   private readonly BATCH_SIZE = 10 // Send after 10 events
-  private readonly FLUSH_INTERVAL = 5000 // Or send every 5 seconds
+  private readonly FLUSH_INTERVAL = 25000 // Or send every 25 seconds
   private consentGiven: boolean = false
 
   constructor() {
     if (typeof window === 'undefined') return
 
-    // Check consent status on init
-    this.checkConsent()
+    // Check consent from first-party cookie (synchronous)
+    this.syncConsentFromCookie()
 
     // Auto-flush every 5 seconds (catches low-activity pages)
     this.flushInterval = setInterval(() => this.flush(), this.FLUSH_INTERVAL)
@@ -35,21 +37,23 @@ class AnalyticsClient {
     })
   }
 
-  private async checkConsent() {
-    try {
-      const response = await fetch('/api/consent')
-      const data = await response.json()
-      this.consentGiven = data.analytics === true
-    } catch {
-      this.consentGiven = false
-    }
+  private syncConsentFromCookie() {
+    const consentState = getConsentFromCookie()
+    this.consentGiven = consentState?.analytics === true
   }
 
   track(eventName: string, eventData?: Record<string, unknown>) {
     if (typeof window === 'undefined') return
 
-    // Don't queue events if consent not given
-    if (!this.consentGiven) return
+    // CRITICAL: Check in-memory consent state (not storage, not DB)
+    // If consent not given, track() becomes a no-op
+    if (!this.consentGiven) {
+      // Optional: log to console in dev for debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Analytics] Event blocked - no consent:', eventName)
+      }
+      return
+    }
 
     const event: AnalyticsEvent = {
       event_name: eventName,
@@ -178,7 +182,7 @@ export const trackVideoInteraction = (
 }
 
 // Standard analytics additions
-export const trackScrollDepth = (depth: 25 | 50 | 75 | 100): void => {
+export const trackScrollDepth = (depth: 50 | 100): void => {
   track('scroll_depth', { depth_percentage: depth })
 }
 
@@ -186,14 +190,27 @@ export const trackError = (errorType: string, errorMessage?: string, path?: stri
   track('error', { error_type: errorType, error_message: errorMessage, page_path: path })
 }
 
+// Helper to bucket viewport size for privacy compliance
+function bucketViewport(width: number, height: number): string {
+  let category = 'unknown'
+  if (width < 640) category = 'mobile'
+  else if (width < 1024) category = 'tablet'
+  else if (width < 1920) category = 'desktop'
+  else category = 'large'
+
+  // Include aspect ratio hint
+  const aspectRatio = height > 0 ? (width / height).toFixed(2) : '0'
+  return `${category}_${aspectRatio}`
+}
+
 export const trackPageView = (title?: string, referrer?: string): void => {
   track('page_view', {
     page_title: title || document?.title,
     referrer: referrer || document?.referrer,
-    screen_resolution:
-      typeof window !== 'undefined' ? `${window.screen.width}x${window.screen.height}` : undefined,
-    viewport_size:
-      typeof window !== 'undefined' ? `${window.innerWidth}x${window.innerHeight}` : undefined,
+    viewport_category:
+      typeof window !== 'undefined'
+        ? bucketViewport(window.innerWidth, window.innerHeight)
+        : undefined,
   })
 }
 
@@ -215,13 +232,14 @@ export const updateConsent = () => {
 /**
  * Scroll depth tracking hook for long-form content
  * Add <ScrollDepthTracker /> to layouts where you want to track scroll depth
+ * Tracks only 50% and 100% to reduce event volume
  */
 export const useScrollDepthTracking = () => {
   if (typeof window === 'undefined') return
 
-  const scrollDepths = { 25: false, 50: false, 75: false, 100: false }
+  const scrollDepths = { 50: false, 100: false }
 
-  const createScrollSentinel = (depth: 25 | 50 | 75 | 100) => {
+  const createScrollSentinel = (depth: 50 | 100) => {
     const sentinel = document.createElement('div')
     sentinel.id = `scroll-depth-${depth}`
     sentinel.style.position = 'absolute'
@@ -236,9 +254,7 @@ export const useScrollDepthTracking = () => {
 
   const setupTracking = () => {
     const sentinels = {
-      25: createScrollSentinel(25),
       50: createScrollSentinel(50),
-      75: createScrollSentinel(75),
       100: createScrollSentinel(100),
     }
 
@@ -246,7 +262,7 @@ export const useScrollDepthTracking = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const depth = parseInt(entry.target.id.split('-')[2] || '0') as 25 | 50 | 75 | 100
+            const depth = parseInt(entry.target.id.split('-')[2] || '0') as 50 | 100
             if (!scrollDepths[depth]) {
               scrollDepths[depth] = true
               trackScrollDepth(depth)
