@@ -13,9 +13,8 @@ import { PrivacyProvider } from '@/providers/Privacy'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/cms/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
-import { GoogleAnalytics } from '@/cms/components/Analytics/GoogleAnalytics'
-import { GoogleTagManager } from '@/cms/components/Analytics/GoogleTagManager'
 import { PrivacyBanner } from '@/cms/components/PrivacyBanner'
+import { ScrollDepthTracker } from '@/cms/components/Analytics/AutoTracker'
 import { NextIntlClientProvider } from 'next-intl'
 import localization from '@/i18n/localization'
 import { getMessages, setRequestLocale } from 'next-intl/server'
@@ -41,10 +40,10 @@ export default async function RootLayout({
   const { lightHref, darkHref, appleTouchIcon } = toFaviconProps(branding)
 
   const { locale } = await params
-  const currentLocale =
+  const _currentLocale =
     localization.locales.find((location) => location.code === locale) || localization.locales[0]
 
-  if (!routing.locales.includes(locale as any)) {
+  if (!routing.locales.includes(locale as TypedLocale)) {
     notFound()
   }
 
@@ -78,17 +77,11 @@ export default async function RootLayout({
 
           {/* Apple touch icons - use PNG format when available, fallback to light favicon */}
           <link href={appleTouchIcon} rel="apple-touch-icon" sizes="180x180" />
-
-          {/* DNS Prefetch for Analytics */}
-          <link href="https://www.googletagmanager.com" rel="preconnect" />
-          <link href="https://www.google-analytics.com" rel="preconnect" />
         </head>
         <body>
           <NextIntlClientProvider locale={locale} messages={messages}>
-            {/* Google Analytics */}
-            <GoogleAnalytics />
-            <GoogleTagManager />
             <Providers>
+              <ScrollDepthTracker />
               <AdminBar
                 adminBarProps={{
                   preview: isEnabled,

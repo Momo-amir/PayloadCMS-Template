@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react'
-import { track, trackButtonClick } from '@/cms/utilities/analytics'
+import { track, trackButtonClick } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 
 /**
@@ -177,7 +177,7 @@ export const useTrackEvent = (eventName: string) => {
   const { cookieConsent } = usePrivacy()
 
   return useCallback(
-    (params?: unknown) => {
+    (params?: Record<string, unknown>) => {
       if (!cookieConsent) return
       track(eventName, params)
     },

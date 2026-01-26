@@ -21,6 +21,11 @@ import { defaultLexical } from '@/cms/fields/defaultLexical'
 import { getServerSideURL } from './cms/utilities/getURL'
 import { People } from './cms/collections/People'
 
+// Server-side analytics
+import { ConsentTokens } from './cms/collections/ConsentTokens'
+import { AnalyticsAggregates } from './cms/collections/AnalyticsAggregates'
+import { AnalyticsConfig } from './cms/globals/AnalyticsConfig/config'
+
 import exports from './website/blocks/exports'
 import localization from './i18n/localization'
 
@@ -89,9 +94,9 @@ export default buildConfig({
     },
   }),
 
-  collections: [Pages, Posts, Media, Categories, Users, People],
+  collections: [Pages, Posts, Media, Categories, Users, People, ConsentTokens, AnalyticsAggregates],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, BrandingGlobal],
+  globals: [Header, Footer, BrandingGlobal, AnalyticsConfig],
   plugins: [
     ...plugins,
     // storage-adapter-placeholder

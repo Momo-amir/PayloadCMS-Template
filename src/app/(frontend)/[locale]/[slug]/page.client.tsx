@@ -1,10 +1,13 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { trackPageView } from '@/cms/utilities/analytics-server'
 
 const PageClient: React.FC = () => {
-  /* Example to force header theme, if needed:
-   * useHeaderThemeOverride('light')
-   */
+  useEffect(() => {
+    // Track page view with title and referrer
+    trackPageView(document.title, document.referrer)
+  }, [])
+
   return <React.Fragment />
 }
 

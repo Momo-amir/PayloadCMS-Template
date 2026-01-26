@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/website/components/elements/card'
-import { trackPostCardClick } from '@/cms/utilities/analytics'
+import { trackPostCardClick } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 import { useTranslations } from 'next-intl'
 

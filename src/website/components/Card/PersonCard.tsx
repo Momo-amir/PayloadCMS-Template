@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/website/components/elements/card'
-import { trackButtonClick } from '@/cms/utilities/analytics'
+import { trackButtonClick } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 import { useTranslations } from 'next-intl'
 

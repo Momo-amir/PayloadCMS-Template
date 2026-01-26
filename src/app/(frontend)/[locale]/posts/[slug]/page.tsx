@@ -38,7 +38,7 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   return (
     <main className="pt-16 pb-16">
-      <PageClient />
+      <PageClient post={post} />
 
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
