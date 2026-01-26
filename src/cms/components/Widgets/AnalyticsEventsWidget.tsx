@@ -1,6 +1,6 @@
 import type { WidgetServerProps } from 'payload'
 import React from 'react'
-import AnalyticsEventsDrilldown from '@/cms/components/Widgets/AnalyticsEventsDrilldown'
+import AnalyticsEventsDrilldown from '@/cms/components/widgets/AnalyticsEventsDrilldown'
 
 interface EventData {
   name: string

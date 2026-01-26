@@ -1,6 +1,6 @@
 import type { WidgetServerProps } from 'payload'
 import React from 'react'
-import UserActivityChart from '@/cms/components/Widgets/UserActivityChart'
+import UserActivityChart from '@/cms/components/widgets/UserActivityChart'
 
 interface DataPoint {
   date: string
