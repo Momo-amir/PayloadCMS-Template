@@ -11,7 +11,7 @@ import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical
 import { fields } from './fields'
 import { getClientSideURL } from '@/cms/utilities/getURL'
 import { cn } from '@/cms/utilities/ui'
-import { trackFormSubmit } from '@/cms/utilities/analytics'
+import { trackFormSubmit } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 
 export type FormBlockType = {

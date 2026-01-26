@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react'
-import { track, trackButtonClick } from '@/cms/utilities/analytics'
+import { track, trackButtonClick } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 
 /**
@@ -32,6 +32,9 @@ export const useTrackClick = (buttonName: string, section?: string) => {
  * Hook to track component impressions (when component becomes visible)
  * Uses Intersection Observer API
  *
+ * **SESSION DEDUPLICATION:** Each component is tracked only ONCE per session,
+ * preventing duplicate impressions on page navigation or re-renders.
+ *
  * @param componentName - Name of the component
  * @param componentType - Type of component (e.g., 'hero', 'cta', 'testimonial')
  * @param threshold - Visibility threshold (0-1, default 0.5 = 50% visible)
@@ -58,6 +61,15 @@ export const useTrackImpression = (
   useEffect(() => {
     if (!cookieConsent || !ref.current || hasTracked.current) return
 
+    // Session deduplication - check if this component was already tracked
+    const sessionKey = `analytics_impression_${componentName}_${componentType || 'default'}`
+    const alreadyTrackedInSession = sessionStorage.getItem(sessionKey)
+
+    if (alreadyTrackedInSession === 'true') {
+      hasTracked.current = true
+      return
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -70,6 +82,8 @@ export const useTrackImpression = (
                   component_type: componentType,
                 })
                 hasTracked.current = true
+                // Mark as tracked in session storage
+                sessionStorage.setItem(sessionKey, 'true')
               }
             }, minVisibleTime)
           } else {
@@ -177,7 +191,7 @@ export const useTrackEvent = (eventName: string) => {
   const { cookieConsent } = usePrivacy()
 
   return useCallback(
-    (params?: unknown) => {
+    (params?: Record<string, unknown>) => {
       if (!cookieConsent) return
       track(eventName, params)
     },

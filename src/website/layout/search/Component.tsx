@@ -4,7 +4,7 @@ import { Label } from '@/website/components/elements/label'
 import React, { useState, useEffect } from 'react'
 import { useDebounce } from '@/cms/utilities/useDebounce'
 import { useRouter } from 'next/navigation'
-import { trackSearch } from '@/cms/utilities/analytics'
+import { trackSearch } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 import { useTranslations } from 'next-intl'
 

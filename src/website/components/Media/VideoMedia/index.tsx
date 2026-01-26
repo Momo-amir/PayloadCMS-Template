@@ -8,7 +8,7 @@ import type { Props as MediaProps } from '../types'
 import { getClientSideURL } from '@/cms/utilities/getURL'
 import { Button } from '../../elements/button'
 import { IconPlayerPlayFilled, IconPlayerPauseFilled } from '@tabler/icons-react'
-import { trackVideoInteraction } from '@/cms/utilities/analytics'
+import { trackVideoInteraction } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 
 export const VideoMedia: React.FC<MediaProps> = (props) => {

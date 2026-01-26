@@ -9,6 +9,11 @@ declare global {
       // Analytics Environment Variables
       NEXT_PUBLIC_GA_MEASUREMENT_ID?: string // Google Analytics Measurement ID (e.g., G-XXXXXXXXXX)
       NEXT_PUBLIC_GTM_MEASUREMENT_ID?: string // Google Tag Manager Container ID (e.g., GTM-XXXXXXX)
+
+      // Server-side analytics (private - not exposed to client)
+      MATOMO_URL?: string // Matomo instance URL (e.g., https://matomo.example.com)
+      MATOMO_SITE_ID?: string // Matomo site ID
+      GA4_API_SECRET?: string // GA4 Measurement Protocol API Secret (pairs with NEXT_PUBLIC_GA_MEASUREMENT_ID)
     }
   }
 }

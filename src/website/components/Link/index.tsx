@@ -3,7 +3,7 @@
 import { Button, type ButtonProps } from '@/website/components/elements/button'
 import Link from 'next/link'
 import React from 'react'
-import { trackButtonClick } from '@/cms/utilities/analytics'
+import { trackButtonClick } from '@/cms/utilities/analytics-server'
 
 import type { Page, Post } from '@/payload-types'
 

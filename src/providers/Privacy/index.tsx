@@ -1,7 +1,8 @@
 'use client'
 
 import React, { createContext, use, useCallback, useEffect, useState } from 'react'
-import { updateConsent } from '@/cms/utilities/analytics'
+import { updateAnalyticsConsent } from '@/cms/utilities/analytics-server'
+import { getConsentFromCookie, setConsentCookie } from '@/cms/utilities/consent-cookie'
 
 type Privacy = {
   cookieConsent?: boolean
@@ -21,72 +22,55 @@ const Context = createContext<Privacy>({
   bannerRequestId: 0,
 })
 
-type CookieConsent = {
-  accepted: boolean
-  at: string
-  country: string
-}
-
-const canUseDOM = typeof window !== 'undefined'
-
-const getLocalStorage = (): CookieConsent | null =>
-  canUseDOM ? JSON.parse(window.localStorage.getItem('cookieConsent') || 'null') : null
-
-const setLocalStorage = (accepted: boolean, country: string) => {
-  if (!canUseDOM) return
-
-  const cookieConsent: CookieConsent = {
-    accepted,
-    at: new Date().toISOString(),
-    country,
-  }
-  window.localStorage.setItem('cookieConsent', JSON.stringify(cookieConsent))
-}
-
 export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showConsent, setShowConsent] = useState<boolean | undefined>()
   const [cookieConsent, setCookieConsent] = useState<boolean | undefined>()
   const [country, setCountry] = useState<string | undefined>()
   const [bannerRequestId, setBannerRequestId] = useState(0)
 
-  const updateCookieConsent = useCallback(
-    (accepted: boolean) => {
-      setCookieConsent(accepted)
-      setLocalStorage(accepted, country || '')
-      setShowConsent(false)
+  const updateCookieConsent = useCallback(async (accepted: boolean) => {
+    try {
+      // 1. Set first-party cookie (readable by track() function)
+      setConsentCookie(accepted)
 
-      // Update Google Consent Mode
-      updateConsent('update', {
-        analytics_storage: accepted ? 'granted' : 'denied',
-        ad_storage: accepted ? 'granted' : 'denied',
-        ad_user_data: accepted ? 'granted' : 'denied',
-        ad_personalization: accepted ? 'granted' : 'denied',
+      // 2. Update in-memory state (React context)
+      setCookieConsent(accepted)
+
+      // 3. Update analytics client consent status
+      updateAnalyticsConsent(accepted)
+
+      // 4. Persist to server database (for audit trail)
+      await fetch('/api/consent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ analytics: accepted }),
       })
-    },
-    [country],
-  )
+
+      // 5. Hide banner
+      setShowConsent(false)
+    } catch (error) {
+      console.error('Failed to update consent:', error)
+    }
+  }, [])
 
   useEffect(() => {
-    const consent = getLocalStorage()
-    if (consent) {
-      setCountry(consent.country)
-      setCookieConsent(consent.accepted || false)
+    // Check first-party cookie for existing consent
+    const consentState = getConsentFromCookie()
 
-      // Update consent mode with stored preference
-      updateConsent('update', {
-        analytics_storage: consent.accepted ? 'granted' : 'denied',
-        ad_storage: consent.accepted ? 'granted' : 'denied',
-        ad_user_data: consent.accepted ? 'granted' : 'denied',
-        ad_personalization: consent.accepted ? 'granted' : 'denied',
-      })
-      setShowConsent(false)
-      return
+    if (consentState) {
+      // User has made a choice - sync to in-memory state
+      const hasConsent = consentState.analytics
+      setCookieConsent(hasConsent)
+      updateAnalyticsConsent(hasConsent)
+      setShowConsent(false) // Don't show banner
+    } else {
+      // No consent cookie found - first visit or expired
+      // Show banner for user to make choice
+      setShowConsent(true)
     }
 
-    // Treat everyone as GDPR by default and always show the banner until a choice is made.
     setCountry('GDPR')
-    setShowConsent(true)
-  }, [updateCookieConsent])
+  }, [])
 
   const openConsentBanner = useCallback(() => {
     setShowConsent(true)

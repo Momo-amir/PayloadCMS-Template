@@ -14,7 +14,7 @@ import React from 'react'
 import { IconArrowRight } from '@tabler/icons-react'
 import { Media as MediaComponent } from '../Media'
 import Link from 'next/link'
-import { trackCardClick } from '@/cms/utilities/analytics'
+import { trackCardClick } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 
 type CardItem = CardBlockType['cards'][number]
