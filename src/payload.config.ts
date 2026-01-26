@@ -57,6 +57,22 @@ export default buildConfig({
         Logo: '@/cms/components/DashboardGraphics/DashboardLogo.tsx',
       },
     },
+    dashboard: {
+      widgets: [
+        {
+          slug: 'analytics-events',
+          ComponentPath: '@/cms/components/widgets/AnalyticsEventsWidget.tsx#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-overview',
+          ComponentPath: '@/cms/components/widgets/EventTrackerGraph.tsx#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+      ],
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
