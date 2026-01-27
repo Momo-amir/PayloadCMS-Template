@@ -641,7 +641,7 @@ query {
 - First-party cookies only
 
 ✅ **Retention**:
-- **Aggregated analytics data**: Kept indefinitely (no automatic deletion)
+- **Aggregated analytics data**: Kept indefinitely (no automatic deletion yet, undecided as of writing)
   - Average size: ~500 bytes per unique event combination
   - Estimated growth: ~180MB per year (based on 1000 unique events/day)
   - Data is aggregated counts, not individual user actions
@@ -649,12 +649,17 @@ query {
 - **Jobs (failed)**: Kept indefinitely for debugging (admin only access)
 
 ### Example Aggregate Size after testing 
+
+``` SQL
+
 FROM analytics_aggregates;
  total_size | table_size | num_records 
 ------------+------------+-------------
  192 kB     | 24 kB      |         106
 (1 row)
 ---
+
+```
 
 ### Consent Cookie Details
 
