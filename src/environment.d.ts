@@ -14,6 +14,7 @@ declare global {
       MATOMO_URL?: string // Matomo instance URL (e.g., https://matomo.example.com)
       MATOMO_SITE_ID?: string // Matomo site ID
       GA4_API_SECRET?: string // GA4 Measurement Protocol API Secret (pairs with NEXT_PUBLIC_GA_MEASUREMENT_ID)
+      ANALYTICS_TRUSTED_ORIGINS?: string // Comma-separated list of trusted origins for analytics data submission
     }
   }
 }

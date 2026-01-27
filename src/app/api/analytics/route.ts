@@ -2,29 +2,53 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { cookies } from 'next/headers'
+import { ANALYTICS_ALLOWED_KEYS, validateAllowlist } from '@/cms/utilities/analytics-allowlist'
 
-// Simple in-memory rate limiting
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT = 100
-const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
-let lastCleanup = Date.now()
+type RateLimitRecord = {
+  count: number
+  resetAt: number
+}
+
+validateAllowlist()
+
+// Simple in-memory rate limiting (per consent token + per IP)
+const tokenRateLimitMap = new Map<string, RateLimitRecord>()
+const ipRateLimitMap = new Map<string, RateLimitRecord>()
+
+const RATE_LIMIT_WINDOW_MS = 60_000 // 1 minute window
+const RATE_LIMIT_TOKENS_MAX_EVENTS = 600 // total events/min per consent token
+const RATE_LIMIT_IP_MAX_EVENTS = 3_000 // total events/min per IP
+
+// Cleanup throttles (per map)
+let lastTokenCleanup = 0
+let lastIpCleanup = 0
+
+function keyNameForMap(map: Map<string, RateLimitRecord>): string {
+  if (map === tokenRateLimitMap) return 'tokens'
+  if (map === ipRateLimitMap) return 'ips'
+  return 'unknown'
+}
 
 // Cleanup old rate limit entries (runs on each request, max once per minute)
-function cleanupRateLimitMap() {
+function cleanupRateLimitMap(map: Map<string, RateLimitRecord>) {
   const now = Date.now()
-  // Only cleanup if more than 1 minute has passed since last cleanup
-  if (now - lastCleanup < 60000) return
+  const lastCleanup = map === tokenRateLimitMap ? lastTokenCleanup : lastIpCleanup
 
-  lastCleanup = now
-  for (const [ip, record] of rateLimitMap.entries()) {
+  // Only cleanup if more than 1 minute has passed since last cleanup
+  if (now - lastCleanup < 60_000) return
+
+  if (map === tokenRateLimitMap) lastTokenCleanup = now
+  else lastIpCleanup = now
+
+  for (const [key, record] of map.entries()) {
     if (now > record.resetAt) {
-      rateLimitMap.delete(ip)
+      map.delete(key)
     }
   }
 
   // Log memory stats in dev
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[Analytics] Rate limit map size: ${rateLimitMap.size} entries`)
+    console.log(`[Analytics] Rate limit map size (${keyNameForMap(map)}): ${map.size} entries`)
   }
 }
 
@@ -42,17 +66,31 @@ let cachedConfig: AnalyticsConfig | null = null
 let configCacheTime = 0
 const CONFIG_CACHE_TTL = 60000 // 1 minute
 
-function checkRateLimit(ip: string): boolean {
+function checkRateLimit(
+  map: Map<string, RateLimitRecord>,
+  key: string,
+  increment: number,
+  maxEventsPerWindow: number,
+): boolean {
   const now = Date.now()
-  const record = rateLimitMap.get(ip)
+  const safeIncrement = increment > 0 ? increment : 1
+  const existing = map.get(key)
 
-  if (!record || now > record.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
-    return true
+  if (!existing || now > existing.resetAt) {
+    map.set(key, {
+      count: safeIncrement,
+      resetAt: now + RATE_LIMIT_WINDOW_MS,
+    })
+    return safeIncrement <= maxEventsPerWindow
   }
 
-  if (record.count >= RATE_LIMIT) return false
-  record.count++
+  const newCount = existing.count + safeIncrement
+  if (newCount > maxEventsPerWindow) {
+    existing.count = newCount
+    return false
+  }
+
+  existing.count = newCount
   return true
 }
 
@@ -61,16 +99,39 @@ function getCountryFromIP(_ip: string): string {
   return 'unknown'
 }
 
+function isTrustedOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get('origin')
+  const referer = request.headers.get('referer')
+
+  const trustedOrigins = (process.env.ANALYTICS_TRUSTED_ORIGINS || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+
+  const value = origin || referer
+  if (!value) return false
+
+  if (trustedOrigins.length === 0) {
+    return false
+  }
+
+  try {
+    const url = new URL(value)
+    const originString = `${url.protocol}//${url.host}`
+    return trustedOrigins.includes(originString)
+  } catch {
+    return false
+  }
+}
+
 function normalizeURL(url: string): string {
   try {
     const parsed = new URL(url, 'http://dummy.com')
     let path = parsed.pathname
 
-    // Remove query strings (may contain PII)
-    // Replace numeric IDs with [id]
-    path = path.replace(/\/\d+/g, '/[id]')
-    // Replace UUIDs with [uuid]
-    path = path.replace(/\/[a-f0-9-]{36}/g, '/[uuid]')
+    path = path.replace(/\/\d+(\b|\/)/g, '/[id]$1')
+    path = path.replace(/\/[a-f0-9-]{36}(\b|\/)/gi, '/[uuid]$1')
+    path = path.replace(/\/[a-f0-9]{16,}(\b|\/)/gi, '/[hash]$1')
 
     return path
   } catch {
@@ -78,21 +139,81 @@ function normalizeURL(url: string): string {
   }
 }
 
-function sanitizeEventData(data: unknown): Record<string, unknown> {
+const MAX_BODY_BYTES = 64 * 1024 // 64 KB
+const MAX_EVENTS = 25
+const MAX_EVENT_NAME_LENGTH = 64
+const MAX_EVENT_DATA_BYTES = 8 * 1024 // 8 KB per event_data
+
+function byteLength(value: string): number {
+  return new TextEncoder().encode(value).length
+}
+
+function sanitizeUrlLike(value: string, key: string, host?: string | null): string {
+  try {
+    const isAbsolute = value.startsWith('http://') || value.startsWith('https://')
+    const base = isAbsolute ? undefined : host ? `https://${host}` : 'http://dummy.com'
+    const parsed = new URL(value, base)
+    const normalizedPath = normalizeURL(parsed.pathname)
+
+    const keyLower = key.toLowerCase()
+    if (keyLower.includes('referrer') || keyLower.includes('referral')) {
+      return isAbsolute ? parsed.origin : normalizedPath
+    }
+
+    if (keyLower.includes('url') || keyLower.includes('path') || keyLower.includes('page')) {
+      return isAbsolute ? `${parsed.origin}${normalizedPath}` : normalizedPath
+    }
+
+    return value
+  } catch {
+    return value
+  }
+}
+
+function sanitizeEventData(
+  data: unknown,
+  host?: string | null,
+): Record<string, unknown> | unknown[] {
   if (!data || typeof data !== 'object') return {}
 
-  // Remove PII fields
-  const piiFields = ['email', 'phone', 'name', 'address', 'ip', 'user_id', 'customer_id']
-  const sanitized: Record<string, unknown> = { ...data } as Record<string, unknown>
+  const piiFields = [
+    'email',
+    'phone',
+    'address',
+    'ip',
+    'user_id',
+    'userid',
+    'customer_id',
+    'customerid',
+    'first_name',
+    'last_name',
+    'full_name',
+  ]
+  const piiSet = new Set(piiFields)
 
-  piiFields.forEach((field) => {
-    if (field in sanitized) delete sanitized[field]
-  })
+  if (Array.isArray(data)) {
+    return data.map((item) => sanitizeEventData(item, host)) as unknown[]
+  }
 
-  // Recursively sanitize nested objects
-  Object.keys(sanitized).forEach((key) => {
-    if (typeof sanitized[key] === 'object' && sanitized[key] !== null) {
-      sanitized[key] = sanitizeEventData(sanitized[key])
+  const sanitized: Record<string, unknown> = {}
+  const original = data as Record<string, unknown>
+
+  Object.entries(original).forEach(([key, value]) => {
+    const keyLower = key.toLowerCase()
+    if (piiSet.has(keyLower)) {
+      return
+    }
+
+    if (!ANALYTICS_ALLOWED_KEYS.has(keyLower) && !keyLower.startsWith('utm_')) {
+      return
+    }
+
+    if (typeof value === 'string') {
+      sanitized[key] = sanitizeUrlLike(value, key, host)
+    } else if (typeof value === 'object' && value !== null) {
+      sanitized[key] = sanitizeEventData(value, host)
+    } else {
+      sanitized[key] = value
     }
   })
 
@@ -101,8 +222,9 @@ function sanitizeEventData(data: unknown): Record<string, unknown> {
 
 export async function POST(request: NextRequest) {
   try {
-    // Lazy cleanup of rate limit map
-    cleanupRateLimitMap()
+    // Lazy cleanup of rate limit maps
+    cleanupRateLimitMap(tokenRateLimitMap)
+    cleanupRateLimitMap(ipRateLimitMap)
 
     const payload = await getPayload({ config })
 
@@ -110,11 +232,6 @@ export async function POST(request: NextRequest) {
     const forwarded = request.headers.get('x-forwarded-for')
     const realIP = request.headers.get('x-real-ip')
     const ip = forwarded?.split(',')[0] || realIP || 'unknown'
-
-    // Rate limiting
-    if (!checkRateLimit(ip)) {
-      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
-    }
 
     // Get consent token from cookie
     const cookieStore = await cookies()
@@ -124,7 +241,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No consent token found' }, { status: 403 })
     }
 
-    // FIRST: Check consent in database
+    if (!isTrustedOrigin(request)) {
+      return NextResponse.json({ error: 'Untrusted origin' }, { status: 403 })
+    }
+
+    // 1) Check consent in database
     const consentRecord = await payload.find({
       collection: 'consent-tokens',
       where: { token: { equals: consentToken } },
@@ -136,12 +257,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Analytics consent not given' }, { status: 403 })
     }
 
-    // NOW we can process the event
-    const body = await request.json()
+    const rawBody = await request.text()
+    if (byteLength(rawBody) > MAX_BODY_BYTES) {
+      return NextResponse.json({ error: 'Request body too large' }, { status: 413 })
+    }
+
+    if (!rawBody) {
+      return NextResponse.json({ error: 'No events provided' }, { status: 400 })
+    }
+
+    let body: { events?: unknown }
+    try {
+      body = JSON.parse(rawBody)
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    }
     const { events } = body
 
     if (!Array.isArray(events) || events.length === 0) {
       return NextResponse.json({ error: 'No events provided' }, { status: 400 })
+    }
+
+    if (events.length > MAX_EVENTS) {
+      return NextResponse.json({ error: 'Too many events in one request' }, { status: 413 })
+    }
+
+    // Rate limiting (apply both per-token and per-IP budgets)
+    const tokenAllowed = checkRateLimit(
+      tokenRateLimitMap,
+      consentToken,
+      events.length,
+      RATE_LIMIT_TOKENS_MAX_EVENTS,
+    )
+    const ipAllowed = checkRateLimit(ipRateLimitMap, ip, events.length, RATE_LIMIT_IP_MAX_EVENTS)
+    if (!tokenAllowed || !ipAllowed) {
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
     }
 
     // Get analytics config with caching
@@ -158,14 +308,27 @@ export async function POST(request: NextRequest) {
 
     const country = analyticsConfig?.anonymize_ip ? getCountryFromIP(ip) : null
     const today = new Date().toISOString().split('T')[0]! // YYYY-MM-DD (always defined)
+    const host = request.headers.get('host')
 
-    // Queue each event using Payload's native job system
+    // Queue each event using Payload job system
     // Jobs will be processed by autoRun cron (every 5 minutes)
     for (const event of events) {
-      if (!event || !event.event_name) continue // Skip invalid events
+      if (!event || typeof event !== 'object') continue
+      if (typeof event.event_name !== 'string') continue
+      if (event.event_name.length === 0 || event.event_name.length > MAX_EVENT_NAME_LENGTH) continue
 
-      const normalizedPath = normalizeURL(event.page_path || '')
-      const sanitizedData = sanitizeEventData(event.event_data || {})
+      const pagePath = typeof event.page_path === 'string' ? event.page_path : ''
+      const normalizedPath = normalizeURL(pagePath)
+      const sanitizedData = sanitizeEventData(event.event_data || {}, host)
+      let finalEventData = sanitizedData
+      try {
+        const sanitizedDataBytes = byteLength(JSON.stringify(sanitizedData))
+        if (sanitizedDataBytes > MAX_EVENT_DATA_BYTES) {
+          finalEventData = {}
+        }
+      } catch {
+        finalEventData = {}
+      }
 
       // Queue workflow job (includes aggregation + GA4 + Matomo)
       await payload.jobs.queue({
@@ -173,7 +336,7 @@ export async function POST(request: NextRequest) {
         input: {
           event_name: event.event_name,
           page_path: normalizedPath,
-          event_data: sanitizedData,
+          event_data: finalEventData,
           country: country || 'unknown',
           date: today,
           consent_token: consentToken,

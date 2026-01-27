@@ -3,6 +3,8 @@
  * Configure tags in GTM UI: https://tagmanager.google.com/
  */
 
+// currently unused - but kept for potential future use
+
 declare global {
   interface Window {
     dataLayer?: unknown[]
