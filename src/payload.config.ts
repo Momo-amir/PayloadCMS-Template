@@ -150,7 +150,6 @@ export default buildConfig({
     // Analytics workflow
     workflows: [processAnalyticsEventWorkflow, cleanupJobsWorkflow],
     // Auto-run processes queued jobs every 5 minutes
-    // To run cleanup, queue it manually or via external cron
     autoRun: [
       {
         cron: '*/5 * * * *', // Process analytics events every 5 minutes
