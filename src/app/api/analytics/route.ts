@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { cookies } from 'next/headers'
 import { ANALYTICS_ALLOWED_KEYS, validateAllowlist } from '@/cms/utilities/analytics-allowlist'
+import { isTrustedOrigin } from '@/cms/utilities/isTrustedOrigin'
 
 type RateLimitRecord = {
   count: number
@@ -94,34 +95,20 @@ function checkRateLimit(
   return true
 }
 
-function getCountryFromIP(_ip: string): string {
-  // TODO: Add geolocation lookup if needed (e.g., @vercel/edge or maxmind)
-  return 'unknown'
-}
+function getCountryFromRequest(request: NextRequest): string {
+  const raw =
+    request.headers.get('x-vercel-ip-country') ||
+    request.headers.get('cf-ipcountry') ||
+    request.headers.get('x-country-code') ||
+    request.headers.get('fastly-geo-country') ||
+    request.headers.get('x-geo-country')
 
-function isTrustedOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get('origin')
-  const referer = request.headers.get('referer')
+  if (!raw) return 'unknown'
 
-  const trustedOrigins = (process.env.ANALYTICS_TRUSTED_ORIGINS || '')
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean)
+  const value = raw.trim().toUpperCase()
+  if (!value || value === 'UNKNOWN' || value === 'XX') return 'unknown'
 
-  const value = origin || referer
-  if (!value) return false
-
-  if (trustedOrigins.length === 0) {
-    return false
-  }
-
-  try {
-    const url = new URL(value)
-    const originString = `${url.protocol}//${url.host}`
-    return trustedOrigins.includes(originString)
-  } catch {
-    return false
-  }
+  return value
 }
 
 function normalizeURL(url: string): string {
@@ -176,6 +163,10 @@ function sanitizeEventData(
 ): Record<string, unknown> | unknown[] {
   if (!data || typeof data !== 'object') return {}
 
+  const emailPattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi
+  const phonePattern =
+    /(\+?\d[\d\s().-]{7,}\d)/g
+
   const piiFields = [
     'email',
     'phone',
@@ -209,7 +200,15 @@ function sanitizeEventData(
     }
 
     if (typeof value === 'string') {
-      sanitized[key] = sanitizeUrlLike(value, key, host)
+      let nextValue = value
+      if (emailPattern.test(nextValue) || phonePattern.test(nextValue)) {
+        return
+      }
+      nextValue = sanitizeUrlLike(nextValue, key, host)
+      if (emailPattern.test(nextValue) || phonePattern.test(nextValue)) {
+        return
+      }
+      sanitized[key] = nextValue
     } else if (typeof value === 'object' && value !== null) {
       sanitized[key] = sanitizeEventData(value, host)
     } else {
@@ -250,6 +249,7 @@ export async function POST(request: NextRequest) {
       collection: 'consent-tokens',
       where: { token: { equals: consentToken } },
       limit: 1,
+      overrideAccess: true,
     })
 
     if (!consentRecord.docs.length || !consentRecord.docs[0]?.analytics) {
@@ -306,7 +306,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true }) // Silently accept but don't process
     }
 
-    const country = analyticsConfig?.anonymize_ip ? getCountryFromIP(ip) : null
+    const country = analyticsConfig?.anonymize_ip ? getCountryFromRequest(request) : null
     const today = new Date().toISOString().split('T')[0]! // YYYY-MM-DD (always defined)
     const host = request.headers.get('host')
 

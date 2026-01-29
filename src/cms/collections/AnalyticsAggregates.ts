@@ -7,12 +7,12 @@ export const AnalyticsAggregates: CollectionConfig = {
     defaultColumns: ['event_name', 'count', 'date'],
     group: 'Analytics',
     description: 'Aggregated analytics (GDPR-friendly, no PII)',
-    hidden: true, // Hidden from nav - access via custom dashboard
+    hidden: true,
   },
   access: {
     read: ({ req: { user } }) => (user && user.roles?.includes('admin')) || false,
-    create: () => true,
-    update: () => true,
+    create: ({ req: { user } }) => (user && user.roles?.includes('admin')) || false,
+    update: ({ req: { user } }) => (user && user.roles?.includes('admin')) || false,
     delete: ({ req: { user } }) => (user && user.roles?.includes('admin')) || false,
   },
   fields: [

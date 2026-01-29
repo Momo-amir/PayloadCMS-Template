@@ -25,7 +25,7 @@ class AnalyticsClient {
     // Check consent from first-party cookie (synchronous)
     this.syncConsentFromCookie()
 
-    // Auto-flush every 5 seconds (catches low-activity pages)
+    // Auto-flush every 25 seconds (catches low-activity pages)
     this.flushInterval = setInterval(() => this.flush(), this.FLUSH_INTERVAL)
 
     // Flush immediately when user leaves page

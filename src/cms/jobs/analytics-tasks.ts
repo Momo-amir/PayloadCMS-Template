@@ -54,6 +54,7 @@ export const aggregateEventTask = {
         ],
       },
       limit: 1,
+      overrideAccess: true,
     })
 
     const existingDoc = existing.docs[0]
@@ -66,6 +67,7 @@ export const aggregateEventTask = {
         data: {
           count: (existingDoc.count || 0) + 1,
         },
+        overrideAccess: true,
       })
 
       return {
@@ -88,6 +90,7 @@ export const aggregateEventTask = {
           metadata_hash: metadataHash,
         },
         draft: false,
+        overrideAccess: true,
       })
 
       return {

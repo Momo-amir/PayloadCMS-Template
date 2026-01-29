@@ -107,7 +107,7 @@ if (!consentState?.analytics) {
 | **Audit Trail** | ✅ GDPR compliance | ❌ No history |
 | **Use Case** | Server verification | Client-side blocking |
 
-**Both together**: Fast client checks + secure server verification = optimal!
+**Both together**: Fast client checks + secure server verification
 
 ---
 
@@ -140,16 +140,18 @@ if (!consentState?.analytics) {
 │                                                │                 │
 │  /api/analytics (route.ts)                    │                 │
 │       ↓                                        │                 │
-│  1. Rate limiting (100 req/min/IP)            │                 │
+│  1. Origin allowlist check (ANALYTICS_TRUSTED_ORIGINS)          │
 │  2. Read consent_token cookie (HttpOnly) ─────┘                 │
 │  3. Verify in DB: consent-tokens[token].analytics === true      │
 │       ↓                                                          │
 │  ❌ No consent in DB? → 403 Forbidden                           │
 │  ✅ Has consent? → Continue                                     │
 │       ↓                                                          │
-│  4. Sanitize PII (remove email, phone, etc.)                    │
-│  5. Normalize URLs (/123 → /[id])                               │
-│  6. Queue job: payload.jobs.queue({                             │
+│  4. Validate body size + max events per request                 │
+│  5. Dual rate limiting (per consent token + per IP)             │
+│  6. Sanitize allowlisted fields + strip PII                     │
+│  7. Normalize URLs (/123 → /[id], /UUID → /[uuid])              │
+│  8. Queue job: payload.jobs.queue({                             │
 │       workflow: 'processAnalyticsEvent',                        │
 │       input: { event_name, page_path, event_data, ... }         │
 │     })                                                           │
@@ -202,6 +204,7 @@ src/
 │   │
 │   ├── utilities/
 │   │   ├── analytics-server.ts       # Client-side tracking functions
+│   │   ├── analytics-allowlist.ts    # Server-side allowlist for event_data
 │   │   └── consent-cookie.ts         # First-party cookie utilities
 │   │
 │   ├── hooks/
@@ -375,6 +378,9 @@ GA4_API_SECRET=your-ga4-api-secret
 MATOMO_URL=https://matomo.example.com
 MATOMO_SITE_ID=1
 
+# Optional - Analytics Security
+ANALYTICS_TRUSTED_ORIGINS=https://example.com,http://localhost:8890
+
 # Optional - Development
 NODE_ENV=development
 ```
@@ -391,7 +397,7 @@ Navigate to **Globals → Analytics Config** in Payload admin:
 | **Store Aggregates** | Save to analytics-aggregates collection | `true` |
 | **GA4 Enabled** | Forward events to Google Analytics | `false` |
 | **Matomo Enabled** | Forward events to Matomo | `false` |
-| **Anonymize IP** | Use country instead of full IP | `true` |
+| **Anonymize IP** | Store only country code from host headers (if available); never store raw IP | `true` |
 
 ---
 
@@ -571,7 +577,8 @@ query {
 
 ```bash
 # Rate limit map size (every minute)
-[Analytics] Rate limit map size: 5 entries
+[Analytics] Rate limit map size (tokens): 5 entries
+[Analytics] Rate limit map size (ips): 3 entries
 
 # Blocked events (no consent)
 [Analytics] Event blocked - no consent: button_click
@@ -592,12 +599,20 @@ query {
 |--------------|--------|-------------|
 | **Client batching** | -96% requests | 10 events OR 25s intervals |
 | **Config caching** | -30% DB queries | 1-minute TTL on analytics config |
-| **Rate limiting** | Security | 100 req/min per IP with cleanup |
+| **Rate limiting** | Security | Event-weighted dual limits (per token + per IP) |
 | **Async processing** | <50ms response | Jobs process in background |
 | **Session deduplication** | -90% duplicates | Component impressions once per session |
 | **Scroll reduction** | -50% events | Only track 50% and 100% scroll |
 | **Viewport bucketing** | GDPR safe | Mobile/tablet/desktop (no fingerprinting) |
 | **Metadata hashing** | Accurate aggregation | MD5 hash prevents false duplicates |
+| **Request limits** | Stability | Max body size + max events per request |
+
+### Security Hardening (Server-Side)
+
+- **Origin allowlist**: requests must match `ANALYTICS_TRUSTED_ORIGINS`
+- **Request caps**: max body size 64 KB, max 25 events per request
+- **Rate limits**: per consent token (600 events/min) and per IP (3,000 events/min)
+- **Allowlist**: only approved `event_data` keys are stored/forwarded (see `src/cms/utilities/analytics-allowlist.ts`)
 
 ---
 
@@ -617,9 +632,10 @@ query {
 ### Privacy Features
 
 ✅ **No PII Collected**:
-- Email, phone, name, address removed automatically
-- IP anonymized to country only
+- Email/phone/name/address keys are dropped by allowlist
+- IP is never stored; country code is used only when provided by the host
 - No user IDs or customer IDs
+- Do not send form field values or user‑entered content in analytics events
 
 ✅ **Explicit Consent Required**:
 - Privacy banner on first visit
@@ -632,7 +648,8 @@ query {
 
 ✅ **Data Minimization**:
 - Only event name, page path, aggregated metadata
-- URLs normalized (`/posts/123` → `/posts/[id]`)
+- Allowlist enforced for `event_data` keys (unknown fields dropped)
+- URLs normalized (`/posts/123` → `/posts/[id]`, UUIDs/hashes masked)
 - Viewport sizes bucketed (no fingerprinting)
 
 ✅ **Pseudonymization**:
@@ -827,3 +844,5 @@ A: Go to `/admin/globals/analytics-config` and uncheck "Enabled".
 
 *Last Updated: January 26, 2026*  
 *System Version: 2.0 (Payload Jobs Native)*
+
+Hey any chance you can help me look at some architecture stuff for the Hackathon instead of UI stuff? I added server-side analytics tracking, because Henrik wanted a good analytics approach and I wanted to try and see if I could get it working as SSR since the client is entirely reliant on third parties and is less optimized. It basically works like this: we collect the tracking events kind of like you normally would, and I added wrappers for tracking that work in React Server Components and client components for the most basic stuff. I’m looking for a sanity check on the architecture, security/consent handling, and any testing gaps.

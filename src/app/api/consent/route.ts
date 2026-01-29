@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { cookies } from 'next/headers'
 import { randomUUID } from 'crypto'
+import { isTrustedOrigin } from '@/cms/utilities/isTrustedOrigin'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,6 +13,10 @@ export async function POST(request: NextRequest) {
 
     if (typeof analytics !== 'boolean') {
       return NextResponse.json({ error: 'Invalid consent value' }, { status: 400 })
+    }
+
+    if (!isTrustedOrigin(request)) {
+      return NextResponse.json({ error: 'Untrusted origin' }, { status: 403 })
     }
 
     const cookieStore = await cookies()
@@ -28,6 +33,7 @@ export async function POST(request: NextRequest) {
           analytics,
           version: 1,
         },
+        overrideAccess: true,
       })
     } else {
       // Update existing consent
@@ -35,6 +41,7 @@ export async function POST(request: NextRequest) {
         collection: 'consent-tokens',
         where: { token: { equals: consentToken } },
         limit: 1,
+        overrideAccess: true,
       })
 
       if (existing.docs.length > 0 && existing.docs[0]?.id) {
@@ -42,6 +49,7 @@ export async function POST(request: NextRequest) {
           collection: 'consent-tokens',
           id: existing.docs[0].id,
           data: { analytics },
+          overrideAccess: true,
         })
       } else {
         // Token not found, create new
@@ -52,6 +60,7 @@ export async function POST(request: NextRequest) {
             analytics,
             version: 1,
           },
+          overrideAccess: true,
         })
       }
     }
@@ -87,6 +96,7 @@ export async function GET() {
       collection: 'consent-tokens',
       where: { token: { equals: consentToken } },
       limit: 1,
+      overrideAccess: true,
     })
 
     if (existing.docs.length === 0 || !existing.docs[0]) {

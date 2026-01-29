@@ -11,8 +11,8 @@ export const ConsentTokens: CollectionConfig = {
   },
   access: {
     read: ({ req: { user } }) => (user && user.roles?.includes('admin')) || false,
-    create: () => true, // API can create
-    update: () => true, // API can update
+    create: ({ req: { user } }) => (user && user.roles?.includes('admin')) || false,
+    update: ({ req: { user } }) => (user && user.roles?.includes('admin')) || false,
     delete: ({ req: { user } }) => (user && user.roles?.includes('admin')) || false,
   },
   fields: [
