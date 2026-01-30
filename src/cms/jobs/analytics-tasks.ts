@@ -60,7 +60,7 @@ export const aggregateEventTask = {
     const existingDoc = existing.docs[0]
 
     if (existingDoc?.id) {
-      // Increment existing
+      // Incrementa existing
       await req.payload.update({
         collection: 'analytics-aggregates',
         id: existingDoc.id,

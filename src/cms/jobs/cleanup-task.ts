@@ -9,12 +9,12 @@ import type { PayloadRequest } from 'payload'
 
 export const cleanupOldJobsTask = {
   slug: 'cleanupOldJobs',
-  retries: 0, // No need to retry cleanup
+  retries: 0,
   handler: async ({ req }: { req: PayloadRequest }) => {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    // Delete completed jobs older than 30 days (keep failed jobs for debugging)
+    // Delete completed jobs older than 30 days (keep failed jobs for debugging) TODO decide what to do with failed jobs for long term
     const result = await req.payload.delete({
       collection: 'payload-jobs',
       where: {

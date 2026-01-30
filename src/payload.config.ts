@@ -110,11 +110,8 @@ export default buildConfig({
       ],
     },
   },
-  // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: postgresAdapter({
-    // Postgres-specific arguments go here.
-    // `pool` is required.
     pool: {
       connectionString: process.env.DATABASE_URI,
     },
@@ -135,19 +132,15 @@ export default buildConfig({
   jobs: {
     access: {
       run: ({ req }: { req: PayloadRequest }): boolean => {
-        // Allow logged in users to execute this endpoint (default)
+        // Allow logged in users to execute this endpoint manually
         if (req.user) return true
 
-        // If there is no logged in user, then check
-        // for the Vercel Cron secret to be present as an
-        // Authorization header:
+        // Authorization header runs automatically (e.g., cron jobs)
         const authHeader = req.headers.get('authorization')
         return authHeader === `Bearer ${process.env.CRON_SECRET}`
       },
     },
-    // Analytics processing tasks
     tasks: [aggregateEventTask, forwardToGA4Task, forwardToMatomoTask, cleanupOldJobsTask],
-    // Analytics workflow
     workflows: [processAnalyticsEventWorkflow, cleanupJobsWorkflow],
     // Auto-run processes queued jobs every 5 minutes
     autoRun: [
