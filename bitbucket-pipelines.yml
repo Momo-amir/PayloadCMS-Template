@@ -1,0 +1,20 @@
+  image: atlassian/default-image:4
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Deploy to server
+          deployment: production
+          script:
+            - pipe: atlassian/ssh-run:0.4.1
+              variables:
+                SSH_USER: $SSH_USER
+                SERVER: $SSH_HOST
+                MODE: command
+                COMMAND: |
+                  set -e
+                  cd $APP_PATH
+                  git fetch origin main
+                  git reset --hard origin/main
+                  docker compose -f docker-compose.prod.yml up -d --build
