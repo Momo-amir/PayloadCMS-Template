@@ -100,11 +100,13 @@ export default async function RootLayout({
   )
 }
 
-export const metadata: Metadata = {
-  metadataBase: new URL(getServerSideURL()),
-  openGraph: mergeOpenGraph(),
-  twitter: {
-    card: 'summary_large_image',
-    creator: '@payloadcms',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    metadataBase: new URL(getServerSideURL()),
+    openGraph: mergeOpenGraph(),
+    twitter: {
+      card: 'summary_large_image',
+      creator: '@payloadcms',
+    },
+  }
 }
