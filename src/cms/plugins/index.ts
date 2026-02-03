@@ -12,6 +12,7 @@ import { beforeSyncWithSearch } from '@/website/layout/search/beforeSync'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/cms/utilities/getURL'
+import { privacyPolicyField } from '@/cms/fields/formBuilder'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Kollab Website Template` : 'Kollab Website Template'
@@ -67,6 +68,7 @@ export const plugins: Plugin[] = [
   formBuilderPlugin({
     fields: {
       payment: false,
+      privacyPolicy: privacyPolicyField,
     },
     formOverrides: {
       labels: {

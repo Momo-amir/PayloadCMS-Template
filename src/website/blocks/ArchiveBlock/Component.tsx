@@ -1,10 +1,11 @@
 import type { Post, ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
 
 import configPromise from '@/payload.config'
-import { getPayload } from 'payload'
+import { getPayload, type TypedLocale } from 'payload'
 import React from 'react'
 import RichText from '@/website/components/RichText'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
+import { getLocale } from 'next-intl/server'
 
 import { CollectionArchive } from '@/website/components/CollectionArchive'
 
@@ -16,6 +17,7 @@ export const ArchiveBlock: React.FC<
   const { id, categories, introContent, limit: limitFromProps, populateBy, selectedDocs } = props
 
   const limit = limitFromProps || 3
+  const locale = (await getLocale()) as TypedLocale
 
   let posts: Post[] = []
 
@@ -29,6 +31,8 @@ export const ArchiveBlock: React.FC<
 
     const fetchedPosts = await payload.find({
       collection: 'posts',
+      locale,
+      fallbackLocale: 'da',
       depth: 1,
       limit,
       ...(flattenedCategories && flattenedCategories.length > 0

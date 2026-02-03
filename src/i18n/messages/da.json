@@ -15,6 +15,7 @@
   "more-pages": "Flere sider",
   "submit": "Indsend",
   "no-results": "Søgningen gav ingen resultater.",
+  "and": "og",
   "untitled-category": "Unavngivet kategori",
   "light": "Lyst",
   "dark": "Mørkt",
@@ -33,5 +34,5 @@
   "cookie-consent:more-info": "for mere information.",
   "cookie-consent:accept": "Acceptér",
   "cookie-consent:decline": "Kun nødvendige",
-  "cookie-consent:settings": "Cookieindstillinger"
+  "cookie-consent:settings": "Cookies"
 }

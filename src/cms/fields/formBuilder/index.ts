@@ -1,0 +1,1 @@
+export { privacyPolicyField } from './privacyPolicy'
