@@ -76,6 +76,7 @@ export const PostHero: React.FC<{
           <Media fill priority imgClassName="-z-10 object-cover" resource={heroImage} />
         )}
         <div className="absolute pointer-events-none left-0 bottom-0 w-full h-1/2 bg-linear-to-t from-black to-transparent" />
+        <div className="absolute pointer-events-none left-0 top-0 w-full h-1/3 bg-linear-to-b from-black to-transparent -z-10" />
       </div>
     </TrackImpression>
   )
