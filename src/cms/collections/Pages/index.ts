@@ -18,6 +18,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
+import { createBreadcrumbsField } from '@payloadcms/plugin-nested-docs'
 
 const layoutBlocks: ComponentBlock[] = []
 
@@ -132,6 +133,11 @@ export const Pages: CollectionConfig<'pages'> = {
     },
 
     slugField(),
+    createBreadcrumbsField('pages', {
+      admin: {
+        condition: (data) => Boolean(data?.parent),
+      },
+    }),
   ],
   hooks: {
     afterChange: [revalidatePage],

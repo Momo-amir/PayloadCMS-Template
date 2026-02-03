@@ -14,8 +14,11 @@ export const PostHero: React.FC<{
   const { categories, heroImage, populatedAuthors, publishedAt, title } = post
   const t = useTranslations()
 
-  const hasAuthors =
-    populatedAuthors && populatedAuthors.length > 0 && formatAuthors(populatedAuthors) !== ''
+  const authorsLabel =
+    populatedAuthors && populatedAuthors.length > 0
+      ? formatAuthors(populatedAuthors, { conjunction: t('and') })
+      : ''
+  const hasAuthors = authorsLabel !== ''
   return (
     <TrackImpression
       componentName="Post Hero"
@@ -29,7 +32,7 @@ export const PostHero: React.FC<{
               if (typeof category === 'object' && category !== null) {
                 const { title: categoryTitle } = category
 
-                const titleToUse = categoryTitle || 'Untitled category'
+                const titleToUse = categoryTitle || t('untitled-category')
 
                 const isLast = index === categories.length - 1
 
@@ -54,7 +57,7 @@ export const PostHero: React.FC<{
                 <div className="flex flex-col gap-1">
                   <p className="text-sm">{t('author')}</p>
 
-                  <p>{formatAuthors(populatedAuthors)}</p>
+                  <p>{authorsLabel}</p>
                 </div>
               </div>
             )}
