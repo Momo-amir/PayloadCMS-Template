@@ -8,6 +8,8 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
   /* Force the header to be dark mode while we have an image behind it */
   useHeaderThemeOverride('dark')
 
+  const postKey = post?.id || post?.slug || post?.title
+
   useEffect(() => {
     // Track generic page view with post title
     const postTitle = post.title || post.slug || 'Unknown Post'
@@ -25,7 +27,7 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
           .filter(Boolean)
       : []
     trackPostView(post.title || '', post.slug || '', categories as string[])
-  }, [post])
+  }, [postKey, post.slug, post.title, post.categories])
 
   return <React.Fragment />
 }

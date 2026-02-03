@@ -108,6 +108,34 @@ class AnalyticsClient {
 // Singleton instance
 const analyticsClient = new AnalyticsClient()
 
+const safeSessionStorageGet = (key: string): string | null => {
+  if (typeof window === 'undefined') return null
+  try {
+    return sessionStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+const safeSessionStorageSet = (key: string, value: string): void => {
+  if (typeof window === 'undefined') return
+  try {
+    sessionStorage.setItem(key, value)
+  } catch {
+    // Ignore storage errors (private mode, quota, etc.)
+  }
+}
+
+const wasTrackedThisSession = (key: string): boolean => {
+  const existing = safeSessionStorageGet(key)
+  if (existing === 'true') {
+    return true
+  }
+
+  safeSessionStorageSet(key, 'true')
+  return false
+}
+
 // Export main track function
 export function track(event: string, data?: Record<string, unknown>) {
   analyticsClient.track(event, data)
@@ -178,6 +206,11 @@ export const trackVideoInteraction = (
   videoTitle: string,
   progress?: number,
 ): void => {
+  const sessionKey = `analytics_video_${action}_${videoTitle}`
+  if (wasTrackedThisSession(sessionKey)) {
+    return
+  }
+
   track('video_interaction', { action, video_title: videoTitle, progress })
 }
 
@@ -204,6 +237,12 @@ function bucketViewport(width: number, height: number): string {
 }
 
 export const trackPageView = (title?: string, referrer?: string): void => {
+  const pagePath = typeof window !== 'undefined' ? window.location.pathname : 'unknown'
+  const sessionKey = `analytics_page_view_${pagePath}`
+  if (wasTrackedThisSession(sessionKey)) {
+    return
+  }
+
   track('page_view', {
     page_title: title || document?.title,
     referrer: referrer || document?.referrer,

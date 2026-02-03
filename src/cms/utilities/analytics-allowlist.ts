@@ -42,6 +42,10 @@ const ANALYTICS_ALLOWED_KEYS = new Set([
   'video_title',
   'progress',
 
+  // Component impressions
+  'component_name',
+  'component_type',
+
   // Scroll depth / engagement
   'depth_percentage',
   'scroll_depth_percentage',
@@ -88,6 +92,10 @@ const ANALYTICS_REQUIRED_KEYS = [
   'success',
   'video_title',
   'viewport_category',
+
+  // Component impressions
+  'component_name',
+  'component_type',
 ]
 
 let didValidateAllowlist = false

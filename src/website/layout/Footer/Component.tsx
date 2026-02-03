@@ -46,13 +46,7 @@ export async function Footer({ locale }: { locale?: string } = {}) {
       <div className="container py-8 gap-8 flex flex-col-reverse md:flex-row md:justify-between items-center">
         <div className="flex flex-col gap-4">
           <Link className="flex items-center" href="/">
-            <Logo
-              loading="eager"
-              priority="high"
-              className="h-[34px]"
-              theme={theme}
-              {...logoProps}
-            />
+            <Logo loading="eager" priority="high" className="h-8.5" theme={theme} {...logoProps} />
           </Link>
 
           {/* Company Info */}
