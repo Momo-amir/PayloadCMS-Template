@@ -4,7 +4,7 @@ export const AnalyticsConfig: GlobalConfig = {
   slug: 'analytics-config',
   label: 'Analytics Settings',
   admin: {
-    group: 'Settings',
+    group: 'Analytics',
   },
   access: {
     read: () => true,
