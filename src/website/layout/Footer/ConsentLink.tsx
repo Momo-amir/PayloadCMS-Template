@@ -10,7 +10,13 @@ export const ConsentLink: React.FC = () => {
   const t = useTranslations()
 
   return (
-    <Button type="button" size="clear" variant="link" onClick={openConsentBanner}>
+    <Button
+      type="button"
+      size="clear"
+      variant="link"
+      onClick={openConsentBanner}
+      className="md:ml-1"
+    >
       {t('cookie-consent:settings')}
     </Button>
   )
