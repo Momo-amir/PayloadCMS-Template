@@ -1,6 +1,13 @@
+import {
+  FixedToolbarFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 import { link } from '@/cms/fields/link'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
 import { CardCarouselBlock as CardCarouselBlockComponent } from './Component'
+import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 
 export const CardCarouselBlock: ComponentBlock = {
   slug: 'cardCarouselBlock',
@@ -12,6 +19,23 @@ export const CardCarouselBlock: ComponentBlock = {
     plural: 'Card Carousel',
   },
   fields: [
+    {
+      name: 'introContent',
+      localized: true,
+      type: 'richText',
+      defaultValue: EMPTY_LEXICAL_CONTENT,
+      editor: lexicalEditor({
+        features: ({ rootFeatures }) => {
+          return [
+            ...rootFeatures,
+            HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
+            FixedToolbarFeature(),
+            InlineToolbarFeature(),
+          ]
+        },
+      }),
+      label: 'Intro Content',
+    },
     {
       name: 'cardBackgroundColor',
       label: 'Card Variant',
@@ -30,18 +54,6 @@ export const CardCarouselBlock: ComponentBlock = {
         description: 'Applies this variant to all cards in the carousel.',
         width: '50%',
       },
-    },
-    {
-      name: 'heading',
-      type: 'text',
-      required: false,
-      label: 'Section Heading',
-    },
-    {
-      name: 'description',
-      type: 'textarea',
-      required: false,
-      label: 'Section Description',
     },
     {
       name: 'cards',

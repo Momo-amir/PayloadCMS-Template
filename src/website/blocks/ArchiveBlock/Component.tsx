@@ -62,7 +62,7 @@ export const ArchiveBlock: React.FC<
       <TrackImpression componentName="Archive Block" componentType="archive">
         {introContent && (
           <div className="container mb-16">
-            <RichText className="ms-0 max-w-3xl" data={introContent} enableGutter={false} />
+            <RichText className="ms-0" data={introContent} enableGutter={false} />
           </div>
         )}
         <CollectionArchive posts={posts} />

@@ -3,8 +3,10 @@ import type { CardBlock as CardBlockType } from '@/payload-types'
 import Card from '@/website/components/Card/CustomCard'
 import { cn } from '@/cms/utilities/ui'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
+import RichText from '@/website/components/RichText'
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-type Props = CardBlockType & { className?: string }
+type Props = CardBlockType & { className?: string; introContent?: SerializedEditorState }
 
 const columnClass = (cardCount: number) => {
   switch (cardCount) {
@@ -20,24 +22,31 @@ const columnClass = (cardCount: number) => {
 
 // Now delegated to Teaser
 
-export const CardBlock: React.FC<Props> = ({ heading, cards = [], cardBackgroundColor }) => {
+export const CardBlock: React.FC<Props> = ({ introContent, cards = [], cardBackgroundColor }) => {
   const variant = cardBackgroundColor ? cardBackgroundColor : 'default'
 
   if (!cards.length) return null
 
   return (
-    <TrackImpression
-      componentName={`Card Block (${cards.length} cards)`}
-      componentType="cards"
-      as="section"
-      className={cn('container')}
-    >
-      {heading && <h2 className="text-3xl font-semibold mb-8">{heading}</h2>}
-      <div className={cn('grid gap-8', columnClass(cards.length))}>
-        {cards.map((card, i) => (
-          <Card key={card.id ?? i} card={card} variant={variant} />
-        ))}
-      </div>
-    </TrackImpression>
+    <div className="my-16">
+      <TrackImpression
+        componentName={`Card Block (${cards.length} cards)`}
+        componentType="cards"
+        as="section"
+      >
+        {introContent && (
+          <div className="container mb-16">
+            <RichText className="ms-0" data={introContent} enableGutter={false} />
+          </div>
+        )}
+        <div className="container">
+          <div className={cn('grid gap-8', columnClass(cards.length))}>
+            {cards.map((card, i) => (
+              <Card key={card.id ?? i} card={card} variant={variant} />
+            ))}
+          </div>
+        </div>
+      </TrackImpression>
+    </div>
   )
 }

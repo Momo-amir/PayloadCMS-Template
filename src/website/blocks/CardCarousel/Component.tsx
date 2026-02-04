@@ -7,8 +7,10 @@ import { cn } from '@/cms/utilities/ui'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
 import { Button } from '@site/components/elements/button'
 import { useTrackImpression } from '@/cms/hooks/useAnalytics'
+import RichText from '@/website/components/RichText'
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-type Props = CardCarouselBlockType & { className?: string }
+type Props = CardCarouselBlockType & { className?: string; introContent?: SerializedEditorState }
 
 const getColumnsPerView = (cardCount: number, containerWidth: number): number => {
   const isMobile = containerWidth < 768
@@ -27,8 +29,7 @@ const getColumnsPerView = (cardCount: number, containerWidth: number): number =>
 }
 
 export const CardCarouselBlock: React.FC<Props> = ({
-  heading,
-  description,
+  introContent,
   cards = [],
   cardBackgroundColor,
 }) => {
@@ -105,82 +106,85 @@ export const CardCarouselBlock: React.FC<Props> = ({
   const offset = -(currentIndex * containerWidth)
 
   return (
-    <section ref={carouselRef} className={cn('container relative')}>
-      {heading && <h1 className="text-5xl text-center font-semibold mb-10">{heading}</h1>}
-      {description && (
-        <div className="w-1/2 mx-auto">
-          <p className="text-center mb-16">{description}</p>
-        </div>
-      )}{' '}
-      <div className="flex items-center gap-4 relative">
-        <Button
-          variant={'circle'}
-          icon={IconArrowLeft}
-          iconSize={36}
-          onClick={prev}
-          disabled={currentIndex === 0}
-          className={cn(
-            'hidden lg:flex shrink-0',
-            'min-[90rem]:absolute min-[90rem]:-left-16 min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
-          )}
-        />
-        <div ref={containerRef} className="overflow-hidden w-full">
-          <div
-            className="slide-track flex transition-transform duration-500 ease-in-out gap-x-4"
-            style={{
-              width: trackWidth,
-              transform: `translateX(${offset}px)`,
-            }}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            {cards.map((card, i) => {
-              const variantRaw = cardBackgroundColor
-              const variant =
-                typeof variantRaw === 'string' && variantRaw !== ''
-                  ? (variantRaw as
-                      | 'default'
-                      | 'accent'
-                      | 'accentThree'
-                      | 'dark'
-                      | 'secondary'
-                      | 'neutral')
-                  : 'default'
+    <div className="my-16">
+      <section ref={carouselRef} className={cn('relative')}>
+        {introContent && (
+          <div className="container mb-16">
+            <RichText className="ms-0" data={introContent} enableGutter={false} />
+          </div>
+        )}
+        <div className="container relative">
+          <div className="flex items-center gap-4 relative">
+            <Button
+              variant={'circle'}
+              icon={IconArrowLeft}
+              iconSize={36}
+              onClick={prev}
+              disabled={currentIndex === 0}
+              className={cn(
+                'hidden lg:flex shrink-0',
+                'min-[90rem]:absolute min-[90rem]:-left-16 min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
+              )}
+            />
+            <div ref={containerRef} className="overflow-hidden w-full">
+              <div
+                className="slide-track flex transition-transform duration-500 ease-in-out gap-x-4"
+                style={{
+                  width: trackWidth,
+                  transform: `translateX(${offset}px)`,
+                }}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {cards.map((card, i) => {
+                  const variantRaw = cardBackgroundColor
+                  const variant =
+                    typeof variantRaw === 'string' && variantRaw !== ''
+                      ? (variantRaw as
+                          | 'default'
+                          | 'accent'
+                          | 'accentThree'
+                          | 'dark'
+                          | 'secondary'
+                          | 'neutral')
+                      : 'default'
 
-              return (
-                <div key={card.id ?? i} className="slide " style={{ width: slideWidth }}>
-                  <Card card={card} variant={variant} className="h-full" />
-                </div>
-              )
-            })}
+                  return (
+                    <div key={card.id ?? i} className="slide " style={{ width: slideWidth }}>
+                      <Card card={card} variant={variant} className="h-full" />
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            <Button
+              variant={'circle'}
+              icon={IconArrowRight}
+              iconSize={36}
+              onClick={next}
+              disabled={currentIndex >= pageCount - 1}
+              className={cn(
+                'hidden lg:flex shrink-0',
+                'min-[90rem]:absolute min-[90rem]:-right-16 min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
+              )}
+            />
+          </div>
+          <div className="mt-6 flex justify-center gap-2">
+            {Array.from({ length: pageCount }).map((_, p) => (
+              <button
+                key={p}
+                onClick={() => goToPage(p)}
+                className={cn(
+                  'w-[15px] h-[15px] rounded-full cursor-pointer',
+                  p === currentIndex ? 'bg-primary' : 'bg-neutral',
+                )}
+              />
+            ))}
           </div>
         </div>
-
-        <Button
-          variant={'circle'}
-          icon={IconArrowRight}
-          iconSize={36}
-          onClick={next}
-          disabled={currentIndex >= pageCount - 1}
-          className={cn(
-            'hidden lg:flex shrink-0',
-            'min-[90rem]:absolute min-[90rem]:-right-16 min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
-          )}
-        />
-      </div>
-      <div className="mt-6 flex justify-center gap-2">
-        {Array.from({ length: pageCount }).map((_, p) => (
-          <button
-            key={p}
-            onClick={() => goToPage(p)}
-            className={cn(
-              'w-[15px] h-[15px] rounded-full cursor-pointer',
-              p === currentIndex ? 'bg-primary' : 'bg-neutral',
-            )}
-          />
-        ))}
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }
