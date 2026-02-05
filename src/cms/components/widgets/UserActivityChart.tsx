@@ -1,5 +1,16 @@
 'use client'
-import React from 'react'
+import React, { useMemo, useState } from 'react'
+import { PillSelector } from '@payloadcms/ui'
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 
 interface DataPoint {
   date: string
@@ -11,17 +22,101 @@ interface DataPoint {
 
 interface UserActivityChartProps {
   data: DataPoint[]
-  maxValue: number
+  initialPeriod?: '3d' | '7d' | '30d'
 }
 
-export default function UserActivityChart({ data, maxValue }: UserActivityChartProps) {
-  const chartHeight = 200
-  const chartWidth = 600
-  const padding = { top: 20, right: 20, bottom: 40, left: 50 }
-  const innerWidth = chartWidth - padding.left - padding.right
-  const innerHeight = chartHeight - padding.top - padding.bottom
+type PeriodKey = '3d' | '7d' | '30d'
+type SeriesKey = 'total' | 'pageViews' | 'interactions' | 'impressions'
 
-  if (data.length === 0) {
+const series = [
+  { key: 'total' as const, label: 'Total Activity', color: '#3b82f6', fillOpacity: 0.28 },
+  { key: 'pageViews' as const, label: 'Page Views', color: '#8b5cf6', fillOpacity: 0.22 },
+  { key: 'interactions' as const, label: 'Interactions', color: '#10b981', fillOpacity: 0.22 },
+  { key: 'impressions' as const, label: 'Component Views', color: '#f59e0b', fillOpacity: 0.22 },
+]
+
+const formatNumber = (value: number) => value.toLocaleString()
+
+const formatAxisDate = (dateStr: string, period: PeriodKey) => {
+  const date = new Date(dateStr)
+  if (period === '3d') {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+  if (period === '7d') {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+const formatTooltipDate = (dateStr: string) =>
+  new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+const getSeriesByLabel = (label: string) => series.find((s) => s.label === label)
+
+const CustomTooltip = ({
+  active,
+  label,
+  payload,
+}: {
+  active?: boolean
+  label?: string
+  payload?: Array<{ name?: string; value?: number; color?: string; dataKey?: SeriesKey }>
+}) => {
+  if (!active || !payload || payload.length === 0 || !label) return null
+  return (
+    <div
+      style={{
+        backgroundColor: 'var(--theme-elevation-50)',
+        borderRadius: '0.25rem',
+        border: '1px solid var(--theme-elevation-200)',
+        color: 'var(--theme-text-dark)',
+        padding: '8px 12px',
+        fontSize: '0.875rem',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <div style={{ color: 'var(--theme-text-light)', marginBottom: '0.25rem' }}>
+        {formatTooltipDate(label)}
+      </div>
+      <div style={{ display: 'grid', gap: '0.25rem' }}>
+        {payload.map((item, index) => {
+          const labelText = item.name || ''
+          return (
+            <div key={`${labelText}-${index}`} style={{ display: 'flex', alignItems: 'center' }}>
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: item.color || 'var(--theme-elevation-400)',
+                  marginRight: '0.5rem',
+                }}
+              />
+              <span style={{ marginRight: '0.5rem' }}>{labelText}</span>
+              <strong>{formatNumber(item.value || 0)}</strong>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+export default function UserActivityChart({ data, initialPeriod = '30d' }: UserActivityChartProps) {
+  const [period, setPeriod] = useState<PeriodKey>(initialPeriod)
+  const [activeKey, setActiveKey] = useState<SeriesKey | null>(null)
+
+  const filteredData = useMemo(() => {
+    if (!data?.length) return []
+    const now = new Date()
+    const start = new Date(now)
+    if (period === '3d') start.setDate(now.getDate() - 2)
+    if (period === '7d') start.setDate(now.getDate() - 6)
+    if (period === '30d') start.setDate(now.getDate() - 29)
+    return data.filter((point) => new Date(point.date) >= start)
+  }, [data, period])
+
+  if (filteredData.length === 0) {
     return (
       <div
         style={{
@@ -37,153 +132,96 @@ export default function UserActivityChart({ data, maxValue }: UserActivityChartP
     )
   }
 
-  // Calculate points for each line
-  const getYPosition = (value: number) => {
-    if (maxValue === 0) return padding.top + innerHeight / 2
-    const normalized = value / maxValue
-    return padding.top + innerHeight - normalized * innerHeight
-  }
-
-  const getXPosition = (index: number) => {
-    if (data.length === 1) return padding.left + innerWidth / 2
-    return padding.left + (index / (data.length - 1)) * innerWidth
-  }
-
-  const createPath = (dataKey: 'total' | 'pageViews' | 'interactions' | 'impressions') => {
-    if (data.length === 0) return ''
-    return data
-      .map((point, index) => {
-        const x = getXPosition(index)
-        const y = getYPosition(point[dataKey])
-        return `${index === 0 ? 'M' : 'L'} ${x},${y}`
-      })
-      .join(' ')
-  }
-
-  const lines = [
-    { key: 'total' as const, color: '#3b82f6', label: 'Total Activity', width: 3 },
-    { key: 'pageViews' as const, color: '#8b5cf6', label: 'Page Views', width: 2 },
-    { key: 'interactions' as const, color: '#10b981', label: 'Interactions', width: 2 },
-    { key: 'impressions' as const, color: '#f59e0b', label: 'Component Views', width: 2 },
-  ]
-
-  // Generate Y-axis labels (5 ticks)
-  const yTicks = Array.from({ length: 5 }, (_, i) => {
-    const value = (maxValue / 4) * i
-    return {
-      value: Math.round(value),
-      y: getYPosition(value),
-    }
-  })
-
-  // Generate X-axis labels (show every nth label to avoid crowding)
-  const xStep = Math.max(1, Math.floor(data.length / 7))
-  const xTicks = data.filter((_, i) => i % xStep === 0 || i === data.length - 1)
-
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
-      <svg width={chartWidth} height={chartHeight} style={{ minWidth: '100%', display: 'block' }}>
-        {/* Grid lines */}
-        {yTicks.map((tick, i) => (
-          <g key={i}>
-            <line
-              x1={padding.left}
-              y1={tick.y}
-              x2={chartWidth - padding.right}
-              y2={tick.y}
-              stroke="var(--theme-elevation-200)"
-              strokeWidth={1}
-              strokeDasharray="3,3"
-            />
-            <text
-              x={padding.left - 10}
-              y={tick.y + 4}
-              textAnchor="end"
-              fill="var(--theme-elevation-400)"
-              fontSize="11"
-            >
-              {tick.value}
-            </text>
-          </g>
-        ))}
-
-        {/* X-axis labels */}
-        {xTicks.map((point, i) => {
-          const index = data.indexOf(point)
-          const x = getXPosition(index)
-          const label = new Date(point.date).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-          })
-          return (
-            <text
-              key={i}
-              x={x}
-              y={chartHeight - padding.bottom + 20}
-              textAnchor="middle"
-              fill="var(--theme-elevation-400)"
-              fontSize="11"
-            >
-              {label}
-            </text>
-          )
-        })}
-
-        {/* Lines */}
-        {lines.map((line) => (
-          <path
-            key={line.key}
-            d={createPath(line.key)}
-            fill="none"
-            stroke={line.color}
-            strokeWidth={line.width}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        ))}
-
-        {/* Data points */}
-        {lines.map((line) =>
-          data.map((point, index) => (
-            <circle
-              key={`${line.key}-${index}`}
-              cx={getXPosition(index)}
-              cy={getYPosition(point[line.key])}
-              r={3}
-              fill={line.color}
-            >
-              <title>
-                {`${line.label}: ${point[line.key]} on ${new Date(point.date).toLocaleDateString()}`}
-              </title>
-            </circle>
-          )),
-        )}
-      </svg>
-
-      {/* Legend */}
+    <div style={{ width: '100%' }}>
       <div
         style={{
+          marginBottom: '0.75rem',
           display: 'flex',
-          gap: '1.5rem',
-          justifyContent: 'center',
-          marginTop: '1rem',
-          flexWrap: 'wrap',
-          fontSize: '0.75rem',
+          justifyContent: 'flex-end',
+          marginRight: '10px',
         }}
       >
-        {lines.map((line) => (
-          <div key={line.key} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div
-              style={{
-                width: '16px',
-                height: `${line.width}px`,
-                backgroundColor: line.color,
-                borderRadius: '2px',
-              }}
+        <PillSelector
+          pills={[
+            { name: '30d', Label: '30d', selected: period === '30d' },
+            { name: '7d', Label: '7d', selected: period === '7d' },
+            { name: '3d', Label: '3d', selected: period === '3d' },
+          ]}
+          onClick={({ pill }) => setPeriod(pill.name as PeriodKey)}
+        />
+      </div>
+
+      <div style={{ width: '100%', height: 260 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={filteredData}
+            margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
+            onMouseMove={(state: any) => {
+              if (state?.activePayload && state.activePayload.length > 0) {
+                const payloadKey = state.activePayload[0]?.dataKey as SeriesKey | undefined
+                if (payloadKey) setActiveKey(payloadKey)
+              }
+            }}
+            onMouseLeave={() => setActiveKey(null)}
+          >
+            <defs>
+              {series.map((s) => (
+                <linearGradient key={s.key} id={`fill-${s.key}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={s.color} stopOpacity={s.fillOpacity} />
+                  <stop offset="95%" stopColor={s.color} stopOpacity={0.02} />
+                </linearGradient>
+              ))}
+            </defs>
+            <CartesianGrid strokeDasharray="4 4" stroke="var(--theme-elevation-200)" />
+            <XAxis
+              dataKey="date"
+              tickFormatter={(value) => formatAxisDate(value, period)}
+              tick={{ fill: 'var(--theme-elevation-600)' }}
+              stroke="var(--theme-elevation-500)"
+              style={{ fontSize: '0.75rem' }}
+              interval="preserveStartEnd"
             />
-            <span style={{ color: 'var(--theme-text)' }}>{line.label}</span>
-          </div>
-        ))}
+            <YAxis
+              stroke="var(--theme-elevation-500)"
+              tick={{ fill: 'var(--theme-elevation-600)' }}
+              tickFormatter={formatNumber}
+              style={{ fontSize: '0.75rem' }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend
+              verticalAlign="bottom"
+              height={24}
+              formatter={(value: string) => (
+                <span style={{ color: 'var(--theme-text)' }}>{value}</span>
+              )}
+              onMouseEnter={(e) => {
+                const label = String(e.value)
+                const seriesItem = getSeriesByLabel(label)
+                if (seriesItem) setActiveKey(seriesItem.key)
+              }}
+              onMouseLeave={() => setActiveKey(null)}
+            />
+            {series.map((s) => {
+              const isActive = activeKey ? activeKey === s.key : true
+              return (
+                <Area
+                  key={s.key}
+                  dataKey={s.key}
+                  type="monotone"
+                  name={s.label}
+                  stroke={s.color}
+                  fill={`url(#fill-${s.key})`}
+                  strokeWidth={isActive ? 3 : 2}
+                  fillOpacity={isActive ? s.fillOpacity + 0.08 : s.fillOpacity}
+                  opacity={isActive ? 1 : 0.4}
+                  activeDot={{ r: 5 }}
+                  dot={{ r: 2, strokeWidth: 1 }}
+                />
+              )
+            })}
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   )

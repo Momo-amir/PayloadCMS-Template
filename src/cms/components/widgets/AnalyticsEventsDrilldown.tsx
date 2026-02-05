@@ -1,5 +1,6 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { Card, PillSelector } from '@payloadcms/ui'
 
 interface EventData {
   name: string
@@ -7,17 +8,55 @@ interface EventData {
   parameters: Record<string, Record<string, number>>
 }
 
-interface DrilldownProps {
+type PeriodKey = 'total' | '30d' | '7d' | '24h'
+
+type PeriodData = {
   events: EventData[]
   totalCount: number
+  pageviews: number
+  impressions: number
+  interactions: number
+  compare?: {
+    pageviews: number
+    impressions: number
+    interactions: number
+  }
 }
 
-export default function AnalyticsEventsDrilldown({ events, totalCount }: DrilldownProps) {
+interface DrilldownProps {
+  dataByPeriod: Record<PeriodKey, PeriodData>
+  initialPeriod?: PeriodKey
+}
+
+const formatNumber = (value: number) => value.toLocaleString()
+const getDeltaColor = (current: number, previous: number | undefined, period: PeriodKey) => {
+  if (period === 'total') return 'var(--theme-brand-500)'
+  if (previous === undefined || previous === 0) return 'var(--theme-elevation-600)'
+  if (current > previous) return 'var(--theme-success-500)'
+  if (current < previous) return 'var(--theme-error-500)'
+  return 'var(--theme-elevation-600)'
+}
+
+export default function AnalyticsEventsDrilldown({
+  dataByPeriod,
+  initialPeriod = '30d',
+}: DrilldownProps) {
+  const [period, setPeriod] = useState<PeriodKey>(initialPeriod)
   const [currentView, setCurrentView] = useState<'events' | 'parameters' | 'values'>('events')
   const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null)
   const [selectedParameter, setSelectedParameter] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
+
+  useEffect(() => {
+    setCurrentView('events')
+    setSelectedEvent(null)
+    setSelectedParameter(null)
+    setCurrentPage(1)
+  }, [period])
+
+  const activeData = dataByPeriod[period]
+  const compare = activeData.compare
 
   const handleEventClick = (event: EventData) => {
     setSelectedEvent(event)
@@ -47,7 +86,7 @@ export default function AnalyticsEventsDrilldown({ events, totalCount }: Drilldo
   let title = 'Event Names'
 
   if (currentView === 'events') {
-    items = events.map((e) => ({ label: e.name, count: e.count }))
+    items = activeData.events.map((e) => ({ label: e.name, count: e.count }))
     title = 'Event Names'
   } else if (currentView === 'parameters' && selectedEvent) {
     items = Object.entries(selectedEvent.parameters).map(([key, values]) => {
@@ -70,11 +109,82 @@ export default function AnalyticsEventsDrilldown({ events, totalCount }: Drilldo
 
   return (
     <div
-      className="card"
+      className="card widget"
       style={{ padding: '1.5rem', minHeight: '400px', flexDirection: 'column' }}
     >
       {/* Header with breadcrumb */}
-      <div style={{ marginBottom: '1.5rem' }}>
+      <div
+        style={{
+          marginBottom: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <h3 style={{ margin: 0, color: 'var(--theme-text)' }}>Analytics Events</h3>
+
+        <PillSelector
+          pills={[
+            { name: 'total', Label: 'Total', selected: period === 'total' },
+            { name: '30d', Label: '30 Days', selected: period === '30d' },
+            { name: '7d', Label: '7 Days', selected: period === '7d' },
+            { name: '24h', Label: '24 Hours', selected: period === '24h' },
+          ]}
+          onClick={({ pill }) => setPeriod(pill.name as PeriodKey)}
+        />
+      </div>
+      <div className="">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: '1rem',
+            marginBottom: '1rem',
+          }}
+        >
+          <Card
+            title="Pageviews"
+            actions={
+              <span
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: 600,
+                  color: getDeltaColor(activeData.pageviews, compare?.pageviews, period),
+                }}
+              >
+                {formatNumber(activeData.pageviews)}
+              </span>
+            }
+          />
+          <Card
+            title="Component Impressions"
+            actions={
+              <span
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: 600,
+                  color: getDeltaColor(activeData.impressions, compare?.impressions, period),
+                }}
+              >
+                {formatNumber(activeData.impressions)}
+              </span>
+            }
+          />
+          <Card
+            title="Interactions"
+            actions={
+              <span
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: 600,
+                  color: getDeltaColor(activeData.interactions, compare?.interactions, period),
+                }}
+              >
+                {formatNumber(activeData.interactions)}
+              </span>
+            }
+          />
+        </div>
         <div
           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}
         >
@@ -95,55 +205,51 @@ export default function AnalyticsEventsDrilldown({ events, totalCount }: Drilldo
               ← Back
             </button>
           )}
-          <h3 style={{ margin: 0, color: 'var(--theme-text)' }}>Analytics Events</h3>
-        </div>
-
-        {/* Breadcrumb */}
-        <div
-          style={{
-            fontSize: '0.8125rem',
-            color: 'var(--theme-elevation-400)',
-            display: 'flex',
-            gap: '0.5rem',
-            alignItems: 'center',
-          }}
-        >
-          <span
-            onClick={() => currentView !== 'events' && handleBack()}
+          <div
             style={{
-              cursor: currentView !== 'events' ? 'pointer' : 'default',
-              textDecoration: currentView !== 'events' ? 'underline' : 'none',
+              fontSize: '0.8125rem',
+              color: 'var(--theme-elevation-400)',
+              display: 'flex',
+              gap: '0.5rem',
+              alignItems: 'center',
             }}
           >
-            Events
-          </span>
-          {selectedEvent && (
-            <>
-              <span>/</span>
-              <span
-                onClick={() => currentView === 'values' && handleBack()}
-                style={{
-                  cursor: currentView === 'values' ? 'pointer' : 'default',
-                  textDecoration: currentView === 'values' ? 'underline' : 'none',
-                }}
-              >
-                {selectedEvent.name}
-              </span>
-            </>
-          )}
-          {selectedParameter && (
-            <>
-              <span>/</span>
-              <span>{selectedParameter}</span>
-            </>
-          )}
+            <span
+              onClick={() => currentView !== 'events' && handleBack()}
+              style={{
+                cursor: currentView !== 'events' ? 'pointer' : 'default',
+                textDecoration: currentView !== 'events' ? 'underline' : 'none',
+              }}
+            >
+              Events
+            </span>
+            {selectedEvent && (
+              <>
+                <span>/</span>
+                <span
+                  onClick={() => currentView === 'values' && handleBack()}
+                  style={{
+                    cursor: currentView === 'values' ? 'pointer' : 'default',
+                    textDecoration: currentView === 'values' ? 'underline' : 'none',
+                  }}
+                >
+                  {selectedEvent.name}
+                </span>
+              </>
+            )}
+            {selectedParameter && (
+              <>
+                <span>/</span>
+                <span>{selectedParameter}</span>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Summary stats */}
         <div
           style={{
             marginTop: '1rem',
-            padding: '0.75rem',
             backgroundColor: 'var(--theme-elevation-50)',
             borderRadius: '4px',
             fontSize: '0.875rem',
@@ -152,7 +258,7 @@ export default function AnalyticsEventsDrilldown({ events, totalCount }: Drilldo
           <strong>{title}</strong>
           <div style={{ color: 'var(--theme-elevation-400)', marginTop: '0.25rem' }}>
             {currentView === 'events' &&
-              `${items.length} event types · ${totalCount.toLocaleString()} total events`}
+              `${items.length} event types · ${activeData.totalCount.toLocaleString()} total events`}
             {currentView === 'parameters' &&
               `${items.length} event parameters · ${selectedEvent?.count.toLocaleString()} total events`}
             {currentView === 'values' && `${items.length} unique values`}
@@ -207,7 +313,7 @@ export default function AnalyticsEventsDrilldown({ events, totalCount }: Drilldo
                   key={`${item.label}-${index}`}
                   onClick={() => {
                     if (currentView === 'events') {
-                      const event = events.find((e) => e.name === item.label)
+                      const event = activeData.events.find((e) => e.name === item.label)
                       if (event) handleEventClick(event)
                     } else if (currentView === 'parameters') {
                       handleParameterClick(item.label)

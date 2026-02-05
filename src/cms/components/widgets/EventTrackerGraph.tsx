@@ -10,6 +10,16 @@ interface DataPoint {
   impressions: number
 }
 
+const interactionEvents = new Set([
+  'form_submit',
+  'search',
+  'link_click',
+  'button_click',
+  'card_click',
+  'post_card_click',
+  'video_interaction',
+])
+
 export default async function EventTrackerGraph({ req }: WidgetServerProps) {
   const { payload } = req
 
@@ -30,7 +40,6 @@ export default async function EventTrackerGraph({ req }: WidgetServerProps) {
 
     // Group by date
     const dateMap = new Map<string, DataPoint>()
-    let maxValue = 0
     let totalEvents = 0
     let recentEvents = 0
     const sevenDaysAgo = new Date()
@@ -68,15 +77,9 @@ export default async function EventTrackerGraph({ req }: WidgetServerProps) {
         dataPoint.pageViews += count
       } else if (eventName === 'component_impression') {
         dataPoint.impressions += count
-      } else if (
-        eventName.includes('click') ||
-        eventName === 'form_submit' ||
-        eventName === 'scroll_depth'
-      ) {
+      } else if (interactionEvents.has(eventName)) {
         dataPoint.interactions += count
       }
-
-      maxValue = Math.max(maxValue, dataPoint.total)
     })
 
     // Convert to sorted array
@@ -94,7 +97,7 @@ export default async function EventTrackerGraph({ req }: WidgetServerProps) {
     const growthRate = oldHalfTotal > 0 ? ((newHalfTotal - oldHalfTotal) / oldHalfTotal) * 100 : 0
 
     return (
-      <div className="card" style={{ padding: '1.5rem', flexDirection: 'column' }}>
+      <div className="card widget" style={{ padding: '1.5rem', flexDirection: 'column' }}>
         <div style={{ marginBottom: '1.5rem' }}>
           <h3 style={{ margin: 0, marginBottom: '0.75rem', color: 'var(--theme-text)' }}>
             User Activity Overview
@@ -164,7 +167,7 @@ export default async function EventTrackerGraph({ req }: WidgetServerProps) {
             No analytics data yet. Activity will appear here once tracking starts.
           </div>
         ) : (
-          <UserActivityChart data={data} maxValue={maxValue} />
+          <UserActivityChart data={data} />
         )}
       </div>
     )

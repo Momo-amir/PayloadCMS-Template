@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 import { slugField } from 'payload'
+import { createParentField } from '@payloadcms/plugin-nested-docs'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
@@ -26,6 +27,21 @@ export const Categories: CollectionConfig = {
       localized: true,
       required: true,
     },
+    createParentField('categories', {
+      filterOptions: ({ id }) => {
+        if (id) {
+          return {
+            id: {
+              not_equals: id,
+            },
+            'breadcrumbs.doc': {
+              not_in: [id],
+            },
+          }
+        }
+        return true
+      },
+    }),
     slugField({
       position: undefined,
     }),

@@ -18,7 +18,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
-import { createBreadcrumbsField } from '@payloadcms/plugin-nested-docs'
+import { createBreadcrumbsField, createParentField } from '@payloadcms/plugin-nested-docs'
 
 const layoutBlocks: ComponentBlock[] = []
 
@@ -94,6 +94,7 @@ export const Pages: CollectionConfig<'pages'> = {
           ],
           label: 'Content',
         },
+
         {
           name: 'meta',
           label: 'SEO',
@@ -122,17 +123,38 @@ export const Pages: CollectionConfig<'pages'> = {
             }),
           ],
         },
+        {
+          fields: [
+            slugField({
+              position: undefined,
+            }),
+            {
+              name: 'publishedAt',
+              type: 'date',
+            },
+            createParentField('pages', {
+              admin: {
+                position: undefined,
+              },
+              filterOptions: ({ id }) => {
+                if (id) {
+                  return {
+                    id: {
+                      not_equals: id,
+                    },
+                    'breadcrumbs.doc': {
+                      not_in: [id],
+                    },
+                  }
+                }
+                return true
+              },
+            }),
+          ],
+          label: 'Info & Settings',
+        },
       ],
     },
-    {
-      name: 'publishedAt',
-      type: 'date',
-      admin: {
-        position: 'sidebar',
-      },
-    },
-
-    slugField(),
     createBreadcrumbsField('pages', {
       admin: {
         condition: (data) => Boolean(data?.parent),

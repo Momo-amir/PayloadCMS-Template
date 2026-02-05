@@ -116,36 +116,6 @@ export const Posts: CollectionConfig<'posts'> = {
           label: 'Content',
         },
         {
-          fields: [
-            {
-              name: 'relatedPosts',
-              type: 'relationship',
-              admin: {
-                position: 'sidebar',
-              },
-              filterOptions: ({ id }) => {
-                return {
-                  id: {
-                    not_in: [id],
-                  },
-                }
-              },
-              hasMany: true,
-              relationTo: 'posts',
-            },
-            {
-              name: 'categories',
-              type: 'relationship',
-              admin: {
-                position: 'sidebar',
-              },
-              hasMany: true,
-              relationTo: 'categories',
-            },
-          ],
-          label: 'Meta',
-        },
-        {
           name: 'meta',
           label: 'SEO',
           localized: true,
@@ -173,36 +143,60 @@ export const Posts: CollectionConfig<'posts'> = {
             }),
           ],
         },
-      ],
-    },
-    {
-      name: 'publishedAt',
-      type: 'date',
-      admin: {
-        date: {
-          pickerAppearance: 'dayAndTime',
+        {
+          fields: [
+            slugField({
+              position: undefined,
+            }),
+
+            {
+              name: 'authors',
+              type: 'relationship',
+              hasMany: true,
+              relationTo: 'people',
+            },
+            {
+              name: 'categories',
+              type: 'relationship',
+              hasMany: true,
+              relationTo: 'categories',
+            },
+            {
+              name: 'relatedPosts',
+              type: 'relationship',
+              filterOptions: ({ id }) => {
+                return {
+                  id: {
+                    not_in: [id],
+                  },
+                }
+              },
+              hasMany: true,
+              relationTo: 'posts',
+            },
+            {
+              name: 'publishedAt',
+              type: 'date',
+              admin: {
+                date: {
+                  pickerAppearance: 'dayAndTime',
+                },
+              },
+              hooks: {
+                beforeChange: [
+                  ({ siblingData, value }) => {
+                    if (siblingData._status === 'published' && !value) {
+                      return new Date()
+                    }
+                    return value
+                  },
+                ],
+              },
+            },
+          ],
+          label: 'Info & Settings',
         },
-        position: 'sidebar',
-      },
-      hooks: {
-        beforeChange: [
-          ({ siblingData, value }) => {
-            if (siblingData._status === 'published' && !value) {
-              return new Date()
-            }
-            return value
-          },
-        ],
-      },
-    },
-    {
-      name: 'authors',
-      type: 'relationship',
-      admin: {
-        position: 'sidebar',
-      },
-      hasMany: true,
-      relationTo: 'people',
+      ],
     },
     // This field is only used to populate the author data via the `populateAuthors` hook
     // GraphQL will not return mutated data that differs from the underlying schema
@@ -227,7 +221,6 @@ export const Posts: CollectionConfig<'posts'> = {
         },
       ],
     },
-    slugField(),
   ],
   hooks: {
     afterChange: [revalidatePost],
