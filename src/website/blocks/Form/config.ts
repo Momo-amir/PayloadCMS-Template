@@ -1,4 +1,3 @@
-import type { Block } from 'payload'
 import { FormBlock as FormBlockComponent } from './Component'
 
 import {

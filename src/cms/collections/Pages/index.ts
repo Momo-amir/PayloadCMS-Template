@@ -126,7 +126,10 @@ export const Pages: CollectionConfig<'pages'> = {
         {
           fields: [
             slugField({
-              position: undefined,
+              overrides: (field) => {
+                ;(field.fields[1] as { label?: string }).label = 'Page URL'
+                return field
+              },
             }),
             {
               name: 'publishedAt',
@@ -151,7 +154,7 @@ export const Pages: CollectionConfig<'pages'> = {
               },
             }),
           ],
-          label: 'Info & Settings',
+          label: 'Page Settings',
         },
       ],
     },

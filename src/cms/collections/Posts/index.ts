@@ -146,7 +146,10 @@ export const Posts: CollectionConfig<'posts'> = {
         {
           fields: [
             slugField({
-              position: undefined,
+              overrides: (field) => {
+                ;(field.fields[1] as { label?: string }).label = 'Page URL'
+                return field
+              },
             }),
 
             {
@@ -194,7 +197,7 @@ export const Posts: CollectionConfig<'posts'> = {
               },
             },
           ],
-          label: 'Info & Settings',
+          label: 'Post Settings',
         },
       ],
     },
