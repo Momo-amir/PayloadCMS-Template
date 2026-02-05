@@ -419,8 +419,32 @@
   }
 }
 
+.status__value {
+  color: var(--color-success-500);
+}
+
+/* Status colors by title text (EN + DA) */
+.status[title*='Draft'] .status__value,
+.status[title*='Kladde'] .status__value {
+  color: #d6281f;
+}
+
+.status[title*='Changed'] .status__value,
+.status[title*='Ændret'] .status__value {
+  color: #ef8500;
+}
+
+.status[title*='Published'] .status__value,
+.status[title*='Offentliggjort'] .status__value {
+  color: var(--color-success-500);
+}
+
 .widget {
   .pill-selector {
     padding: 0;
   }
+}
+
+.btn--style-primary:has(#action-unpublish) {
+  background-color: var(--color-warning-400);
 }

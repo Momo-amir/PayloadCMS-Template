@@ -27,6 +27,7 @@
   "plugin-redirects:internalLink": "Intern link",
   "plugin-redirects:customUrl": "Brugerdefineret URL",
   "plugin-redirects:documentToRedirect": "Dokument der skal omdirigeres",
+  "plugin-redirects:redirectType": "Omdirigeringstype",
 
   "cookie-consent:title": "Cookie Præferencer",
   "cookie-consent:message": "Vi bruger cookies, med dit samtykke, til at analysere brugen af vores hjemmeside og for at sikre, at du får den bedste oplevelse. Tredjeparter, som vi samarbejder med, kan også installere cookies for at vise dig personligt indhold. Læs vores",

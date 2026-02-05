@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { da } from '@payloadcms/translations/languages/da'
 import { en } from '@payloadcms/translations/languages/en'
+import daMessages from './i18n/messages/da.json'
+import enMessages from './i18n/messages/en.json'
 
 import { Categories } from './cms/collections/Categories'
 import { Media } from './cms/collections/Media'
@@ -41,6 +43,17 @@ import localization from './i18n/localization'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+const buildPluginRedirectsTranslations = (messages: Record<string, string>) => ({
+  'plugin-redirects': {
+    fromUrl: messages['plugin-redirects:fromUrl'],
+    toUrlType: messages['plugin-redirects:toUrlType'],
+    internalLink: messages['plugin-redirects:internalLink'],
+    customUrl: messages['plugin-redirects:customUrl'],
+    documentToRedirect: messages['plugin-redirects:documentToRedirect'],
+    redirectType: messages['plugin-redirects:redirectType'],
+  },
+})
 
 export default buildConfig({
   blocks: exports.blocks,
@@ -175,10 +188,14 @@ export default buildConfig({
     fallbackLanguage: 'en',
     translations: {
       da: {
+        ...buildPluginRedirectsTranslations(daMessages),
         general: {
           noResults:
             'Ingen {{label}} fundet. Enten findes der endnu ingen {{label}}, eller også matcher ingen af de filtre angivet ovenfor.',
         },
+      },
+      en: {
+        ...buildPluginRedirectsTranslations(enMessages),
       },
     },
   },
