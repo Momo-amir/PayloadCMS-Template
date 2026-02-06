@@ -1,3 +1,4 @@
+import { PromoStripBlock } from "./PromoStrip/config";
 import { RichTextBlockBlock } from './RichTextBlock/config'
 import { PeopleArchiveBlock } from './PeopleArchive/config'
 /* eslint-disable import/no-anonymous-default-export */
@@ -29,6 +30,7 @@ export default {
       PeopleArchiveBlock,
       RichTextBlockBlock,
       Columns,
+    PromoStripBlock,
     ] satisfies ComponentBlock[])
   ),
 }
