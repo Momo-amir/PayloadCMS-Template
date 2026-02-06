@@ -17,7 +17,7 @@ import Link from 'next/link'
 import { trackCardClick } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 
-type CardItem = CardBlockType['cards'][number]
+type CardItem = NonNullable<CardBlockType['cards']>[number]
 
 export type CardVariant = 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary' | 'neutral'
 

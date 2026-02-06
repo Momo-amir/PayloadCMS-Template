@@ -11,7 +11,7 @@ import { useTrackImpression } from '@/cms/hooks/useAnalytics'
 import RichText from '@/website/components/RichText'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-type CardItem = CardCarouselBlockType['cards'][number]
+type CardItem = NonNullable<CardCarouselBlockType['cards']>[number]
 type Props = CardCarouselBlockType & {
   className?: string
   introContent?: SerializedEditorState
@@ -48,7 +48,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
   const [touchEnd, setTouchEnd] = useState(0)
 
   // Track when carousel becomes visible
-  const resolvedCards = cardType === 'info' ? infoCards : cards
+  const resolvedCards = (cardType === 'info' ? infoCards : cards) ?? []
   const CardComponent = cardType === 'info' ? InfoCard : Card
   const carouselRef = useTrackImpression(
     `Card Carousel (${resolvedCards.length} cards)`,
