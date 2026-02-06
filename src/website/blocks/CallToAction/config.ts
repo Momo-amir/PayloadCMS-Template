@@ -39,6 +39,12 @@ export const CallToAction: ComponentBlock = {
         maxRows: 2,
       },
     }),
+    {
+      name: 'centered',
+      type: 'checkbox',
+      label: 'Center Content',
+      defaultValue: false,
+    },
   ],
   labels: {
     plural: 'Calls to Action',

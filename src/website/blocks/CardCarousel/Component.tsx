@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import type { CardCarouselBlock as CardCarouselBlockType } from '@/payload-types'
 import Card from '@/website/components/Card/CustomCard'
+import InfoCard from '@/website/components/Card/InfoCard'
 import { cn } from '@/cms/utilities/ui'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
 import { Button } from '@site/components/elements/button'
@@ -10,7 +11,12 @@ import { useTrackImpression } from '@/cms/hooks/useAnalytics'
 import RichText from '@/website/components/RichText'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-type Props = CardCarouselBlockType & { className?: string; introContent?: SerializedEditorState }
+type CardItem = CardCarouselBlockType['cards'][number]
+type Props = CardCarouselBlockType & {
+  className?: string
+  introContent?: SerializedEditorState
+  infoCards?: CardItem[]
+}
 
 const getColumnsPerView = (cardCount: number, containerWidth: number): number => {
   const isMobile = containerWidth < 768
@@ -31,7 +37,9 @@ const getColumnsPerView = (cardCount: number, containerWidth: number): number =>
 export const CardCarouselBlock: React.FC<Props> = ({
   introContent,
   cards = [],
+  infoCards = [],
   cardBackgroundColor,
+  cardType,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [containerWidth, setContainerWidth] = useState(0)
@@ -40,13 +48,15 @@ export const CardCarouselBlock: React.FC<Props> = ({
   const [touchEnd, setTouchEnd] = useState(0)
 
   // Track when carousel becomes visible
+  const resolvedCards = cardType === 'info' ? infoCards : cards
+  const CardComponent = cardType === 'info' ? InfoCard : Card
   const carouselRef = useTrackImpression(
-    `Card Carousel (${cards.length} cards)`,
+    `Card Carousel (${resolvedCards.length} cards)`,
     'carousel',
   ) as React.RefObject<HTMLElement>
 
-  const perView = getColumnsPerView(cards.length, containerWidth)
-  const pageCount = Math.ceil(cards.length / perView)
+  const perView = getColumnsPerView(resolvedCards.length, containerWidth)
+  const pageCount = Math.ceil(resolvedCards.length / perView)
 
   useEffect(() => {
     const measure = () => {
@@ -59,7 +69,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
     return () => window.removeEventListener('resize', measure)
   }, [])
 
-  if (!cards.length) return null
+  if (!resolvedCards.length) return null
 
   const goToPage = (page: number) => {
     const clamped = Math.max(0, Math.min(page, pageCount - 1))
@@ -102,7 +112,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
   }
 
   const slideWidth = containerWidth / perView
-  const trackWidth = slideWidth * cards.length
+  const trackWidth = slideWidth * resolvedCards.length
   const offset = -(currentIndex * containerWidth)
 
   return (
@@ -126,9 +136,9 @@ export const CardCarouselBlock: React.FC<Props> = ({
                 'min-[90rem]:absolute min-[90rem]:-left-16 min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
               )}
             />
-            <div ref={containerRef} className="overflow-hidden w-full">
+            <div ref={containerRef} className="overflow-hidden w-full py-2">
               <div
-                className="slide-track flex transition-transform duration-500 ease-in-out gap-x-4"
+                className="slide-track flex items-stretch transition-transform duration-500 ease-in-out gap-x-4"
                 style={{
                   width: trackWidth,
                   transform: `translateX(${offset}px)`,
@@ -137,7 +147,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
-                {cards.map((card, i) => {
+                {resolvedCards.map((card, i) => {
                   const variantRaw = cardBackgroundColor
                   const variant =
                     typeof variantRaw === 'string' && variantRaw !== ''
@@ -151,8 +161,8 @@ export const CardCarouselBlock: React.FC<Props> = ({
                       : 'default'
 
                   return (
-                    <div key={card.id ?? i} className="slide " style={{ width: slideWidth }}>
-                      <Card card={card} variant={variant} className="h-full" />
+                    <div key={card.id ?? i} className="slide h-full" style={{ width: slideWidth }}>
+                      <CardComponent card={card} variant={variant} className="h-full" />
                     </div>
                   )
                 })}

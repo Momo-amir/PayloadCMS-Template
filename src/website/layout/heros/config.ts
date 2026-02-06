@@ -48,11 +48,11 @@ export const hero: Field = {
           defaultValue: 'dark',
           options: [
             {
-              label: 'Light',
+              label: 'Black text',
               value: 'light',
             },
             {
-              label: 'Dark',
+              label: 'White text',
               value: 'dark',
             },
           ],

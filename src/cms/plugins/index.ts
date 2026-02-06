@@ -13,6 +13,9 @@ import { beforeSyncWithSearch } from '@/website/layout/search/beforeSync'
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/cms/utilities/getURL'
 import { privacyPolicyField } from '@/cms/fields/formBuilder'
+import { formActionOptions } from '@/cms/forms/actions'
+import { copyFormActionToSubmission } from '@/cms/forms/copyFormActionToSubmission'
+import { runFormAction } from '@/cms/forms/runFormAction'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Kollab Website Template` : 'Kollab Website Template'
@@ -99,7 +102,20 @@ export const plugins: Plugin[] = [
             }
           }
           return field
-        })
+        }).concat([
+          {
+            name: 'action',
+            type: 'select',
+            label: 'Submission Action',
+            options: formActionOptions,
+            defaultValue: 'none',
+            admin: {
+              position: 'sidebar',
+              description:
+                'Used to trigger server-side callbacks when a submission is created.',
+            },
+          },
+        ])
       },
     },
     formSubmissionOverrides: {
@@ -112,6 +128,21 @@ export const plugins: Plugin[] = [
           en: 'Form Submissions',
           da: 'Formularindsendelser',
         },
+      },
+      fields: ({ defaultFields }) => {
+        return defaultFields.concat([
+          {
+            name: 'action',
+            type: 'text',
+            admin: {
+              hidden: true,
+            },
+          },
+        ])
+      },
+      hooks: {
+        beforeChange: [copyFormActionToSubmission],
+        afterChange: [runFormAction],
       },
     },
   }),

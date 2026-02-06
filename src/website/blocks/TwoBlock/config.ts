@@ -37,14 +37,42 @@ export const TwoBlockBlock: ComponentBlock = {
       defaultValue: false,
     },
     {
+      name: 'backgroundMode',
+      type: 'radio',
+      label: 'Background Mode',
+      defaultValue: 'color',
+      options: [
+        { label: 'Color', value: 'color' },
+        { label: 'Image/Video', value: 'media' },
+      ],
+      admin: {
+        condition: (_, siblingData) => siblingData?.enableBackground === true,
+      },
+    },
+    {
       name: 'backgroundMedia',
       type: 'upload',
       relationTo: 'media',
       label: 'Background Image/Video',
       admin: {
-        condition: (_, siblingData) => siblingData?.enableBackground === true,
-        description:
-          'Upload a background image or video. If not provided, background variant color will be used.',
+        condition: (_, siblingData) =>
+          siblingData?.enableBackground === true && siblingData?.backgroundMode === 'media',
+        description: 'Upload a background image or video.',
+      },
+    },
+    {
+      name: 'textColorMode',
+      type: 'radio',
+      label: 'Text Color',
+      defaultValue: 'white',
+      options: [
+        { label: 'White', value: 'white' },
+        { label: 'Black', value: 'black' },
+      ],
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.enableBackground === true && siblingData?.backgroundMode === 'media',
+        description: 'Choose text color when using a background image or video.',
       },
     },
     {
@@ -61,22 +89,8 @@ export const TwoBlockBlock: ComponentBlock = {
       ],
       admin: {
         condition: (_, siblingData) =>
-          siblingData?.enableBackground === true && !siblingData?.backgroundMedia,
-        description: 'Choose a background color variant when no media is uploaded.',
-      },
-    },
-    {
-      name: 'themeMode',
-      type: 'select',
-      label: 'Theme',
-      defaultValue: 'light',
-      options: [
-        { label: 'Light', value: 'light' },
-        { label: 'Dark', value: 'dark' },
-      ],
-      admin: {
-        condition: (_, siblingData) => siblingData?.enableBackground === true,
-        description: 'Choose text color theme based on background.',
+          siblingData?.enableBackground === true && siblingData?.backgroundMode !== 'media',
+        description: 'Choose a background color variant.',
       },
     },
   ],

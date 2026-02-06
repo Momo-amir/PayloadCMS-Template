@@ -37,6 +37,19 @@ export const CardCarouselBlock: ComponentBlock = {
       label: 'Intro Content',
     },
     {
+      name: 'cardType',
+      label: 'Card Type',
+      type: 'radio',
+      defaultValue: 'link',
+      options: [
+        { label: 'Info (No Link)', value: 'info' },
+        { label: 'Link (Clickable)', value: 'link' },
+      ],
+      admin: {
+        width: '50%',
+      },
+    },
+    {
       name: 'cardBackgroundColor',
       label: 'Card Variant',
       type: 'select',
@@ -55,14 +68,18 @@ export const CardCarouselBlock: ComponentBlock = {
         width: '50%',
       },
     },
+
     {
       name: 'cards',
       type: 'array',
-      required: true,
+      required: false,
       minRows: 1,
       labels: {
         singular: 'Card',
         plural: 'Cards',
+      },
+      admin: {
+        condition: (_data, siblingData) => siblingData?.cardType !== 'info',
       },
       fields: [
         {
@@ -87,6 +104,51 @@ export const CardCarouselBlock: ComponentBlock = {
         },
 
         link({ appearances: false }),
+        {
+          name: 'media',
+          type: 'upload',
+          relationTo: 'media',
+          required: false,
+          admin: {
+            description: 'Optional media (image or video) to show at top of card',
+          },
+        },
+      ],
+    },
+    {
+      name: 'infoCards',
+      type: 'array',
+      required: false,
+      minRows: 1,
+      labels: {
+        singular: 'Card',
+        plural: 'Cards',
+      },
+      admin: {
+        condition: (_data, siblingData) => siblingData?.cardType === 'info',
+      },
+      fields: [
+        {
+          name: 'tag',
+          type: 'text',
+          required: false,
+          label: 'Tag',
+          admin: {
+            description: 'Optional label to show above the title (e.g., "New", "Featured").',
+            width: '50%',
+          },
+        },
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+          required: false,
+        },
+
         {
           name: 'media',
           type: 'upload',

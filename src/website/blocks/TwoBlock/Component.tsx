@@ -12,31 +12,47 @@ export const TwoBlock: React.FC<{
   right?: TwoBlockField[]
   backgroundColor?: string
   enableBackground?: boolean
+  backgroundMode?: 'color' | 'media'
   backgroundMedia?: MediaType | number | null
   backgroundVariant?: 'default' | 'accent' | 'secondary' | 'dark' | 'neutral'
-  themeMode?: 'light' | 'dark'
+  textColorMode?: 'white' | 'black'
 }> = ({
   left = [],
   right = [],
   backgroundColor,
   enableBackground = false,
+  backgroundMode = 'color',
   backgroundMedia,
   backgroundVariant = 'default',
-  themeMode = 'light',
+  textColorMode = 'white',
 }) => {
   const hasBg = Boolean(backgroundColor)
-  const hasBackgroundEnabled = enableBackground && (backgroundMedia || backgroundVariant)
+  const hasBackgroundEnabled = enableBackground
   const rightHasMedia = right.some((field) => field.blockType === 'mediaBlock')
-  const theme = themeMode === 'light' ? 'light' : 'dark'
-
-  // Background variant classes
-  const backgroundVariantClasses: Record<string, string> = {
-    default: 'bg-background',
-    accent: 'bg-accent',
-    secondary: 'bg-secondary',
-    dark: 'bg-card',
-    neutral: 'bg-neutral',
+  const textWhite = 'text-white'
+  const textBlack = 'text-black'
+  const textClassByColor = {
+    white: textWhite,
+    black: textBlack,
+  } as const
+  const colorVariantStyles: Record<
+    NonNullable<React.ComponentProps<typeof TwoBlock>['backgroundVariant']>,
+    { bg: string; text: string }
+  > = {
+    default: { bg: 'bg-background', text: textBlack },
+    accent: { bg: 'bg-accenttwo', text: textWhite },
+    secondary: { bg: 'bg-secondary', text: textWhite },
+    dark: { bg: 'bg-black', text: textWhite },
+    neutral: { bg: 'bg-neutral', text: textBlack },
   }
+  const colorVariantStyle = colorVariantStyles[backgroundVariant]
+  const showMedia =
+    backgroundMode === 'media' && backgroundMedia && typeof backgroundMedia === 'object'
+  const forcedTextClass = hasBackgroundEnabled
+    ? showMedia
+      ? textClassByColor[textColorMode]
+      : colorVariantStyle.text
+    : undefined
 
   const gridClasses = cn(
     'grid grid-cols-1 md:grid-cols-2 items-center gap-y-6',
@@ -46,15 +62,12 @@ export const TwoBlock: React.FC<{
 
   return (
     <div className="container">
-      <div
-        className={cn('relative overflow-hidden', hasBackgroundEnabled && 'py-16 rounded-2xl')}
-        data-theme={hasBackgroundEnabled ? theme : undefined}
-      >
+      <div className={cn('relative overflow-hidden', hasBackgroundEnabled && 'py-16 rounded-2xl')}>
         <TrackImpression componentName="Two Column Block" componentType="two-block">
           {/* Background Layer */}
           {hasBackgroundEnabled && (
             <div className="absolute inset-0 -z-10">
-              {backgroundMedia && typeof backgroundMedia === 'object' ? (
+              {showMedia ? (
                 backgroundMedia.mimeType?.includes('video') ? (
                   <Media
                     className="absolute inset-0 w-full h-full object-cover"
@@ -64,7 +77,7 @@ export const TwoBlock: React.FC<{
                   <Media fill imgClassName="object-cover" resource={backgroundMedia} />
                 )
               ) : (
-                <div className={cn('w-full h-full', backgroundVariantClasses[backgroundVariant])} />
+                <div className={cn('w-full h-full', colorVariantStyle.bg)} />
               )}
             </div>
           )}
@@ -85,8 +98,7 @@ export const TwoBlock: React.FC<{
                     {column.map((field, i) => {
                       const key = `${colIdx}-${i}`
                       const isMediaBlock = field.blockType === 'mediaBlock'
-                      const isInDarkTheme = Boolean(hasBackgroundEnabled && theme === 'dark')
-                      const child = renderChildField(field, key, true, isInDarkTheme)
+                      const child = renderChildField(field, key, true, forcedTextClass)
 
                       const wrapperClasses = cn(
                         hasBg && !isMediaBlock && 'p-6',

@@ -1,12 +1,18 @@
 import React from 'react'
 import type { CardBlock as CardBlockType } from '@/payload-types'
 import Card from '@/website/components/Card/CustomCard'
+import InfoCard from '@/website/components/Card/InfoCard'
 import { cn } from '@/cms/utilities/ui'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 import RichText from '@/website/components/RichText'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-type Props = CardBlockType & { className?: string; introContent?: SerializedEditorState }
+type CardItem = CardBlockType['cards'][number]
+type Props = CardBlockType & {
+  className?: string
+  introContent?: SerializedEditorState
+  infoCards?: CardItem[]
+}
 
 const columnClass = (cardCount: number) => {
   switch (cardCount) {
@@ -22,10 +28,18 @@ const columnClass = (cardCount: number) => {
 
 // Now delegated to Teaser
 
-export const CardBlock: React.FC<Props> = ({ introContent, cards = [], cardBackgroundColor }) => {
+export const CardBlock: React.FC<Props> = ({
+  introContent,
+  cards = [],
+  infoCards = [],
+  cardBackgroundColor,
+  cardType,
+}) => {
   const variant = cardBackgroundColor ? cardBackgroundColor : 'default'
+  const CardComponent = cardType === 'info' ? InfoCard : Card
+  const resolvedCards = cardType === 'info' ? infoCards : cards
 
-  if (!cards.length) return null
+  if (!resolvedCards.length) return null
 
   return (
     <div className="my-16">
@@ -41,8 +55,8 @@ export const CardBlock: React.FC<Props> = ({ introContent, cards = [], cardBackg
         )}
         <div className="container">
           <div className={cn('grid gap-8', columnClass(cards.length))}>
-            {cards.map((card, i) => (
-              <Card key={card.id ?? i} card={card} variant={variant} />
+            {resolvedCards.map((card, i) => (
+              <CardComponent key={card.id ?? i} card={card} variant={variant} />
             ))}
           </div>
         </div>

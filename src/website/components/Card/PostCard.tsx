@@ -70,7 +70,7 @@ export const PostCard: React.FC<{
     >
       <CardComponent
         className={cn(
-          'h-full flex flex-col transition hover:shadow-md bg-base text-primary border-border',
+          'h-full flex flex-col transition hover:shadow-md bg-surface text-primary border-none',
         )}
       >
         <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">

@@ -7,19 +7,32 @@ import { CMSLink } from '@/website/components/Link'
 import { cn } from '@/cms/utilities/ui'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 
-export const CallToActionBlock: React.FC<CTABlockProps & { enableGutter?: boolean }> = ({
-  links,
-  richText,
-  enableGutter = true,
-}) => {
+export const CallToActionBlock: React.FC<
+  CTABlockProps & { enableGutter?: boolean; textClassName?: string }
+> = ({ links, richText, enableGutter = true, textClassName, centered }) => {
+  const isCentered = Boolean(centered)
+  const contentWrapperClass = cn(
+    'rounded shadow-md bg-surface p-4 flex gap-8',
+    isCentered ? 'flex-col items-center text-center' : 'md:flex-row md:justify-between md:items-center',
+  )
+  const linksWrapperClass = cn(
+    'flex gap-8',
+    isCentered ? 'items-center justify-center flex-row flex-wrap' : 'flex-col',
+  )
   return (
     <div className={cn({ 'my-16': enableGutter, container: enableGutter })}>
       <TrackImpression componentName="CTA Block" componentType="cta">
-        <div className=" rounded  border p-4 flex flex-col gap-8 md:flex-row md:justify-between md:items-center">
-          <div className="max-w-3xl flex items-center">
-            {richText && <RichText className="mb-0" data={richText} enableGutter={false} />}
+        <div className={contentWrapperClass}>
+          <div className={cn('max-w-3xl flex items-center', isCentered && 'justify-center')}>
+            {richText && (
+              <RichText
+                className={cn('mb-0', textClassName)}
+                data={richText}
+                enableGutter={false}
+              />
+            )}
           </div>
-          <div className="flex flex-col gap-8">
+          <div className={linksWrapperClass}>
             {(links || []).map(({ link }, i) => {
               return (
                 <CMSLink

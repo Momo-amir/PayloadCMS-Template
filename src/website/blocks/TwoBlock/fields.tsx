@@ -27,18 +27,39 @@ export function renderChildField(
   field: TwoBlockField,
   key: React.Key,
   enableGutter = true,
-  isInDarkTheme = false,
+  contentTextClassName?: string,
 ) {
   const sharedProps = enableGutter ? { enableGutter: false } : {}
   switch (field.blockType) {
     case 'archive':
       return <ArchiveBlock key={key} {...field} {...sharedProps} />
     case 'cta':
-      return <CallToActionBlock key={key} {...field} {...sharedProps} />
+      return (
+        <CallToActionBlock
+          key={key}
+          {...field}
+          {...sharedProps}
+          textClassName={contentTextClassName}
+        />
+      )
     case 'richTextBlock':
-      return <RichTextBlock key={key} {...field} {...sharedProps} />
+      return (
+        <RichTextBlock
+          key={key}
+          {...field}
+          {...sharedProps}
+          textClassName={contentTextClassName}
+        />
+      )
     case 'formBlock':
-      return <FormBlock key={key} {...field} {...sharedProps} isInDarkTheme={isInDarkTheme} />
+      return (
+        <FormBlock
+          key={key}
+          {...field}
+          {...sharedProps}
+          introTextClassName={contentTextClassName}
+        />
+      )
     case 'mediaBlock':
       return <MediaBlock key={key} {...field} {...sharedProps} />
     default:

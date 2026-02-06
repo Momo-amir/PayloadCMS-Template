@@ -54,12 +54,15 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
 
   //Card variants - Different looks for this type of card
   const cardVariant: Record<CardVariant, { wrapper: string; chip: string }> = {
-    default: { wrapper: 'bg-base text-primary', chip: 'bg-white text-black' },
+    default: {
+      wrapper: 'bg-surface text-primary border-none ',
+      chip: 'bg-white text-black',
+    },
     accent: { wrapper: 'bg-accent text-white', chip: 'bg-white text-black' },
     accentThree: { wrapper: 'bg-accentthree text-black', chip: 'bg-accenttwo text-white' },
-    dark: { wrapper: 'bg-black border-neutraltwo text-white', chip: 'bg-white text-black' },
-    secondary: { wrapper: 'bg-secondary text-white border-border', chip: 'bg-white text-black' },
-    neutral: { wrapper: 'bg-border text-black border-border', chip: 'bg-white text-black' },
+    dark: { wrapper: 'bg-black border-none text-white', chip: 'bg-white text-black' },
+    secondary: { wrapper: 'bg-secondary text-white border-none', chip: 'bg-white text-black' },
+    neutral: { wrapper: 'bg-neutral text-black border-none', chip: 'bg-white text-black' },
   }
 
   return (
