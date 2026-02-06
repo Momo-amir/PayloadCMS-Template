@@ -40,7 +40,7 @@ export const TwoBlock: React.FC<{
     { bg: string; text: string }
   > = {
     default: { bg: 'bg-background', text: textBlack },
-    accent: { bg: 'bg-accenttwo', text: textWhite },
+    accent: { bg: 'bg-accent', text: textWhite },
     secondary: { bg: 'bg-secondary', text: textWhite },
     dark: { bg: 'bg-black', text: textWhite },
     neutral: { bg: 'bg-neutral', text: textBlack },
