@@ -21,7 +21,7 @@ export const RelatedPosts: React.FC<RelatedPostsProps> = (props) => {
     <TrackImpression
       componentName={`Related Posts (${docs?.length || 0} posts)`}
       componentType="related-posts"
-      className={clsx('lg:container', className)}
+      className={clsx('mx-auto', className)}
     >
       {introContent && <RichText data={introContent} enableGutter={false} />}
 
