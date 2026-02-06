@@ -55,7 +55,7 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
 
       <p className="text-sm leading-relaxed mb-4">
         {t('cookie-consent:message')}{' '}
-        <Link className="underline hover:opacity-80" href="/privacy-policy" prefetch={false}>
+        <Link className="underline hover:opacity-80" href="/privatlivspolitik" prefetch={false}>
           {t('cookie-consent:privacy-policy')}
         </Link>{' '}
         {t('cookie-consent:more-info')}
