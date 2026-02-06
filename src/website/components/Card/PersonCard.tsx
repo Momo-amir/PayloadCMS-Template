@@ -51,15 +51,15 @@ export const PersonCard: React.FC<{
         </div>
 
         <CardHeader className="">
-          <CardTitle className="text-xl">{fullName}</CardTitle>
-          {title && <p className="text-sm  ">{title}</p>}
+          <CardTitle className="text-xl wrap-break-word">{fullName}</CardTitle>
+          {title && <p className="text-sm wrap-break-word">{title}</p>}
         </CardHeader>
 
         {email && (
           <CardContent className="pt-0 border-none ">
             <a
               href={`mailto:${email}`}
-              className="text-sm text-primary hover:underline"
+              className="text-sm text-primary hover:underline wrap-break-word"
               onClick={handleEmailClick}
             >
               {email}

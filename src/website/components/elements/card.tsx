@@ -3,11 +3,11 @@ import * as React from 'react'
 
 // Primitive Card component without variant logic.
 // Variant styling is owned by higher-level components (e.g., CustomCard).
-const Card: React.FC<{ ref?: React.Ref<HTMLDivElement> } & React.HTMLAttributes<HTMLDivElement>> = ({
-  className,
-  ref,
-  ...props
-}) => <div className={cn('rounded-lg border shadow-sm', className)} ref={ref} {...props} />
+const Card: React.FC<
+  { ref?: React.Ref<HTMLDivElement> } & React.HTMLAttributes<HTMLDivElement>
+> = ({ className, ref, ...props }) => (
+  <div className={cn('rounded-lg border shadow-sm h-full', className)} ref={ref} {...props} />
+)
 
 const CardHeader: React.FC<
   { ref?: React.Ref<HTMLDivElement> } & React.HTMLAttributes<HTMLDivElement>

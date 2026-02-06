@@ -107,8 +107,8 @@ export const PostCard: React.FC<{
         {(showCategories || titleToUse) && (
           <CardHeader>
             {titleToUse && (
-              <CardTitle className="text-xl">
-                <Link href={href} ref={link.ref} className="" {...link.props}>
+              <CardTitle className="text-xl wrap-break-word">
+                <Link href={href} ref={link.ref} className="wrap-break-word" {...link.props}>
                   {titleToUse}
                 </Link>
               </CardTitle>
@@ -118,7 +118,7 @@ export const PostCard: React.FC<{
 
         {description && (
           <CardContent className="pt-0">
-            <CardDescription>{sanitizedDescription}</CardDescription>
+            <CardDescription className="wrap-break-word">{sanitizedDescription}</CardDescription>
           </CardContent>
         )}
       </CardComponent>

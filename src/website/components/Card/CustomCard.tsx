@@ -68,12 +68,12 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
   return (
     <article
       ref={cardRef.ref}
-      className={cn('group h-full hover:cursor-pointer', className)}
+      className={cn('group h-full w-full min-w-0 hover:cursor-pointer', className)}
       onClick={handleClick}
     >
       <CardComponent
         className={cn(
-          'h-full flex flex-col transition hover:shadow-md',
+          'h-full w-full min-w-0 flex flex-col transition hover:shadow-md',
           cardVariant[variant].wrapper,
         )}
       >
@@ -93,12 +93,16 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
           </div>
         )}
         {(title || description) && (
-          <CardHeader>{title && <CardTitle>{title}</CardTitle>}</CardHeader>
+          <CardHeader>
+            {title && <CardTitle className="wrap-break-word">{title}</CardTitle>}
+          </CardHeader>
         )}
         {(description || link) && (
           <>
-            <CardContent className={cn(!description ? 'pt-0' : undefined)}>
-              {description && <CardDescription>{description}</CardDescription>}
+            <CardContent className={cn('flex-1', !description ? 'pt-0' : undefined)}>
+              {description && (
+                <CardDescription className="wrap-break-word">{description}</CardDescription>
+              )}
             </CardContent>
             <CardFooter className="mt-auto">
               {link && href ? (

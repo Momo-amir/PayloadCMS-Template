@@ -6,6 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/website/components/elements/card'
 import type { CardBlock as CardBlockType } from '@/payload-types'
 import React from 'react'
@@ -13,7 +14,13 @@ import { Media as MediaComponent } from '../Media'
 
 type CardItem = NonNullable<CardBlockType['cards']>[number]
 
-export type InfoCardVariant = 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary' | 'neutral'
+export type InfoCardVariant =
+  | 'default'
+  | 'accent'
+  | 'accentThree'
+  | 'dark'
+  | 'secondary'
+  | 'neutral'
 
 type InfoCardProps = {
   className?: string
@@ -37,8 +44,10 @@ export const InfoCard: React.FC<InfoCardProps> = ({ card, className, variant = '
   }
 
   return (
-    <article className={cn('group h-full', className)}>
-      <CardComponent className={cn('h-full flex flex-col', cardVariant[variant].wrapper)}>
+    <article className={cn('group h-full w-full min-w-0', className)}>
+      <CardComponent
+        className={cn('h-full w-full min-w-0 flex flex-col', cardVariant[variant].wrapper)}
+      >
         {media && (
           <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
             <MediaComponent resource={media} fill imgClassName="object-cover" />
@@ -55,13 +64,16 @@ export const InfoCard: React.FC<InfoCardProps> = ({ card, className, variant = '
           </div>
         )}
         {(title || description) && (
-          <CardHeader>{title && <CardTitle>{title}</CardTitle>}</CardHeader>
+          <CardHeader>
+            {title && <CardTitle className="wrap-break-word">{title}</CardTitle>}
+          </CardHeader>
         )}
         {description && (
-          <CardContent className={cn(!description ? 'pt-0' : undefined)}>
-            <CardDescription>{description}</CardDescription>
+          <CardContent className={cn('flex-1', !description ? 'pt-0' : undefined)}>
+            <CardDescription className="wrap-break-word">{description}</CardDescription>
           </CardContent>
         )}
+        <CardFooter className="mt-auto" />
       </CardComponent>
     </article>
   )

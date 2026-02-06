@@ -5,6 +5,7 @@ const name: Field = {
   type: 'text',
   label: 'Name (lowercase, no special characters)',
   required: true,
+  defaultValue: 'privacy',
 }
 
 const label: Field = {
@@ -12,7 +13,7 @@ const label: Field = {
   type: 'text',
   label: 'Label',
   localized: true,
-  defaultValue: 'I agree to the',
+  defaultValue: 'Jeg accepterer behandling af mine oplysninger i overensstemmelse med',
 }
 
 const linkLabel: Field = {
@@ -20,16 +21,16 @@ const linkLabel: Field = {
   type: 'text',
   label: 'Link Label',
   localized: true,
-  defaultValue: 'privacy policy',
+  defaultValue: 'privatlivspolitik',
 }
 
 const policyLink: Field = {
   name: 'policyLink',
   type: 'text',
   label: 'Privacy Policy URL',
-  defaultValue: '/privacy-policy',
+  defaultValue: '/privatlivspolitik',
   admin: {
-    description: 'Defaults to /privacy-policy',
+    description: 'Defaults to /privatlivspolitik',
   },
 }
 
@@ -99,12 +100,6 @@ export const privacyPolicyField: Block = {
           },
         },
       ],
-    },
-    {
-      name: 'defaultValue',
-      type: 'checkbox',
-      label: 'Default Value',
-      defaultValue: false,
     },
   ],
   labels: {

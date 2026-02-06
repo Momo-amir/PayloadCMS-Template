@@ -127,6 +127,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
           <div className="flex items-center gap-4 relative">
             <Button
               variant={'circle'}
+              size={'icon'}
               icon={IconArrowLeft}
               iconSize={36}
               onClick={prev}
@@ -161,8 +162,16 @@ export const CardCarouselBlock: React.FC<Props> = ({
                       : 'default'
 
                   return (
-                    <div key={card.id ?? i} className="slide h-full" style={{ width: slideWidth }}>
-                      <CardComponent card={card} variant={variant} className="h-full" />
+                    <div
+                      key={card.id ?? i}
+                      className="slide h-auto flex items-stretch min-w-0"
+                      style={{ width: slideWidth }}
+                    >
+                      <CardComponent
+                        card={card}
+                        variant={variant}
+                        className="h-full w-full flex-1 min-w-0"
+                      />
                     </div>
                   )
                 })}
@@ -171,6 +180,7 @@ export const CardCarouselBlock: React.FC<Props> = ({
 
             <Button
               variant={'circle'}
+              size={'icon'}
               icon={IconArrowRight}
               iconSize={36}
               onClick={next}

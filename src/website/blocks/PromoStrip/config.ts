@@ -1,4 +1,3 @@
-import type { Field } from 'payload'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
 import { PromoStripComponent } from './Component'
 
