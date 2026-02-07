@@ -15,10 +15,10 @@ const buttonVariants = cva(
     variants: {
       size: {
         clear: '',
-        default: 'h-10 px-4 py-2 w-full sm:w-fit',
+        default: 'h-10 px-4 py-2 max-md:w-full ',
         icon: 'h-10 w-10',
-        lg: 'h-11 rounded px-8 w-full sm:w-fit',
-        sm: 'h-9 rounded px-3',
+        lg: 'h-11 rounded px-8 max-md:w-full',
+        sm: 'h-9 rounded px-3 max-md:w-full',
       },
       variant: {
         default: 'bg-primary border border-primary text-base hover:bg-base hover:text-primary',
@@ -26,7 +26,7 @@ const buttonVariants = cva(
         ghost: 'hover:bg-border hover:text-accent',
         link: 'text-primary items-start justify-start relative after:absolute after:bottom-0 after:left-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full hover:cursor-pointer max-w-min @max-md:active:text-accentthree transition-colors duration-200 ',
         outline: 'border border-primary bg-transparent hover:bg-primary hover:text-base',
-        secondary: 'bg-black text-white hover:bg-secondary active:bg-secondary',
+        secondary: 'bg-black text-white hover:bg-accent active:bg-accent',
         tertiary: 'bg-white text-black hover:bg-accentthree active:bg-accentthree',
         circle:
           'cursor-pointer w-12 h-12 rounded-full bg-primary text-base shadow disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-primary disabled:hover:text-base transition-colors duration-200 ease-in-out hover:bg-accent hover:text-white',

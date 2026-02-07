@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'react-phone-number-input/style.css';
 @plugin 'tailwindcss-animate';
 @custom-variant dark (&:is([data-theme=dark], [data-theme=dark] &));
 @custom-variant light (&:is([data-theme=light], [data-theme=light] &));
@@ -22,10 +23,12 @@
   --color-border: #a5a5aa;
   --color-neutral: #eee;
   --color-neutraltwo: #a5a5aa;
-  --color-error: #b00020;
+  --color-error: #d8000c;
   --color-success: #008550;
   --color-warning: #ef8500;
   --color-surface: #ffffff;
+  --color-black: #060513;
+  --color-white: #ffffff;
 }
 
 /* Dark theme */
@@ -33,7 +36,7 @@
   --color-primary: #e8e8e8;
   --color-secondary: #0e0e9a;
   --color-tertiary: #9ecde4;
-  --color-base: #121212;
+  --color-base: #060513;
   --color-accent: #231b67;
   --color-accenttwo: #c5a4e9;
   --color-accentthree: #e7d8fa;
@@ -43,7 +46,9 @@
   --color-error: #cf6679;
   --color-success: #29c467;
   --color-warning: #ff9800;
-  --color-surface: #1e1e1e;
+  --color-surface: #111320;
+  --color-black: #060513;
+  --color-white: #ffffff;
 }
 
 @theme static {
@@ -61,6 +66,8 @@
   --color-error: --color-error;
   --color-success: --color-success;
   --color-surface: --color-surface;
+  --color-black: --color-black;
+  --color-white: --color-white;
 }
 
 @theme {
@@ -270,4 +277,49 @@ html[data-theme='light'] {
 
 .two-background-spacing .two-column-left .media-block {
   @apply rounded-b-none lg:rounded-l-lg lg:rounded-r-none;
+}
+
+.required {
+  @apply text-error;
+}
+
+/* Phone input (react-phone-number-input) */
+:root {
+  --PhoneInput-color--focus: var(--color-primary);
+  --PhoneInputCountryFlag-borderColor: var(--color-border);
+  --PhoneInputCountrySelectArrow-color: currentColor;
+}
+
+.phone-input.PhoneInput {
+  @apply flex items-center w-full h-10 border border-border rounded bg-transparent  text-sm text-primary transition-colors focus-within:border-primary;
+}
+
+.phone-input .PhoneInputInput {
+  @apply flex-1 min-w-0 border-0 outline-none bg-transparent p-0 text-inherit;
+}
+
+.phone-input .PhoneInputInput::placeholder {
+  @apply text-border;
+}
+
+.phone-input .PhoneInputCountry {
+  @apply mr-2 flex items-center;
+}
+
+.phone-input .PhoneInputCountrySelect {
+  @apply cursor-pointer;
+}
+
+.phone-input .PhoneInputCountryIcon img {
+  @apply h-full w-full;
+}
+
+.PhoneInputCountryIcon--border {
+  @apply rounded-xs border-none shadow-none;
+}
+.PhoneInputCountryIconImg {
+  @apply rounded-xs;
+}
+.phone-input .PhoneInputCountrySelectArrow {
+  @apply opacity-60;
 }

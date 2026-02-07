@@ -12,7 +12,7 @@ import { beforeSyncWithSearch } from '@/website/layout/search/beforeSync'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/cms/utilities/getURL'
-import { privacyPolicyField } from '@/cms/fields/formBuilder'
+import { phoneField, privacyPolicyField } from '@/cms/fields/formBuilder'
 import { formActionOptions } from '@/cms/forms/actions'
 import { copyFormActionToSubmission } from '@/cms/forms/copyFormActionToSubmission'
 import { runFormAction } from '@/cms/forms/runFormAction'
@@ -72,6 +72,7 @@ export const plugins: Plugin[] = [
   formBuilderPlugin({
     fields: {
       payment: false,
+      phone: phoneField,
       privacyPolicy: privacyPolicyField,
     },
     formOverrides: {

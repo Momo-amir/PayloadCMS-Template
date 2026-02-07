@@ -12,12 +12,14 @@ export const CallToActionBlock: React.FC<
 > = ({ links, richText, enableGutter = true, textClassName, centered }) => {
   const isCentered = Boolean(centered)
   const contentWrapperClass = cn(
-    'rounded shadow-md bg-surface p-4 flex gap-8',
-    isCentered ? 'flex-col items-center text-center' : 'md:flex-row md:justify-between md:items-center',
+    'rounded shadow-md bg-surface py-10 px-8 flex gap-8',
+    isCentered
+      ? 'flex-col items-center text-center'
+      : 'flex-col md:flex-row md:justify-between md:items-center',
   )
   const linksWrapperClass = cn(
     'flex gap-8',
-    isCentered ? 'items-center justify-center flex-row flex-wrap' : 'flex-col',
+    isCentered ? 'w-full items-center justify-center sm:flex-row flex-col' : 'flex-col',
   )
   return (
     <div className={cn({ 'my-16': enableGutter, container: enableGutter })}>

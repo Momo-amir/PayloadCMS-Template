@@ -1,7 +1,6 @@
 export type PhoneField = {
   blockName?: string
   blockType: 'phone'
-  defaultValue?: string
   label?: string
   name: string
   required?: boolean
