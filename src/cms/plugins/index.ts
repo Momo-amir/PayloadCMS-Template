@@ -63,6 +63,7 @@ export const plugins: Plugin[] = [
   nestedDocsPlugin({
     collections: ['categories', 'pages'],
     parentFieldSlug: 'parent',
+    breadcrumbsFieldSlug: 'breadcrumbs',
     generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''),
   }),
   seoPlugin({

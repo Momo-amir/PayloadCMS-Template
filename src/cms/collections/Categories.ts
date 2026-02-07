@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 import { slugField } from 'payload'
-import { createParentField } from '@payloadcms/plugin-nested-docs'
+import { createBreadcrumbsField, createParentField } from '@payloadcms/plugin-nested-docs'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
@@ -40,6 +40,11 @@ export const Categories: CollectionConfig = {
           }
         }
         return true
+      },
+    }),
+    createBreadcrumbsField('categories', {
+      admin: {
+        condition: (data) => Boolean(data?.parent),
       },
     }),
     slugField({

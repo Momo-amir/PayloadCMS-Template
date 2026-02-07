@@ -15,6 +15,7 @@ import { PostHero } from '@/website/layout/heros/PostHero'
 import { generateMeta } from '@/cms/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/cms/components/LivePreviewListener'
+import { Breadcrumbs } from '@/website/components/Breadcrumbs'
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true // Allow any slug to be rendered dynamically
 
@@ -48,6 +49,9 @@ export default async function Post({ params: paramsPromise }: Args) {
       <PostHero post={post} />
 
       <div className="flex flex-col items-center gap-4 pt-8">
+        <div className="container max-w-208 mb-8 relative z-20 mr-auto w-full">
+          <Breadcrumbs post={post} includeHome={false} />
+        </div>
         <div className="container">
           <RichText className="max-w-3xl mx-auto" data={post.content} enableGutter={false} />
           {post.relatedPosts && post.relatedPosts.length > 0 && (

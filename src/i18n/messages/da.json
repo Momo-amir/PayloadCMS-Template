@@ -3,6 +3,9 @@
   "author": "Forfatter",
   "page-not-found": "Siden blev ikke fundet",
   "go-home": "Gå til forsiden",
+  "home": "Forside",
+  "posts": "Indlæg",
+  "back-to": "Tilbage til {label}",
   "loading": "Indlæser",
   "posts": "Indlæg",
   "post": "Indlæg",
@@ -21,6 +24,7 @@
   "dark": "Mørkt",
   "auto": "Auto",
   "no-image": "Intet billede",
+  "related-posts": "Relaterede indlæg",
 
   "plugin-redirects:fromUrl": "Fra URL",
   "plugin-redirects:toUrlType": "Til URL-type",

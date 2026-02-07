@@ -153,16 +153,16 @@ export const Pages: CollectionConfig<'pages'> = {
                 return true
               },
             }),
+            createBreadcrumbsField('pages', {
+              admin: {
+                condition: (data) => Boolean(data?.parent),
+              },
+            }),
           ],
           label: 'Page Settings',
         },
       ],
     },
-    createBreadcrumbsField('pages', {
-      admin: {
-        condition: (data) => Boolean(data?.parent),
-      },
-    }),
   ],
   hooks: {
     afterChange: [revalidatePage],

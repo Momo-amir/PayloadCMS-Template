@@ -11,6 +11,7 @@ import { RenderHero } from '@/website/layout/heros/RenderHero'
 import { generateMeta } from '@/cms/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/cms/components/LivePreviewListener'
+import { Breadcrumbs } from '@/website/components/Breadcrumbs'
 
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
@@ -47,6 +48,11 @@ export default async function Page({ params: paramsPromise }: Args) {
       {draft && <LivePreviewListener />}
 
       <RenderHero {...hero} />
+      {page.parent && (
+        <div className="container mb-8 relative z-20">
+          <Breadcrumbs page={page} />
+        </div>
+      )}
       <RenderBlocks blocks={layout} />
     </main>
   )
