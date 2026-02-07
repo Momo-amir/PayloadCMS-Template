@@ -3,6 +3,7 @@ import type { Metadata } from 'next/types'
 import { CollectionArchive } from '@/website/components/CollectionArchive'
 import { PageRange } from '@/website/components/PageRange'
 import { Pagination } from '@/website/components/Pagination/index'
+import { PayloadRedirects } from '@/cms/components/PayloadRedirects'
 import configPromise from '@/payload.config'
 import { getPayload, TypedLocale } from 'payload'
 import React from 'react'
@@ -13,13 +14,13 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 type Args = {
-  params: {
+  params: Promise<{
     locale?: TypedLocale
-  }
+  }>
 }
 
 export default async function Page({ params }: Args) {
-  const { locale = 'da' } = params
+  const { locale = 'da' } = await params
 
   const payload = await getPayload({ config: configPromise })
 
@@ -42,6 +43,8 @@ export default async function Page({ params }: Args) {
   return (
     <div className="pt-24 pb-24">
       <PageClient />
+      {/* Allow redirects for the /posts index */}
+      <PayloadRedirects disableNotFound url="/posts" />
       <div className="container mb-16">
         <div className="max-w-none">
           <h1>{t('post')}</h1>
