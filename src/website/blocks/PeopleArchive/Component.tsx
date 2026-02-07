@@ -36,6 +36,7 @@ export const PeopleArchive: React.FC<
       collection: 'people',
       depth: 1,
       limit,
+      sort: 'firstName',
     })
 
     people = fetchedPeople.docs
@@ -47,7 +48,9 @@ export const PeopleArchive: React.FC<
         })
         .filter(Boolean) as Person[]
 
-      people = filteredSelectedPeople
+      people = filteredSelectedPeople.sort((a, b) =>
+        a.firstName.localeCompare(b.firstName),
+      )
     }
   }
 
