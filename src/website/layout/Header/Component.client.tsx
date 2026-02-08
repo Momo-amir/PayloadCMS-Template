@@ -13,7 +13,6 @@ import type { Header } from '@/payload-types'
 import { Logo } from '@/website/components/elements/Logo'
 import type { LogoProps } from '@/website/components/elements/Logo'
 import { HeaderNav } from './Nav'
-import { IconSearch } from '@tabler/icons-react'
 
 interface HeaderClientProps {
   data: Header
@@ -85,10 +84,6 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) =
         </Link>
         <HeaderNav data={data} />
         <div className="ml-3 md:ml-auto flex flex-row  items-center gap-x-2 ">
-          <Link href="/search">
-            <span className="sr-only">Search</span>
-            <IconSearch className="w-5 text-primary hover:scale-110 transition-transform duration-100 ease-in-out" />
-          </Link>
           {data.showLanguageSwitcher && <LocaleSwitcher />}
         </div>
       </div>

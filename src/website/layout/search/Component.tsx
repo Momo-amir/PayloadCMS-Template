@@ -8,7 +8,11 @@ import { trackSearch } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 import { useTranslations } from 'next-intl'
 
-export const Search: React.FC<{ resultsCount?: number }> = ({ resultsCount }) => {
+export const Search: React.FC<{
+  resultsCount?: number
+  searchPath?: string
+  liveSearch?: boolean
+}> = ({ resultsCount, searchPath = '/search', liveSearch = true }) => {
   const [value, setValue] = useState('')
   const router = useRouter()
   const { cookieConsent } = usePrivacy()
@@ -17,21 +21,31 @@ export const Search: React.FC<{ resultsCount?: number }> = ({ resultsCount }) =>
   const t = useTranslations()
 
   useEffect(() => {
-    router.push(`/search${debouncedValue ? `?q=${debouncedValue}` : ''}`)
+    if (!liveSearch) {
+      return
+    }
+    router.push(`${searchPath}${debouncedValue ? `?q=${debouncedValue}` : ''}`, {
+      scroll: false,
+    })
 
     // Track search query when user stops typing
     if (cookieConsent && debouncedValue) {
       trackSearch(debouncedValue, resultsCount)
     }
-  }, [debouncedValue, router, cookieConsent, resultsCount])
+  }, [debouncedValue, router, cookieConsent, resultsCount, searchPath, liveSearch])
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!liveSearch) {
+      router.push(`${searchPath}${value ? `?q=${value}` : ''}`, {
+        scroll: false,
+      })
+    }
+  }
 
   return (
     <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <Label htmlFor="search" className="sr-only">
           {t('search')}
         </Label>

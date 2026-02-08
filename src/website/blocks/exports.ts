@@ -1,3 +1,4 @@
+import { SearchBlockBlock } from "./SearchBlock/config";
 import { PromoStripBlock } from "./PromoStrip/config";
 import { RichTextBlockBlock } from './RichTextBlock/config'
 import { PeopleArchiveBlock } from './PeopleArchive/config'
@@ -31,6 +32,7 @@ export default {
       RichTextBlockBlock,
       Columns,
     PromoStripBlock,
+    SearchBlockBlock,
     ] satisfies ComponentBlock[])
   ),
 }

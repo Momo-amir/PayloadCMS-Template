@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
 
 import type { Page } from '@/payload-types'
+import type { TypedLocale } from 'payload'
 import blockExports from './exports'
 
 const blockComponents: Record<string, React.FC<any>> = {}
@@ -13,8 +14,13 @@ blockExports.blocks.forEach((block) => {
 
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
+  locale?: TypedLocale
+  pageSlug?: string
+  searchParams?: {
+    [key: string]: string | string[] | undefined
+  }
 }> = (props) => {
-  const { blocks } = props
+  const { blocks, locale, pageSlug, searchParams } = props
 
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
 
@@ -30,7 +36,13 @@ export const RenderBlocks: React.FC<{
             if (Block) {
               return (
                 <div className="my-16" key={index}>
-                  <Block {...block} disableInnerContainer />
+                  <Block
+                    {...block}
+                    disableInnerContainer
+                    locale={locale}
+                    pageSlug={pageSlug}
+                    searchParams={searchParams}
+                  />
                 </div>
               )
             }

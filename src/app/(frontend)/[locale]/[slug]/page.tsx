@@ -21,13 +21,17 @@ type Args = {
     slug?: string
     locale?: TypedLocale
   }>
+  searchParams?: Promise<{
+    [key: string]: string | string[] | undefined
+  }>
 }
 
-export default async function Page({ params: paramsPromise }: Args) {
+export default async function Page({ params: paramsPromise, searchParams: searchParamsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
 
   const { locale = 'da', slug = 'home' } = await paramsPromise
   const url = '/' + slug
+  const searchParams = await searchParamsPromise
 
   // Use cached data when not in draft/preview; bypass cache in preview to ensure freshness
   const page = draft
@@ -47,13 +51,23 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
-      <RenderHero {...hero} />
+      <RenderHero
+        {...hero}
+        locale={locale}
+        pageSlug={slug}
+        searchParams={searchParams}
+      />
       {page.parent && (
         <div className="container mb-8 relative z-20">
           <Breadcrumbs page={page} />
         </div>
       )}
-      <RenderBlocks blocks={layout} />
+      <RenderBlocks
+        blocks={layout}
+        locale={locale}
+        pageSlug={slug}
+        searchParams={searchParams}
+      />
     </main>
   )
 }
