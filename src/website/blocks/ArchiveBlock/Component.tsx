@@ -8,13 +8,22 @@ import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 import { getLocale } from 'next-intl/server'
 
 import { CollectionArchive } from '@/website/components/CollectionArchive'
+import { ArchiveCategoryFilter } from './ArchiveCategoryFilter.client'
 
 export const ArchiveBlock: React.FC<
   ArchiveBlockProps & {
     id?: string
   }
 > = async (props) => {
-  const { id, categories, introContent, limit: limitFromProps, populateBy, selectedDocs } = props
+  const {
+    id,
+    categories,
+    introContent,
+    limit: limitFromProps,
+    populateBy,
+    selectedDocs,
+    enableCategoryFilter,
+  } = props
 
   const limit = limitFromProps || 3
   const locale = (await getLocale()) as TypedLocale
@@ -65,7 +74,11 @@ export const ArchiveBlock: React.FC<
             <RichText className="ms-0" data={introContent} enableGutter={false} />
           </div>
         )}
-        <CollectionArchive posts={posts} />
+        {enableCategoryFilter ? (
+          <ArchiveCategoryFilter posts={posts} />
+        ) : (
+          <CollectionArchive posts={posts} />
+        )}
       </TrackImpression>
     </div>
   )

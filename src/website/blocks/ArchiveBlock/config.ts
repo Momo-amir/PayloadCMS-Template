@@ -92,6 +92,12 @@ export const Archive: ComponentBlock = {
       label: 'Selection',
       relationTo: ['posts'],
     },
+    {
+      name: 'enableCategoryFilter',
+      type: 'checkbox',
+      label: 'Enable category tag filtering',
+      defaultValue: false,
+    },
   ],
   labels: {
     plural: 'Archives',
