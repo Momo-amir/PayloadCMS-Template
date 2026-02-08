@@ -6,7 +6,7 @@ import { CollectionArchive } from '@/website/components/CollectionArchive'
 import { Button } from '@/website/components/elements/button'
 
 export const ArchiveCategoryFilter: React.FC<{ posts: Post[] }> = ({ posts }) => {
-  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null)
+  const [activeCategoryIds, setActiveCategoryIds] = useState<Set<string>>(() => new Set())
   const [isVisible, setIsVisible] = useState(true)
   const fadeTimeoutRef = useRef<number | null>(null)
 
@@ -28,25 +28,32 @@ export const ArchiveCategoryFilter: React.FC<{ posts: Post[] }> = ({ posts }) =>
   }, [posts])
 
   const filteredPosts = useMemo(() => {
-    if (!activeCategoryId) return posts
-
+    if (activeCategoryIds.size === 0) return posts
     return posts.filter((post) => {
       return post.categories?.some((category) => {
         if (typeof category === 'object' && category) {
-          return String((category as Category).id) === activeCategoryId
+          return activeCategoryIds.has(String((category as Category).id))
         }
-        return String(category) === activeCategoryId
+        return activeCategoryIds.has(String(category))
       })
     })
-  }, [posts, activeCategoryId])
+  }, [posts, activeCategoryIds])
 
-  const applyFilter = (nextCategoryId: string | null) => {
+  const applyFilter = (nextCategoryId: string) => {
     if (fadeTimeoutRef.current) {
       window.clearTimeout(fadeTimeoutRef.current)
     }
     setIsVisible(false)
     fadeTimeoutRef.current = window.setTimeout(() => {
-      setActiveCategoryId(nextCategoryId)
+      setActiveCategoryIds((current) => {
+        const next = new Set(current)
+        if (next.has(nextCategoryId)) {
+          next.delete(nextCategoryId)
+        } else {
+          next.add(nextCategoryId)
+        }
+        return next
+      })
       setIsVisible(true)
     }, 150)
   }
@@ -63,11 +70,11 @@ export const ArchiveCategoryFilter: React.FC<{ posts: Post[] }> = ({ posts }) =>
                 variant="ghost"
                 size="sm"
                 className={`group relative rounded-full px-3 py-1 text-sm transition-all duration-200 ${
-                  activeCategoryId === category.id
+                  activeCategoryIds.has(category.id)
                     ? 'bg-neutral dark:bg-surface text-primary hover:text-primary hover:bg-neutral/90 dark:hover:bg-surface/90 '
                     : 'bg-transparent text-primary hover:text-primary hover:bg-neutral/70 dark:hover:bg-surface/60'
                 }`}
-                onClick={() => applyFilter(activeCategoryId === category.id ? null : category.id)}
+                onClick={() => applyFilter(category.id)}
               >
                 <span className="relative inline-flex items-center">{category.title}</span>
               </Button>

@@ -3,7 +3,7 @@ import configPromise from '@/payload.config'
 import { getPayload, type Payload, type TypedLocale } from 'payload'
 import { PersonCard } from '@/website/components/Card/PersonCard'
 import type { Person } from '@/payload-types'
-import { SearchShell, resolveSearchPath } from './SearchShell'
+import { SearchShell, resolveSearchPath } from '@/website/components/Search/SearchShell'
 
 export type SearchPeopleResultsArgs = {
   payload: Payload

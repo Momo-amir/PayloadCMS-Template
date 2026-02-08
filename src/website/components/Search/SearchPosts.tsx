@@ -3,7 +3,7 @@ import configPromise from '@/payload.config'
 import { getPayload, type Payload, type TypedLocale } from 'payload'
 import { CollectionArchive } from '@/website/components/CollectionArchive'
 import type { CardPostData } from '@/website/components/Card/PostCard'
-import { SearchShell, resolveSearchPath } from './SearchShell'
+import { SearchShell, resolveSearchPath } from '@/website/components/Search/SearchShell'
 
 export type SearchPostsResultsArgs = {
   payload: Payload
@@ -141,7 +141,7 @@ export const SearchPosts: React.FC<SearchPostsProps> = async (props) => {
         if (typeof category === 'number' || typeof category === 'string') return String(category)
         return null
       })
-      .filter(Boolean) || []
+      .filter((id): id is string => id !== null) || []
 
   const { resultsCount, resultsNode } = await getSearchPostsResults({
     payload,

@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation'
 import { trackSearch } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 import { useTranslations } from 'next-intl'
-import { IconSearch } from '@tabler/icons-react'
 
 export const Search: React.FC<{
   resultsCount?: number
