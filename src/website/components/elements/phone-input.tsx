@@ -64,9 +64,13 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
   const selectedLabel = getCountryLabel(value)
 
   const shouldRenderIcon = typeof Icon === 'function'
+  const baseId =
+    id || name || (ariaLabel ? ariaLabel.replace(/\s+/g, '-').toLowerCase() : undefined)
+  const contentId = baseId ? `${baseId}-select-content` : undefined
 
   return (
     <Select
+      contentId={contentId}
       disabled={disabled || readOnly}
       name={name}
       onValueChange={(next) => onChange(next)}

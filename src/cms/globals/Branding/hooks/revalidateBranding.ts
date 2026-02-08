@@ -8,5 +8,5 @@ export const revalidateBranding: GlobalAfterChangeHook = ({ req: { payload, cont
   }
 
   payload.logger.info('Revalidating branding tag')
-  revalidateTag('global_branding')
+  revalidateTag('global_branding', 'max')
 }

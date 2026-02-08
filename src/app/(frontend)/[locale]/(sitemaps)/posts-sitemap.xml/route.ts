@@ -54,8 +54,9 @@ const getPostsSitemap = unstable_cache(
   },
 )
 
-export async function GET(_req: Request, { params }: { params: { locale?: string } }) {
-  const locale = params?.locale || 'da'
+export async function GET(_req: Request, { params }: { params: Promise<{ locale?: string }> }) {
+  const resolvedParams = await params
+  const locale = resolvedParams?.locale || 'da'
   const sitemap = await getPostsSitemap(locale)
 
   return getServerSideSitemap(sitemap)

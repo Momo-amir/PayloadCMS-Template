@@ -35,12 +35,12 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
       // Revalidate all locale-specific paths
       paths.forEach((path) => revalidatePath(path))
 
-      revalidateTag('pages-sitemap')
+      revalidateTag('pages-sitemap', 'max')
 
       // Invalidate cached page detail fetch for all locales
-      revalidateTag(`page:${doc.slug}`)
-      revalidateTag(`page:${doc.slug}:da`)
-      revalidateTag(`page:${doc.slug}:en`)
+      revalidateTag(`page:${doc.slug}`, 'max')
+      revalidateTag(`page:${doc.slug}:da`, 'max')
+      revalidateTag(`page:${doc.slug}:en`, 'max')
     }
 
     // If the page was previously published, we need to revalidate the old paths
@@ -50,12 +50,12 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
       payload.logger.info(`Revalidating old page at paths: ${oldPaths.join(', ')}`)
 
       oldPaths.forEach((path) => revalidatePath(path))
-      revalidateTag('pages-sitemap')
+      revalidateTag('pages-sitemap', 'max')
 
       // Invalidate cached page detail fetch for previous slug (all locales)
-      revalidateTag(`page:${previousDoc.slug}`)
-      revalidateTag(`page:${previousDoc.slug}:da`)
-      revalidateTag(`page:${previousDoc.slug}:en`)
+      revalidateTag(`page:${previousDoc.slug}`, 'max')
+      revalidateTag(`page:${previousDoc.slug}:da`, 'max')
+      revalidateTag(`page:${previousDoc.slug}:en`, 'max')
     }
   }
   return doc
@@ -67,12 +67,12 @@ export const revalidateDelete: CollectionAfterDeleteHook<Page> = ({ doc, req: { 
 
     // Revalidate all locale-specific paths
     paths.forEach((path) => revalidatePath(path))
-    revalidateTag('pages-sitemap')
+    revalidateTag('pages-sitemap', 'max')
 
     // Invalidate cached page detail fetch for all locales
-    revalidateTag(`page:${doc.slug}`)
-    revalidateTag(`page:${doc.slug}:da`)
-    revalidateTag(`page:${doc.slug}:en`)
+    revalidateTag(`page:${doc.slug}`, 'max')
+    revalidateTag(`page:${doc.slug}:da`, 'max')
+    revalidateTag(`page:${doc.slug}:en`, 'max')
   }
 
   return doc

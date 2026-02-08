@@ -10,14 +10,14 @@ services:
         NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID}
         
     ports:
-      - "8890:3000"
+      - "8890:8890"
     depends_on:
       postgres:
         condition: service_healthy
     env_file:
       - .env
     environment:
-      - PORT=3000
+      - PORT=8890
       - NODE_ENV=production
       - HOSTNAME=0.0.0.0
     restart: unless-stopped

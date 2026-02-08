@@ -43,7 +43,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
 
     const cacheTag = resource.updatedAt
 
-    src = `${getClientSideURL()}${url}?${cacheTag}`
+    src = `${getClientSideURL()}${url}?v=${cacheTag}`
   }
 
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
@@ -64,7 +64,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         height={!fill ? height : undefined}
         placeholder="blur"
         blurDataURL={placeholderBlur}
-        priority={priority}
+        preload={priority}
         quality={100}
         loading={loading}
         sizes={sizes}
