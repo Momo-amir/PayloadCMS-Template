@@ -43,7 +43,7 @@ export const LocaleSwitcher: React.FC = () => {
   }
 
   return (
-    <Select onValueChange={onLocaleChange} value={currentLocale}>
+    <Select contentId="locale-select-content" onValueChange={onLocaleChange} value={currentLocale}>
       <SelectTrigger
         aria-label="Select language"
         className=" gap-2 border-none text-primary h-auto py-0 px-2 cursor-pointer"

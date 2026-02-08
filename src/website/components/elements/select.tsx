@@ -5,29 +5,53 @@ import * as SelectPrimitive from '@radix-ui/react-select'
 import { Check, ChevronDown, ChevronUp } from 'lucide-react'
 import * as React from 'react'
 
-const Select = SelectPrimitive.Root
+type SelectRootProps = React.ComponentProps<typeof SelectPrimitive.Root> & {
+  contentId?: string
+}
+
+const SelectIdContext = React.createContext<string | undefined>(undefined)
+
+const Select: React.FC<SelectRootProps> = ({ children, contentId, ...props }) => {
+  const reactId = React.useId()
+  const resolvedContentId = contentId || `select-${reactId.replace(/:/g, '')}`
+
+  return (
+    <SelectIdContext.Provider value={resolvedContentId}>
+      <SelectPrimitive.Root {...props}>{children}</SelectPrimitive.Root>
+    </SelectIdContext.Provider>
+  )
+}
 
 const SelectGroup = SelectPrimitive.Group
 
 const SelectValue = SelectPrimitive.Value
 
-const SelectTrigger: React.FC<
-  { ref?: React.Ref<HTMLButtonElement> } & React.ComponentProps<typeof SelectPrimitive.Trigger>
-> = ({ children, className, ref, ...props }) => (
-  <SelectPrimitive.Trigger
-    className={cn(
-      'flex h-10 w-full items-center justify-between rounded border border-input px-3 py-2 text-inherit hover:cursor-pointer placeholder:text-muted-primary focus:outline-none focus:border-primary  disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
-      className,
-    )}
-    ref={ref}
-    {...props}
-  >
-    {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronDown className="h-4 w-4 opacity-50" />
-    </SelectPrimitive.Icon>
-  </SelectPrimitive.Trigger>
-)
+const SelectTrigger = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<typeof SelectPrimitive.Trigger>
+>(({ children, className, ...props }, ref) => {
+  const contentId = React.useContext(SelectIdContext)
+  const { ['aria-controls']: ariaControlsProp, ...triggerProps } = props
+  const ariaControls = ariaControlsProp ?? contentId
+
+  return (
+    <SelectPrimitive.Trigger
+      className={cn(
+        'flex h-10 w-full items-center justify-between rounded border border-input px-3 py-2 text-inherit hover:cursor-pointer placeholder:text-muted-primary focus:outline-none focus:border-primary  disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
+        className,
+      )}
+      ref={ref}
+      aria-controls={ariaControls}
+      {...triggerProps}
+    >
+      {children}
+      <SelectPrimitive.Icon asChild>
+        <ChevronDown className="h-4 w-4 opacity-50" />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+  )
+})
+SelectTrigger.displayName = 'SelectTrigger'
 
 const SelectScrollUpButton: React.FC<
   { ref?: React.Ref<HTMLDivElement> } & React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>
@@ -55,37 +79,43 @@ const SelectScrollDownButton: React.FC<
   </SelectPrimitive.ScrollDownButton>
 )
 
-const SelectContent: React.FC<
-  {
-    ref?: React.Ref<HTMLDivElement>
-  } & React.ComponentProps<typeof SelectPrimitive.Content>
-> = ({ children, className, position = 'popper', ref, ...props }) => (
-  <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
-      className={cn(
-        'relative z-50 max-h-96 min-w-32 overflow-hidden rounded border bg-surface text-primary shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-        position === 'popper' &&
-          'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
-        className,
-      )}
-      position={position}
-      ref={ref}
-      {...props}
-    >
-      <SelectScrollUpButton />
-      <SelectPrimitive.Viewport
+const SelectContent = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<typeof SelectPrimitive.Content>
+>(({ children, className, position = 'popper', id, ...props }, ref) => {
+  const contentId = React.useContext(SelectIdContext)
+  const resolvedId = id ?? contentId
+
+  return (
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
         className={cn(
-          'p-1',
+          'relative z-50 max-h-96 min-w-32 overflow-hidden rounded border bg-surface text-primary shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
           position === 'popper' &&
-            'h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width)',
+            'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
+          className,
         )}
+        position={position}
+        ref={ref}
+        id={resolvedId}
+        {...props}
       >
-        {children}
-      </SelectPrimitive.Viewport>
-      <SelectScrollDownButton />
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-)
+        <SelectScrollUpButton />
+        <SelectPrimitive.Viewport
+          className={cn(
+            'p-1',
+            position === 'popper' &&
+              'h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width)',
+          )}
+        >
+          {children}
+        </SelectPrimitive.Viewport>
+        <SelectScrollDownButton />
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  )
+})
+SelectContent.displayName = 'SelectContent'
 
 const SelectLabel: React.FC<
   { ref?: React.Ref<HTMLDivElement> } & React.ComponentProps<typeof SelectPrimitive.Label>
