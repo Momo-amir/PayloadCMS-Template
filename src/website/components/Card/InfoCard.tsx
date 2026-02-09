@@ -12,7 +12,7 @@ import type { CardBlock as CardBlockType } from '@/payload-types'
 import React from 'react'
 import { Media as MediaComponent } from '../Media'
 
-type CardItem = NonNullable<CardBlockType['cards']>[number]
+type CardItem = NonNullable<CardBlockType['infoCards']>[number]
 
 export type InfoCardVariant =
   | 'default'

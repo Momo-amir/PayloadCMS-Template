@@ -65,7 +65,10 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
   }
 
   if (resource && typeof resource === 'object') {
-    const { filename } = resource
+    const { url, updatedAt } = resource
+    if (!url) return null
+    const cacheTag = updatedAt
+    const src = `${getClientSideURL()}${url}${cacheTag ? `?v=${cacheTag}` : ''}`
 
     return (
       <div className="relative group">
@@ -78,7 +81,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
           playsInline
           ref={videoRef}
         >
-          <source src={`${getClientSideURL()}/media/${filename}`} />
+          <source src={src} />
         </video>
         {!autoplay && (
           <Button
