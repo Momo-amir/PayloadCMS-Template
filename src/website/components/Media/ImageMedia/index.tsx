@@ -24,6 +24,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     imgClassName,
     priority,
     resource,
+    imageSize = 'original',
     size: sizeFromProps,
     src: srcFromProps,
     loading: loadingFromProps,
@@ -35,11 +36,15 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   let src: StaticImageData | string = srcFromProps || ''
 
   if (!src && resource && typeof resource === 'object') {
-    const { alt: altFromResource, height: fullHeight, url, width: fullWidth } = resource
+    const sizeKey = imageSize !== 'original' ? imageSize : undefined
+    const sized = sizeKey ? resource.sizes?.[sizeKey] : undefined
+    const chosen = sized?.url ? sized : resource
+
+    const { height: fullHeight, url, width: fullWidth } = chosen
 
     width = fullWidth!
     height = fullHeight!
-    alt = altFromResource || ''
+    alt = resource.alt || ''
 
     const cacheTag = resource.updatedAt
 

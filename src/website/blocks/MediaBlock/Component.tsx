@@ -18,6 +18,7 @@ type Props = MediaBlockProps & {
   videoClassName?: string
   staticImage?: StaticImageData
   disableInnerContainer?: boolean
+  imageSize?: string
   // Video-specific props
   autoplay?: boolean
   loop?: boolean
@@ -35,6 +36,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
     media,
     staticImage,
     disableInnerContainer,
+    imageSize,
     autoplay,
     loop,
     muted,
@@ -70,6 +72,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
           })}
           resource={media}
           src={staticImage}
+          imageSize={imageSize}
           autoplay={autoplay}
           loop={loop}
           muted={muted}
