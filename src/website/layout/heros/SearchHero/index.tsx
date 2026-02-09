@@ -15,6 +15,7 @@ import {
   getSearchPeopleResults,
   type SearchPeopleResultsArgs,
 } from '@/website/components/Search/SearchPeople'
+import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 
 type SearchHeroProps = Page['hero'] & {
   searchPathMode?: 'current' | 'select' | null
@@ -97,7 +98,7 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
   }
 
   return (
-    <div>
+    <TrackImpression componentName="Search Hero" componentType="searh_hero">
       <div className="relative mb-8 -mt-[9.4rem]">
         <div className="container relative z-10 pt-24 pb-16">
           <div className="max-w-200 mx-auto">
@@ -117,6 +118,6 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
           resultsNode
         )}
       </div>
-    </div>
+    </TrackImpression>
   )
 }

@@ -7,11 +7,12 @@ import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 import RichText from '@/website/components/RichText'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-type CardItem = CardBlockType['cards'][number]
+type LinkCardItem = NonNullable<CardBlockType['cards']>[number]
+type InfoCardItem = NonNullable<CardBlockType['infoCards']>[number]
 type Props = CardBlockType & {
   className?: string
   introContent?: SerializedEditorState
-  infoCards?: CardItem[]
+  infoCards?: InfoCardItem[]
 }
 
 const columnClass = (cardCount: number) => {
@@ -30,37 +31,58 @@ const columnClass = (cardCount: number) => {
 
 export const CardBlock: React.FC<Props> = ({
   introContent,
-  cards = [],
-  infoCards = [],
+  cards,
+  infoCards,
   cardBackgroundColor,
   cardType,
 }) => {
   const variant = cardBackgroundColor ? cardBackgroundColor : 'default'
-  const CardComponent = cardType === 'info' ? InfoCard : Card
-  const resolvedCards = cardType === 'info' ? infoCards : cards
-
-  if (!resolvedCards.length) return null
+  const safeCards: LinkCardItem[] = cards ?? []
+  const safeInfoCards: InfoCardItem[] = infoCards ?? []
 
   return (
     <div className="my-16">
-      <TrackImpression
-        componentName={`Card Block (${cards.length} cards)`}
-        componentType="cards"
-        as="section"
-      >
-        {introContent && (
-          <div className="container mb-16">
-            <RichText className="ms-0" data={introContent} enableGutter={false} />
+      {cardType === 'info' ? (
+        safeInfoCards.length ? (
+          <TrackImpression
+            componentName={`Card Info Block (${safeInfoCards.length} cards)`}
+            componentType="cards"
+            as="section"
+          >
+            {introContent && (
+              <div className="container mb-16">
+                <RichText className="ms-0" data={introContent} enableGutter={false} />
+              </div>
+            )}
+            <div className="container">
+              <div className={cn('grid gap-8', columnClass(safeInfoCards.length))}>
+                {safeInfoCards.map((card, i) => (
+                  <InfoCard key={card.id ?? i} card={card} variant={variant} />
+                ))}
+              </div>
+            </div>
+          </TrackImpression>
+        ) : null
+      ) : safeCards.length ? (
+        <TrackImpression
+          componentName={`Card Link Block (${safeCards.length} cards)`}
+          componentType="cards"
+          as="section"
+        >
+          {introContent && (
+            <div className="container mb-16">
+              <RichText className="ms-0" data={introContent} enableGutter={false} />
+            </div>
+          )}
+          <div className="container">
+            <div className={cn('grid gap-8', columnClass(safeCards.length))}>
+              {safeCards.map((card, i) => (
+                <Card key={card.id ?? i} card={card} variant={variant} />
+              ))}
+            </div>
           </div>
-        )}
-        <div className="container">
-          <div className={cn('grid gap-8', columnClass(cards.length))}>
-            {resolvedCards.map((card, i) => (
-              <CardComponent key={card.id ?? i} card={card} variant={variant} />
-            ))}
-          </div>
-        </div>
-      </TrackImpression>
+        </TrackImpression>
+      ) : null}
     </div>
   )
 }

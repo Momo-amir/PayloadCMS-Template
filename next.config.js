@@ -14,6 +14,11 @@ const nextConfig = {
     // Explicitly allow quality values used by <Image quality={...}>
     // This will be required starting in Next.js 16
     qualities: [60, 75, 85, 90, 100],
+    localPatterns: [
+      {
+        pathname: '/api/media/**',
+      },
+    ],
     remotePatterns: [
       ...[NEXT_PUBLIC_SERVER_URL].map((item) => {
         const url = new URL(item)
