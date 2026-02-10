@@ -88,6 +88,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         sizes={sizes}
         src={src}
         style={objectPosition ? { objectPosition } : undefined}
+        style={objectPosition ? { objectPosition } : undefined}
         width={!fill ? width : undefined}
       />
     </picture>
