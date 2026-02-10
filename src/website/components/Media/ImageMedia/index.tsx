@@ -34,6 +34,8 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   let height: number | undefined
   let alt = altFromProps
   let src: StaticImageData | string = srcFromProps || ''
+  let focalX: number | null = null
+  let focalY: number | null = null
 
   if (!src && resource && typeof resource === 'object') {
     const sizeKey = imageSize !== 'original' ? imageSize : undefined
@@ -45,6 +47,14 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     width = fullWidth!
     height = fullHeight!
     alt = resource.alt || ''
+
+    // Get focal point coordinates if they exist (stored as percentages 0-100)
+    if (resource.focalX !== null && resource.focalX !== undefined) {
+      focalX = resource.focalX
+    }
+    if (resource.focalY !== null && resource.focalY !== undefined) {
+      focalY = resource.focalY
+    }
 
     const cacheTag = resource.updatedAt
 
@@ -60,6 +70,9 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         .map(([, value]) => `(max-width: ${value}px) ${value * 2}w`)
         .join(', ')
 
+  // Calculate object-position based on focal point (values are already in percentages)
+  const objectPosition = focalX !== null && focalY !== null ? `${focalX}% ${focalY}%` : undefined
+
   return (
     <picture>
       <NextImage
@@ -74,6 +87,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         loading={loading}
         sizes={sizes}
         src={src}
+        style={objectPosition ? { objectPosition } : undefined}
         width={!fill ? width : undefined}
       />
     </picture>
