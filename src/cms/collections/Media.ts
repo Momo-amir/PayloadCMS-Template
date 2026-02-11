@@ -47,32 +47,60 @@ export const Media: CollectionConfig = {
     // Upload to the public/media directory in Next.js making them publicly accessible even outside of Payload
     staticDir: path.resolve(dirname, '../../../public/media'),
     focalPoint: true,
+    formatOptions: {
+      format: 'webp',
+      options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
+    },
     imageSizes: [
       {
         name: 'thumbnail',
         width: 300,
         crop: 'center',
+        formatOptions: {
+          format: 'webp',
+          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
+        },
       },
       {
         name: 'square',
         width: 500,
         height: 500,
+        formatOptions: {
+          format: 'webp',
+          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
+        },
       },
       {
         name: 'small',
         width: 600,
+        formatOptions: {
+          format: 'webp',
+          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
+        },
       },
       {
         name: 'medium',
         width: 900,
+        formatOptions: {
+          format: 'webp',
+          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
+        },
       },
       {
         name: 'large',
         width: 1400,
+        formatOptions: {
+          format: 'webp',
+          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
+        },
       },
       {
         name: 'xlarge',
         width: 1920,
+        formatOptions: {
+          format: 'webp',
+          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
+        },
       },
     ],
   },
