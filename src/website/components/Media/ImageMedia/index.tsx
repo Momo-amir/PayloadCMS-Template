@@ -71,7 +71,10 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         .join(', ')
 
   // Calculate object-position based on focal point (values are already in percentages)
-  const objectPosition = focalX !== null && focalY !== null ? `${focalX}% ${focalY}%` : undefined
+  const objectPosition =
+    focalX !== null && focalY !== null && (focalX !== 50 || focalY !== 50)
+      ? `${focalX}% ${focalY}%`
+      : undefined
 
   return (
     <picture>
