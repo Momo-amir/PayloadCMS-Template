@@ -13,7 +13,7 @@ import { CallToActionBlock } from './Component'
 export const CallToAction: ComponentBlock = {
   slug: 'cta',
   component: CallToActionBlock,
-  imageURL: '/assets/block-icons/input-spark.svg',
+  imageURL: '/assets/block-icons/call-to-action.svg',
   interfaceName: 'CallToActionBlock',
   fields: [
     {

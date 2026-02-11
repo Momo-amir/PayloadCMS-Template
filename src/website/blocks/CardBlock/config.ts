@@ -12,7 +12,7 @@ import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 export const CardBlock: ComponentBlock = {
   slug: 'cardBlock',
   component: CardBlockComponent,
-  imageURL: '/assets/block-icons/cards.svg',
+  imageURL: '/assets/block-icons/card-grid.svg',
   interfaceName: 'CardBlock',
   labels: {
     singular: 'Card Layout',

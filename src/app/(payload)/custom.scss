@@ -389,35 +389,6 @@
 
 /* Block icon SVG theming and sizing */
 /* Style block icons in the blocks drawer/selector */
-.blocks-field__drawer,
-.blocks-field,
-.blocks-drawer,
-[class*='block'] {
-  /* Light mode: dark grey for SVG icons */
-  img[src$='.svg'],
-  svg {
-    filter: brightness(0.3);
-    max-width: 100px;
-    width: auto;
-    object-fit: contain;
-  }
-}
-
-/* Dark mode: white for SVG icons */
-[data-theme='dark'] {
-  .blocks-field__drawer,
-  .blocks-field,
-  .blocks-drawer,
-  [class*='block'] {
-    img[src$='.svg'],
-    svg {
-      filter: brightness(0) invert(1);
-      max-width: 100px;
-      width: auto;
-      object-fit: contain;
-    }
-  }
-}
 
 .status__value {
   color: var(--color-success-500);

@@ -13,7 +13,7 @@ export const RichTextBlockBlock: ComponentBlock = {
   slug: 'richTextBlock',
   component: RichTextBlock,
   interfaceName: 'RichTextBlockBlock',
-  imageURL: '/assets/block-icons/article.svg',
+  imageURL: '/assets/block-icons/Content.svg',
 
   showOnPage: false, // Only available in TwoBlock
   labels: {
