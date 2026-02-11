@@ -12,7 +12,7 @@ import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 export const CardCarouselBlock: ComponentBlock = {
   slug: 'cardCarouselBlock',
   component: CardCarouselBlockComponent,
-  imageURL: '/assets/block-icons/carousel-horizontal-main.svg',
+  imageURL: '/assets/block-icons/image-slider.svg',
   interfaceName: 'CardCarouselBlock',
   labels: {
     singular: 'Card Carousel',
