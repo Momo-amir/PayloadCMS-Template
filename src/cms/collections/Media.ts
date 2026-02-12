@@ -49,7 +49,6 @@ export const Media: CollectionConfig = {
     focalPoint: true,
     formatOptions: {
       format: 'webp',
-      options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
     },
     imageSizes: [
       {
@@ -58,7 +57,6 @@ export const Media: CollectionConfig = {
         crop: 'center',
         formatOptions: {
           format: 'webp',
-          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
         },
       },
       {
@@ -67,7 +65,6 @@ export const Media: CollectionConfig = {
         height: 500,
         formatOptions: {
           format: 'webp',
-          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
         },
       },
       {
@@ -75,7 +72,6 @@ export const Media: CollectionConfig = {
         width: 600,
         formatOptions: {
           format: 'webp',
-          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
         },
       },
       {
@@ -83,7 +79,6 @@ export const Media: CollectionConfig = {
         width: 900,
         formatOptions: {
           format: 'webp',
-          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
         },
       },
       {
@@ -91,7 +86,6 @@ export const Media: CollectionConfig = {
         width: 1400,
         formatOptions: {
           format: 'webp',
-          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
         },
       },
       {
@@ -99,7 +93,6 @@ export const Media: CollectionConfig = {
         width: 1920,
         formatOptions: {
           format: 'webp',
-          options: { quality: 100 }, // High quality for stored variants; Next.js can optimize further at runtime
         },
       },
     ],
