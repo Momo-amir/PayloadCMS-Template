@@ -95,6 +95,15 @@ export const Media: CollectionConfig = {
           format: 'webp',
         },
       },
+      {
+        name: 'og',
+        width: 1200,
+        height: 630,
+        crop: 'center',
+        formatOptions: {
+          format: 'webp',
+        },
+      },
     ],
   },
 }

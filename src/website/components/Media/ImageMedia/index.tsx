@@ -24,7 +24,6 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     imgClassName,
     priority,
     resource,
-    imageSize = 'original',
     size: sizeFromProps,
     src: srcFromProps,
     loading: loadingFromProps,
@@ -38,15 +37,11 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   let focalY: number | null = null
 
   if (!src && resource && typeof resource === 'object') {
-    const sizeKey = imageSize !== 'original' ? imageSize : undefined
-    const sized = sizeKey ? resource.sizes?.[sizeKey] : undefined
-    const chosen = sized?.url ? sized : resource
-
-    const { height: fullHeight, url, width: fullWidth } = chosen
+    const { alt: altFromResource, url, width: fullWidth, height: fullHeight } = resource
 
     width = fullWidth!
     height = fullHeight!
-    alt = resource.alt || ''
+    alt = altFromResource || ''
 
     // Get focal point coordinates if they exist (stored as percentages 0-100)
     if (resource.focalX !== null && resource.focalX !== undefined) {
