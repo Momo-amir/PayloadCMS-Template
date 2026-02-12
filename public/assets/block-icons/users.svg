@@ -1,1 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-users"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>
+<svg width="70" height="46" viewBox="0 0 70 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_users)">
+<rect width="69.3093" height="45.6626" fill="#3C3C3C"/>
+<!-- Top Left Card -->
+<rect x="7.76758" y="8.91794" width="25.5226" height="27.7407" fill="#656565"/>
+<g clip-path="url(#clip1_users)">
+<circle cx="20.5289" cy="14.91794" r="2.8" fill="#9A9A9A"/>
+<path d="M15.5289 20.91794C15.5289 18.91794 17.5289 17.41794 20.5289 17.41794C23.5289 17.41794 25.5289 18.91794 25.5289 20.91794V25.5631H15.5289V20.91794Z" fill="#9A9A9A"/>
+</g>
+<path d="M11.0967 32.2211H19.824" stroke="#ACACAC" stroke-width="0.969704"/>
+<path d="M11.0967 28.891H28.5514" stroke="#ACACAC" stroke-width="0.969704"/>
+<!-- Bottom Left Card (clipped) -->
+<g clip-path="url(#clip2_users)">
+<rect width="25.5226" height="16.5432" transform="translate(7.76758 39.945)" fill="#656565"/>
+<circle cx="20.5289" cy="45.945" r="2.8" fill="#9A9A9A"/>
+</g>
+<!-- Top Right Card -->
+<rect x="36.6191" y="8.91794" width="25.5226" height="27.7407" fill="#656565"/>
+<g clip-path="url(#clip3_users)">
+<circle cx="49.3804" cy="14.91794" r="2.8" fill="#9A9A9A"/>
+<path d="M44.3804 20.91794C44.3804 18.91794 46.3804 17.41794 49.3804 17.41794C52.3804 17.41794 54.3804 18.91794 54.3804 20.91794V25.5631H44.3804V20.91794Z" fill="#9A9A9A"/>
+</g>
+<path d="M41.1309 32.2211H49.8582" stroke="#ACACAC" stroke-width="0.969704"/>
+<path d="M41.1309 28.891H58.5855" stroke="#ACACAC" stroke-width="0.969704"/>
+<!-- Bottom Right Card (clipped) -->
+<g clip-path="url(#clip4_users)">
+<rect width="25.5226" height="16.6452" transform="translate(36.6191 39.945)" fill="#656565"/>
+<circle cx="49.3804" cy="45.945" r="2.8" fill="#9A9A9A"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_users">
+<rect width="69.3093" height="45.6626" fill="white"/>
+</clipPath>
+<clipPath id="clip1_users">
+<rect width="25.5226" height="16.6452" fill="white" transform="translate(7.76758 8.91794)"/>
+</clipPath>
+<clipPath id="clip2_users">
+<rect width="25.5226" height="16.5432" fill="white" transform="translate(7.76758 39.945)"/>
+</clipPath>
+<clipPath id="clip3_users">
+<rect width="25.5226" height="16.6452" fill="white" transform="translate(36.6191 8.91794)"/>
+</clipPath>
+<clipPath id="clip4_users">
+<rect width="25.5226" height="16.6452" fill="white" transform="translate(36.6191 39.945)"/>
+</clipPath>
+</defs>
+</svg>

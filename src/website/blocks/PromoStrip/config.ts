@@ -5,7 +5,7 @@ export const PromoStripBlock: ComponentBlock = {
   slug: 'PromoStrip',
   component: PromoStripComponent,
   interfaceName: 'PromoStripBlock',
-  imageURL: '/assets/block-icons/badge-ad.svg',
+  imageURL: '/assets/block-icons/promo-strip.svg',
 
   showOnPage: true,
   fields: [

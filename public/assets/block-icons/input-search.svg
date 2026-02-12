@@ -1,1 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-input-search"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11v-2a2 2 0 0 0 -2 -2h-12a2 2 0 0 0 -2 2v5a2 2 0 0 0 2 2h5" /><path d="M15 18a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M20.2 20.2l1.8 1.8" /></svg>
+<svg width="75" height="48" viewBox="0 0 75 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="74.359" height="47.4632" fill="#2F2F2F"/>
+<rect x="2.86133" y="0.000152588" width="71.6596" height="47.4367" fill="#3C3C3C"/>
+<rect x="12.9541" y="15.032" width="53.0005" height="17.6668" rx="8.83342" fill="#9A9A9A"/>
+<circle cx="54.5" cy="21.8" r="3.2" stroke="#2F2F2F" stroke-width="1.13952" fill="none"/>
+<path d="M56.8 24.1L59.5 26.8" stroke="#2F2F2F" stroke-width="1.13952" stroke-linecap="butt"/>
+<path d="M20.8145 21.8264H41.3258" stroke="#2F2F2F" stroke-width="1.13952"/>
+<path d="M20.8145 25.2494H31.0701" stroke="#2F2F2F" stroke-width="1.13952"/>
+</svg>
+ 

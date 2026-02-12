@@ -1,1 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-carousel-horizontal"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 6a1 1 0 0 1 1 -1h8a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1l0 -12" /><path d="M22 17h-1a1 1 0 0 1 -1 -1v-8a1 1 0 0 1 1 -1h1" /><path d="M2 17h1a1 1 0 0 0 1 -1v-8a1 1 0 0 0 -1 -1h-1" /></svg>
+<svg width="75" height="48" viewBox="0 0 75 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_carousel)">
+<rect width="74.359" height="47.4632" fill="#3C3C3C"/>
+<!-- Left Card (partial - empty) -->
+<rect width="12" height="26.5" transform="translate(3 6)" fill="#656565"/>
+<!-- Center Card (focused) -->
+<g clip-path="url(#clip2_carousel)">
+<rect width="33.2591" height="26.5" transform="translate(20.5 6)" fill="#656565"/>
+<path d="M34.7089 22.2198L48.888 32.5666H16.31445V22.2198L22.0627 18.3876L30.8767 24.9023L34.7089 22.2198Z" fill="#9A9A9A"/>
+<circle cx="47.5" cy="13.5" r="2.91371" fill="#9A9A9A"/>
+</g>
+<!-- Right Card (partial - empty) -->
+<rect width="12" height="26.5" transform="translate(59.36 6)" fill="#656565"/>
+<!-- Navigation arrows -->
+<path d="M42.5 40L44.5 42L42.5 44" stroke="#808080" stroke-width="0.790784"/>
+<path d="M34.5 40L32.5 42L34.5 44" stroke="#808080" stroke-width="0.790784"/>
+<!-- Progress dots -->
+<circle cx="35.5" cy="35" r="1" fill="#808080"/>
+<circle cx="38.5" cy="35" r="1" fill="#E9E9E9"/>
+<circle cx="41.5" cy="35" r="1" fill="#808080"/>
+</g>
+<defs>
+<clipPath id="clip0_carousel">
+<rect width="74.359" height="47.4632" fill="white"/>
+</clipPath>
+<clipPath id="clip2_carousel">
+<rect width="33.2591" height="26.5" fill="white" transform="translate(20.5 6)"/>
+</clipPath>
+</defs>
+</svg>
