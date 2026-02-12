@@ -5,6 +5,7 @@ export const MediaBlock: ComponentBlock = {
   slug: 'mediaBlock',
   component: MediaBlockComponent,
   interfaceName: 'MediaBlock',
+  imageURL: '/assets/block-icons/polaroid.svg',
   fields: [
     {
       name: 'media',
