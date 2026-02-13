@@ -96,6 +96,14 @@ export const Media: CollectionConfig = {
         },
       },
       {
+        name: '2k',
+        width: 2560,
+        formatOptions: {
+          format: 'webp',
+        },
+      },
+
+      {
         name: 'og',
         width: 1200,
         height: 630,
