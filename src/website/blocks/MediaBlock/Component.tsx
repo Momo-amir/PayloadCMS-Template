@@ -74,6 +74,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
           loop={loop}
           muted={muted}
           controls={controls}
+          sizes="xlarge"
         />
       )}
       {caption && (

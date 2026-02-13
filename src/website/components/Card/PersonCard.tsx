@@ -48,7 +48,7 @@ export const PersonCard: React.FC<{
             </div>
           )}
           {image && typeof image !== 'string' && (
-            <Media resource={image} fill imgClassName="object-cover" />
+            <Media resource={image} fill imgClassName="object-cover" sizes="small" />
           )}
         </div>
 

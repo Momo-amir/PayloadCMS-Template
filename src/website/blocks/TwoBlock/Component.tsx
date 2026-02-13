@@ -74,7 +74,12 @@ export const TwoBlock: React.FC<{
                     resource={backgroundMedia}
                   />
                 ) : (
-                  <Media fill imgClassName="object-cover" resource={backgroundMedia} />
+                  <Media
+                    fill
+                    imgClassName="object-cover"
+                    resource={backgroundMedia}
+                    sizes="large"
+                  />
                 )
               ) : (
                 <div className={cn('w-full h-full', colorVariantStyle.bg)} />

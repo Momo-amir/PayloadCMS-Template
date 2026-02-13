@@ -80,7 +80,7 @@ export const PostCard: React.FC<{
             </div>
           )}
           {metaImage && typeof metaImage !== 'string' && (
-            <Media resource={metaImage} fill imgClassName="object-cover" />
+            <Media resource={metaImage} fill imgClassName="object-cover" sizes="medium" />
           )}
 
           {showCategories && hasCategories && (

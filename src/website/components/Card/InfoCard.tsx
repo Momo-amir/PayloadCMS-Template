@@ -53,7 +53,7 @@ export const InfoCard: React.FC<InfoCardProps> = ({ card, className, variant = '
       >
         {media && (
           <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
-            <MediaComponent resource={media} fill imgClassName="object-cover" />
+            <MediaComponent resource={media} fill imgClassName="object-cover" sizes="medium" />
             {tag && (
               <span
                 className={cn(

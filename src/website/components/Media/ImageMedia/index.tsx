@@ -8,10 +8,8 @@ import React from 'react'
 
 import type { Props as MediaProps } from '../types'
 
-import { cssVariables } from '@/cssVariables'
 import { getClientSideURL } from '@/cms/utilities/getURL'
-
-const { breakpoints } = cssVariables
+import { isMediaSizePreset, toImageSizesValue } from '../imageSizes'
 
 // A base64 encoded image to use as a placeholder while the image is loading
 const placeholderBlur =
@@ -24,7 +22,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     imgClassName,
     priority,
     resource,
-    size: sizeFromProps,
+    sizes: sizesFromProps,
     src: srcFromProps,
     loading: loadingFromProps,
   } = props
@@ -60,7 +58,8 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
 
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
 
-  const sizes = sizeFromProps ? sizeFromProps : '100vw'
+  const sizes =
+    sizesFromProps && isMediaSizePreset(sizesFromProps) ? toImageSizesValue(sizesFromProps) : '100vw'
 
   // Calculate object-position based on focal point (values are already in percentages)
   const objectPosition =

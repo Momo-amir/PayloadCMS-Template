@@ -82,7 +82,7 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
       >
         {media && (
           <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
-            <MediaComponent resource={media} fill imgClassName="object-cover" />
+            <MediaComponent resource={media} fill imgClassName="object-cover" sizes="medium" />
             {tag && (
               <span
                 className={cn(
