@@ -257,7 +257,7 @@ You can customize the template here:
 
 ### Notes and tips
 
-- Ports: dev uses 8890; prod maps 8890 -> 3000 in Docker. Change this as needed for actual production use.
+- Ports: dev and prod uses 8890 in Docker. Change this as needed for actual production use.
 - Next.js `output: 'standalone'` is required for the Docker prod image and is safe to keep for dev.
 - Scripts you’ll likely use:
   - `yarn docker-dev`, `yarn attach`, `yarn docker-prod`, `yarn docker-prod:build`, `yarn docker-prod:up-build`, `yarn docker-prod:down`
