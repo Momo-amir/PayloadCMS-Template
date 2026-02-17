@@ -1,9 +1,5 @@
 # Analytics Production Readiness Checklist
 
-**Purpose**: Security and privacy audit for production deployment  
-**Version**: 2.0  
-**Last Updated**: February 17, 2026
-
 ---
 
 ## 1. Privacy Banner & Consent Flow
@@ -170,6 +166,8 @@
 
 **Expected Behavior**: Extracts country code from CDN headers (Vercel, Cloudflare, etc.). Never stores raw IP addresses. Returns 'unknown' if no header present. Sufficient for geographic analysis without privacy risk.
 
+-- above is WIP 
+
 ---
 
 ## 4. Client-Side Tracking
@@ -219,6 +217,8 @@
 
 **Expected Behavior**: Each event queued as Payload job. Workflow retries up to 3 times. Tasks execute conditionally based on config flags (store_aggregates, ga4_enabled, matomo_enabled). Returns 201 immediately (non-blocking). Failed jobs kept for debugging.
 
+-- needs way to monitor failed jobs
+
 ---
 
 ### 5.2 Event Aggregation
@@ -251,6 +251,8 @@
 - `src/cms/jobs/analytics-tasks.ts` - `forwardToMatomoTask`
 
 **Expected Behavior**: Sends event_name and page_path to Matomo HTTP API. Retries 3 times. Skips if credentials missing. Enables privacy-first self-hosted analytics as GA4 alternative.
+
+-- Unverfied in production yet, needs testing with real Matomo instance
 
 ---
 
@@ -391,7 +393,7 @@
 
 ### 10.1 Pre-Deployment Verification
 
-**Expected Behavior**: All required env vars set. `NODE_ENV=production`. SSL certificates valid (for Secure cookies). Database migrations run. Trusted origins include all production domains (with https://). Secrets are cryptographically random.
+**Expected Behavior**: All required env vars set. SSL certificates valid (for Secure cookies). Database migrations run. Trusted origins include all production domains (with https://). Secrets are cryptographically random.
 
 ---
 
@@ -401,15 +403,3 @@
 
 ---
 
-### 10.3 Monitoring
-
-**Expected Behavior**: Check failed jobs daily. Monitor job queue size. Verify event processing latency < 5 minutes. Database queries for PII leakage should return zero rows. Rate limit cleanup running (dev logs show map sizes).
-
----
-
-## Sign-Off
-
-**Audit Completed By**: ______________________  
-**Date**: ______________________  
-**Production Approved**: [ ] Yes [ ] No  
-**Critical Issues Found**: ______________________
