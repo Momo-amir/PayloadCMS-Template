@@ -25,12 +25,12 @@
 
 This analytics system provides **GDPR-compliant, privacy-first tracking** with:
 
-- ✅ First-party consent cookies (no third-party tracking)
-- ✅ Server-side aggregation (no PII stored)
-- ✅ Async job processing (Payload native Jobs/Tasks/Workflows)
-- ✅ Dual-tracking: Local aggregates + GA4 + Matomo
-- ✅ Automatic retry logic and error handling
-- ✅ Built-in monitoring via Payload admin UI
+- First-party consent cookies (no third-party tracking)
+- Server-side aggregation (no PII stored)
+- Async job processing (Payload native Jobs/Tasks/Workflows)
+- Dual-tracking: Local aggregates + GA4 + Matomo
+- Automatic retry logic and error handling
+- Built-in monitoring via Payload admin UI
 
 ---
 
