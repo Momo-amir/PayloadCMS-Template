@@ -351,7 +351,7 @@ src/
 │   └── messages/               # Translation files
 │       ├── da.json             # Danish translations
 │       └── en.json             # English translations
-├── middleware.ts               # Locale detection middleware
+├── proxy.ts               # Locale detection middleware
 ├── payload.config.ts           # PayloadCMS localization config
 └── app/
     └── (frontend)/
@@ -363,7 +363,7 @@ src/
 
 ## Middleware Behavior
 
-The middleware in [src/middleware.ts](../src/middleware.ts) handles locale routing:
+The middleware in [src/proxy.ts](../src/proxy.ts) handles locale routing:
 
 ### Current Strategy: Manual Cookie Detection
 
@@ -384,7 +384,7 @@ For projects designed with **localization from the start**, a simpler approach u
 
 #### Simplified Middleware
 
-Replace [src/middleware.ts](../src/middleware.ts) with:
+Replace [src/proxy.ts](../src/proxy.ts) with:
 
 ```typescript
 import createMiddleware from 'next-intl/middleware'
