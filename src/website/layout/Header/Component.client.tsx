@@ -72,7 +72,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) =
       )}
       data-theme={headerTheme ?? undefined}
     >
-      <div className="container flex items-center md:gap-x-24 py-6">
+      <div className="container flex items-center md:gap-x-12 lg:gap-x-24 py-6">
         <Link href="/">
           <Logo
             theme={mounted ? (headerTheme ?? rootTheme ?? null) : null}
