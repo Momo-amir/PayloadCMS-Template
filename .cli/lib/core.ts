@@ -10,9 +10,9 @@ interface Config {
 const dirname = import.meta.dirname;
 
 const root = Path.resolve(dirname, "../../");
-const configPath = Path.resolve(root, ".cli/config.json");
-const config: Config = await import(configPath);
 const winPrefix = (os.platform() == "win32" ? "file://" : "");
+const configPath = winPrefix + Path.resolve(root, ".cli/config.json");
+const config: Config = await import(configPath);
 const exportsPath = winPrefix + Path.resolve(root, config.blockDirectory, "exports.ts");
 
 Command.register(
