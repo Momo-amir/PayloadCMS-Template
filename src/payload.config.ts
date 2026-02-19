@@ -36,6 +36,7 @@ import {
 } from './cms/jobs/analytics-tasks'
 import { processAnalyticsEventWorkflow } from './cms/jobs/analytics-workflow'
 import { cleanupOldJobsTask } from './cms/jobs/cleanup-task'
+import { cleanupExpiredConsentTokensTask } from './cms/jobs/cleanup-consent-tokens-task'
 import { cleanupJobsWorkflow } from './cms/jobs/cleanup-workflow'
 
 import exports from './website/blocks/exports'
@@ -153,7 +154,13 @@ export default buildConfig({
         return authHeader === `Bearer ${process.env.CRON_SECRET}`
       },
     },
-    tasks: [aggregateEventTask, forwardToGA4Task, forwardToMatomoTask, cleanupOldJobsTask],
+    tasks: [
+      aggregateEventTask,
+      forwardToGA4Task,
+      forwardToMatomoTask,
+      cleanupOldJobsTask,
+      cleanupExpiredConsentTokensTask,
+    ],
     workflows: [processAnalyticsEventWorkflow, cleanupJobsWorkflow],
     // Auto-run processes queued jobs every 5 minutes
     autoRun: [

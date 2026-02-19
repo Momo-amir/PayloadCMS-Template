@@ -7,7 +7,11 @@
 
 export const CONSENT_COOKIE_NAME = 'analytics_consent'
 export const CONSENT_TOKEN_COOKIE_NAME = 'consent_token'
-const COOKIE_MAX_AGE = 365 * 24 * 60 * 60 // 1 year in seconds
+// GDPR: 12 months balances user convenience with periodic re-consent requirement
+const COOKIE_MAX_AGE = 365 * 24 * 60 * 60 // 12 months in seconds
+
+// Current privacy policy version - increment this when policy changes materially
+export const CURRENT_CONSENT_VERSION = 1
 
 export interface ConsentState {
   analytics: boolean
@@ -53,16 +57,24 @@ export function setConsentCookie(analytics: boolean): void {
 
   // Set first-party cookie (readable by JavaScript)
   // SameSite=Lax for CSRF protection, Secure in production
-  const isSecure = window.location.protocol === 'https:'
-  document.cookie = `${CONSENT_COOKIE_NAME}=${value}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax${isSecure ? '; Secure' : ''}`
+  const isProduction = process.env.NODE_ENV === 'production'
+  const isSecure = isProduction || window.location.protocol === 'https:'
+
+  const domain = window.location.hostname
+
+  // Partitioned for Chrome CHIPS (future-proofing for third-party cookie phase-out)
+  const partitioned = '; Partitioned'
+
+  document.cookie = `${CONSENT_COOKIE_NAME}=${value}; path=/; max-age=${COOKIE_MAX_AGE}; domain=${domain}; SameSite=Lax${isSecure ? '; Secure' : ''}${isSecure ? partitioned : ''}`
 }
 
 /**
- * Clear consent cookie
+ * Clear consent cookie (must match domain used when setting)
  */
 export function clearConsentCookie(): void {
   if (typeof document === 'undefined') return
-  document.cookie = `${CONSENT_COOKIE_NAME}=; path=/; max-age=0`
+  const domain = window.location.hostname
+  document.cookie = `${CONSENT_COOKIE_NAME}=; path=/; max-age=0; domain=${domain}`
 }
 
 /**

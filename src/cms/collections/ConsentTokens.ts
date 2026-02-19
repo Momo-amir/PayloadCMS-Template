@@ -44,6 +44,15 @@ export const ConsentTokens: CollectionConfig = {
         description: 'Privacy policy version',
       },
     },
+    {
+      name: 'expiresAt',
+      type: 'date',
+      index: true,
+      admin: {
+        description:
+          'Token expiry date (12 months from creation/update). Used for automatic cleanup.',
+      },
+    },
   ],
   timestamps: true,
 }

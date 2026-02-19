@@ -26,12 +26,17 @@ export async function POST(request: NextRequest) {
       // Create new consent token
       consentToken = randomUUID()
 
+      // Set expiry to 12 months from now (matching cookie expiry)
+      const expiresAt = new Date()
+      expiresAt.setMonth(expiresAt.getMonth() + 12)
+
       await payload.create({
         collection: 'consent-tokens',
         data: {
           token: consentToken,
           analytics,
           version: 1,
+          expiresAt: expiresAt.toISOString(),
         },
         overrideAccess: true,
       })
@@ -45,34 +50,65 @@ export async function POST(request: NextRequest) {
       })
 
       if (existing.docs.length > 0 && existing.docs[0]?.id) {
+        // Extend expiry when user updates consent (fresh 12 months)
+        const expiresAt = new Date()
+        expiresAt.setMonth(expiresAt.getMonth() + 12)
+
         await payload.update({
           collection: 'consent-tokens',
           id: existing.docs[0].id,
-          data: { analytics },
+          data: {
+            analytics,
+            expiresAt: expiresAt.toISOString(),
+          },
           overrideAccess: true,
         })
       } else {
         // Token not found, create new
+        const expiresAt = new Date()
+        expiresAt.setMonth(expiresAt.getMonth() + 12)
+
         await payload.create({
           collection: 'consent-tokens',
           data: {
             token: consentToken,
             analytics,
             version: 1,
+            expiresAt: expiresAt.toISOString(),
           },
           overrideAccess: true,
         })
       }
     }
 
-    // Set HttpOnly cookie
+    // If user is revoking consent, delete their queued analytics jobs
+    if (!analytics) {
+      // Delete any pending analytics workflow jobs for this consent token
+      await payload.delete({
+        collection: 'payload-jobs',
+        where: {
+          and: [
+            { 'input.consent_token': { equals: consentToken } },
+            { hasError: { equals: false } },
+            { completedAt: { exists: false } }, // Only delete incomplete jobs
+          ],
+        },
+        overrideAccess: true,
+      })
+    }
+
+    // Set HttpOnly cookie with domain restriction
     const response = NextResponse.json({ success: true })
+    const host = request.headers.get('host')
+    const domain = host?.split(':')[0] // Remove port
+
     response.cookies.set('consent_token', consentToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 365, // 1 year
+      maxAge: 60 * 60 * 24 * 365, // 12 months
       path: '/',
+      domain: domain || undefined, // Only set if we have a valid domain
     })
 
     return response
