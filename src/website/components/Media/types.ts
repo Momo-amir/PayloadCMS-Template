@@ -14,6 +14,7 @@ export interface Props {
   onLoad?: () => void
   loading?: 'lazy' | 'eager' // for NextImage only
   priority?: boolean // for NextImage only
+  fetchPriority?: 'high' | 'low' | 'auto' // for NextImage only
   ref?: Ref<HTMLImageElement | HTMLVideoElement | null>
   resource?: MediaType | string | number | null // for Payload media
   sizes?: MediaSizePreset // max rendered size preset for NextImage
