@@ -1,3 +1,5 @@
+import { AccordionGroupBlock } from "./AccordionGroup/config";
+import { AccordionBlock } from "./Accordion/config";
 import { SearchBlockBlock } from "./SearchBlock/config";
 import { PromoStripBlock } from "./PromoStrip/config";
 import { RichTextBlockBlock } from './RichTextBlock/config'
@@ -33,6 +35,8 @@ export default {
       Columns,
     PromoStripBlock,
     SearchBlockBlock,
+    AccordionBlock,
+    AccordionGroupBlock,
     ] satisfies ComponentBlock[])
   ),
 }
