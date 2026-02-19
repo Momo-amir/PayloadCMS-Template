@@ -14,7 +14,7 @@ export const AccordionBlock: ComponentBlock = {
   slug: 'Accordion',
   component: Accordion,
   interfaceName: 'AccordionBlock',
-  showOnPage: true,
+  showOnPage: false,
   fields: [
     {
       name: 'title',
