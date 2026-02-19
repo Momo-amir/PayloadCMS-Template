@@ -13,7 +13,7 @@ const root = Path.resolve(dirname, "../../");
 const winPrefix = (os.platform() == "win32" ? "file://" : "");
 const configPath = winPrefix + Path.resolve(root, ".cli/config.json");
 const config: Config = await import(configPath);
-const exportsPath = winPrefix + Path.resolve(root, config.blockDirectory, "exports.ts");
+const exportsPath = Path.resolve(root, config.blockDirectory, "exports.ts");
 
 Command.register(
   new Command("create:block")
@@ -24,8 +24,8 @@ Command.register(
         console.error("No block name provided");
         process.exit(1);
       }
-      const blockDir = winPrefix + Path.resolve(root, config.blockDirectory, blockName);
-      const templateDir = winPrefix + Path.resolve(dirname, "../templates/block");
+      const blockDir = Path.resolve(root, config.blockDirectory, blockName);
+      const templateDir = Path.resolve(dirname, "../templates/block");
       if (fs.existsSync(blockDir)) {
         console.error(`Block directory already exists: ${blockDir}`);
         process.exit(1);
