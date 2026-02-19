@@ -23,7 +23,7 @@
 **Where**: 
 - `src/providers/Privacy/index.tsx` - `updateCookieConsent()` function
 
-**Expected Behavior**: When privacy banner is clicked (Accept/Decline), consent updates propagate in order: first-party cookie → React state → analytics client → database. This ensures analytics tracking starts/stops immediately while maintaining audit trail. Declining consent flushes event queue and blocks future tracking.
+**Expected Behavior**: When privacy banner is clicked (Accept/Decline), consent updates persist in order: database → first-party cookie → React state → analytics client. This ensures legal source-of-truth is written before local tracking state changes. On failure, banner remains open so user can retry.
 
 ---
 
@@ -215,7 +215,7 @@
 **Where**: 
 - `src/cms/jobs/analytics-workflow.ts`
 
-**Expected Behavior**: Each event queued as Payload job. Workflow retries up to 3 times. Tasks execute conditionally based on config flags (store_aggregates, ga4_enabled, matomo_enabled). Returns 201 immediately (non-blocking). Failed jobs kept for debugging.
+**Expected Behavior**: Each event queued as Payload job. Workflow retries up to 3 times. Before running side effects, workflow re-validates that `consent_token` exists and still has `analytics=true`. Tasks execute conditionally based on config flags (store_aggregates, ga4_enabled, matomo_enabled). API returns 201 immediately (non-blocking). Failed jobs are kept for debugging.
 
 -- needs way to monitor failed jobs
 
@@ -228,7 +228,7 @@
 **Where**: 
 - `src/cms/jobs/analytics-tasks.ts` - `aggregateEventTask`
 
-**Expected Behavior**: Groups by event_name + page_path + date + country + metadata hash. Increments existing count or creates new record (count=1). MD5 hash of sanitized metadata enables exact duplicate detection. No raw events stored (GDPR-friendly).
+**Expected Behavior**: Groups by event_name + page_path + date + country + metadata hash. Current implementation finds existing aggregate, increments count if found, otherwise creates a new record (count=1). MD5 hash of sanitized metadata enables duplicate grouping. No raw events stored (GDPR-friendly).
 
 ---
 
@@ -276,7 +276,7 @@
 **Where**: 
 - `src/cms/collections/ConsentTokens.ts`
 
-**Expected Behavior**: Stores UUID token, analytics boolean, policy version, timestamps. Admin-only access. Hidden from nav (programmatic use only). Provides legally-required audit trail for GDPR compliance. Tokens immutable (updates only change consent flag).
+**Expected Behavior**: Stores UUID token, analytics boolean, policy version, `expiresAt`, and timestamps. Admin-only access. Hidden from nav (programmatic use only). Provides GDPR consent audit trail while supporting scheduled expiry cleanup.
 
 ---
 
@@ -298,7 +298,7 @@
 **Where**: 
 - Payload core collections (no custom config)
 
-**Expected Behavior**: Tracks job state (pending/completed/failed), retry attempts, input/output, errors. Failed jobs kept indefinitely for debugging. Completed jobs auto-deleted after 30 days. Admin can filter by workflow, error state, completion status.
+**Expected Behavior**: Tracks job state (pending/completed/failed), retry attempts, input/output, errors. Failed jobs are kept for debugging. Completed jobs are deleted by cleanup workflow (30-day policy) when cron endpoint/workflow trigger runs. Admin can filter by workflow, error state, completion status.
 
 ---
 
@@ -385,7 +385,7 @@
 
 ### 9.3 Data Retention
 
-**Expected Behavior**: Consent tokens kept indefinitely (audit trail). Aggregates kept indefinitely (no PII, low risk). Completed jobs deleted after 30 days. Failed jobs kept for debugging (manual deletion available).
+**Expected Behavior**: Consent tokens use 12-month rolling expiry and are removed by weekly cleanup. Aggregates are retained long-term (no PII, low risk). Completed jobs follow 30-day cleanup policy. Failed jobs are retained for debugging unless manually deleted.
 
 ---
 
@@ -402,4 +402,3 @@
 **Expected Behavior**: Privacy banner displays on first visit. Consent persists across sessions. Events tracked after consent. Jobs processing successfully every 5 minutes. No failed jobs accumulating. Aggregates populating in database. External providers receiving events (if configured).
 
 ---
-
