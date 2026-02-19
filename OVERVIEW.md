@@ -353,6 +353,12 @@ const impressionRef = useTrackImpression('Hero Banner', 'hero')
 - List third-party services if enabled (GA4, Matomo)
 - Explain consent withdrawal process
 
+**Replace Custom privacy banner with thirdparty CMP (Example for Cookiebot)**
+
+- Replace the code in `PrivacyBanner/index.tsx` with Cookiebot <Script/> and values
+- Add so on Cookiebot consent change, call existing /api/consent with mapped analytics boolean.
+- Remove cookie-consent translation strings and footer cookie link.
+
 For detailed implementation guide, see [`docs/ANALYTICS_IMPLEMENTATION_GUIDE.md`](docs/ANALYTICS_IMPLEMENTATION_GUIDE.md) and [`docs/ANALYTICS_OVERVIEW.md`](docs/ANALYTICS_OVERVIEW.md).
 
 ## Search & Discovery

@@ -474,7 +474,7 @@ export const config = {
 ### Current Status
 
 **Localized slugs are not currently implemented** in this project. The slug field is the same across all locales.
-This simplifies routing and avoids complex redirect logic. This is default behavior since the added complexity is currently worth it by default.
+This simplifies routing and avoids complex redirect logic. This is default behavior since the added complexity is currently not worth it by default.
 
 ### Enabling Localized Slugs
 

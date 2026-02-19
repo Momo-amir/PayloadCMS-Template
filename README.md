@@ -47,6 +47,7 @@ Schema changes in dev: Drizzle auto-pushes schema to the DB. If a destructive ch
 
 ```bash
 yarn attach
+yarn atttach:ps # Windows users - PowerShell doesn't support the -t flag, so we have a separate command for it.
 ```
 
 - Detach: press Ctrl+P, then Ctrl+Q
@@ -90,8 +91,8 @@ yarn docker-prod:down
 
 Notes:
 
-- Public port 8890 maps to container port 3000 in prod (`docker-compose.prod.yml`). - This is to be changed later
-- Media is persisted in the `payload_media` volume.
+- Port 8890 are used for both dev and prod in Docker. Change in `docker-compose.yml` if needed.
+- Media is persisted in the `payload_media` volume. Deleting the database volume does not delete media files, but they will still be inaccessible from Payload if the DB is reset. Back up media files, clear it manually and re-upload in that scenario to avoid duplicated inaccessible files.
 
 ---
 

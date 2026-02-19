@@ -95,7 +95,7 @@
     "typescript": "5.9.2"
   },
   "engines": {
-    "node": "^18.20.2 || >=20.9.0"
+    "node": ">=20.9.0"
   },
   "resolutions": {
     "@types/react": "19.2.13",
