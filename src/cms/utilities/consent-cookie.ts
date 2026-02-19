@@ -59,13 +59,7 @@ export function setConsentCookie(analytics: boolean): void {
   // SameSite=Lax for CSRF protection, Secure in production
   const isProduction = process.env.NODE_ENV === 'production'
   const isSecure = isProduction || window.location.protocol === 'https:'
-
-  const domain = window.location.hostname
-
-  // Partitioned for Chrome CHIPS (future-proofing for third-party cookie phase-out)
-  const partitioned = '; Partitioned'
-
-  document.cookie = `${CONSENT_COOKIE_NAME}=${value}; path=/; max-age=${COOKIE_MAX_AGE}; domain=${domain}; SameSite=Lax${isSecure ? '; Secure' : ''}${isSecure ? partitioned : ''}`
+  document.cookie = `${CONSENT_COOKIE_NAME}=${value}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax${isSecure ? '; Secure' : ''}`
 }
 
 /**
@@ -73,8 +67,9 @@ export function setConsentCookie(analytics: boolean): void {
  */
 export function clearConsentCookie(): void {
   if (typeof document === 'undefined') return
-  const domain = window.location.hostname
-  document.cookie = `${CONSENT_COOKIE_NAME}=; path=/; max-age=0; domain=${domain}`
+  const isProduction = process.env.NODE_ENV === 'production'
+  const isSecure = isProduction || window.location.protocol === 'https:'
+  document.cookie = `${CONSENT_COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax${isSecure ? '; Secure' : ''}`
 }
 
 /**

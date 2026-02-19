@@ -48,6 +48,7 @@ const ANALYTICS_ALLOWED_KEYS = new Set([
 
   // Scroll depth / engagement
   'depth_percentage',
+  'page',
   'scroll_depth_percentage',
   'engagement_time_msec',
 
@@ -60,6 +61,14 @@ const ANALYTICS_ALLOWED_KEYS = new Set([
   'error_type',
   'error_message',
   'page_path',
+
+  // Link clicks
+  'link_text',
+  'link_url',
+  'link_type',
+
+  // Time spent
+  'duration_seconds',
 ])
 
 const ANALYTICS_REQUIRED_KEYS = [
@@ -92,6 +101,11 @@ const ANALYTICS_REQUIRED_KEYS = [
   'success',
   'video_title',
   'viewport_category',
+  'page',
+  'link_text',
+  'link_url',
+  'link_type',
+  'duration_seconds',
 
   // Component impressions
   'component_name',

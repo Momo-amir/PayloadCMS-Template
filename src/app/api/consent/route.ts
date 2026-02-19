@@ -99,16 +99,12 @@ export async function POST(request: NextRequest) {
 
     // Set HttpOnly cookie with domain restriction
     const response = NextResponse.json({ success: true })
-    const host = request.headers.get('host')
-    const domain = host?.split(':')[0] // Remove port
-
     response.cookies.set('consent_token', consentToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 60 * 60 * 24 * 365, // 12 months
       path: '/',
-      domain: domain || undefined, // Only set if we have a valid domain
     })
 
     return response

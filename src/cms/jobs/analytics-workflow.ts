@@ -27,8 +27,26 @@ export const processAnalyticsEventWorkflow = {
   // Workflow-level retries: up to 3 attempts total
   retries: 3,
 
-  handler: async ({ job, tasks }) => {
+  handler: async ({ job, req, tasks }) => {
     const input = job.input
+
+    // Re-validate consent at execution time in case it changed after queueing
+    const consentRecord = await req.payload.find({
+      collection: 'consent-tokens',
+      where: {
+        and: [
+          { token: { equals: input.consent_token } },
+          { analytics: { equals: true } },
+        ],
+      },
+      limit: 1,
+      overrideAccess: true,
+    })
+
+    // Consent missing/revoked/expired: skip all side effects
+    if (!consentRecord.docs.length) {
+      return
+    }
 
     // Step 1: Aggregate to local DB (if enabled)
     if (input.store_aggregates) {

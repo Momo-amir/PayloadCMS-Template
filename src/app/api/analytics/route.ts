@@ -130,6 +130,7 @@ const MAX_BODY_BYTES = 64 * 1024 // 64 KB
 const MAX_EVENTS = 25
 const MAX_EVENT_NAME_LENGTH = 64
 const MAX_EVENT_DATA_BYTES = 8 * 1024 // 8 KB per event_data
+const QUEUE_CONCURRENCY = 5
 
 function byteLength(value: string): number {
   return new TextEncoder().encode(value).length
@@ -310,16 +311,37 @@ export async function POST(request: NextRequest) {
     const today = new Date().toISOString().split('T')[0]! // YYYY-MM-DD (always defined)
     const host = request.headers.get('host')
 
-    // Queue each event using Payload job system
-    // Jobs will be processed by autoRun cron (every 5 minutes)
+    const jobInputs: Array<{
+      event_name: string
+      page_path: string
+      event_data: Record<string, unknown> | unknown[]
+      country: string
+      date: string
+      consent_token: string
+      store_aggregates: boolean
+      ga4_enabled: boolean
+      matomo_enabled: boolean
+    }> = []
+
     for (const event of events) {
       if (!event || typeof event !== 'object') continue
-      if (typeof event.event_name !== 'string') continue
-      if (event.event_name.length === 0 || event.event_name.length > MAX_EVENT_NAME_LENGTH) continue
+      const eventRecord = event as {
+        event_name?: unknown
+        page_path?: unknown
+        event_data?: unknown
+      }
 
-      const pagePath = typeof event.page_path === 'string' ? event.page_path : ''
+      if (typeof eventRecord.event_name !== 'string') continue
+      if (
+        eventRecord.event_name.length === 0 ||
+        eventRecord.event_name.length > MAX_EVENT_NAME_LENGTH
+      ) {
+        continue
+      }
+
+      const pagePath = typeof eventRecord.page_path === 'string' ? eventRecord.page_path : ''
       const normalizedPath = normalizeURL(pagePath)
-      const sanitizedData = sanitizeEventData(event.event_data || {}, host)
+      const sanitizedData = sanitizeEventData(eventRecord.event_data || {}, host)
       let finalEventData = sanitizedData
       try {
         const sanitizedDataBytes = byteLength(JSON.stringify(sanitizedData))
@@ -330,25 +352,37 @@ export async function POST(request: NextRequest) {
         finalEventData = {}
       }
 
-      // Queue workflow job (includes aggregation + GA4 + Matomo)
-      await payload.jobs.queue({
-        workflow: 'processAnalyticsEvent',
-        input: {
-          event_name: event.event_name,
-          page_path: normalizedPath,
-          event_data: finalEventData,
-          country: country || 'unknown',
-          date: today,
-          consent_token: consentToken,
-          store_aggregates: analyticsConfig?.store_aggregates || false,
-          ga4_enabled: analyticsConfig?.ga4_enabled || false,
-          matomo_enabled: analyticsConfig?.matomo_enabled || false,
-        },
+      jobInputs.push({
+        event_name: eventRecord.event_name,
+        page_path: normalizedPath,
+        event_data: finalEventData,
+        country: country || 'unknown',
+        date: today,
+        consent_token: consentToken,
+        store_aggregates: analyticsConfig?.store_aggregates || false,
+        ga4_enabled: analyticsConfig?.ga4_enabled || false,
+        matomo_enabled: analyticsConfig?.matomo_enabled || false,
       })
     }
 
+    // Queue each event using bounded parallel batches.
+    // Jobs will be processed by autoRun cron (every 5 minutes)
+    let queuedCount = 0
+    for (let index = 0; index < jobInputs.length; index += QUEUE_CONCURRENCY) {
+      const batch = jobInputs.slice(index, index + QUEUE_CONCURRENCY)
+      await Promise.all(
+        batch.map((input) =>
+          payload.jobs.queue({
+            workflow: 'processAnalyticsEvent',
+            input,
+          }),
+        ),
+      )
+      queuedCount += batch.length
+    }
+
     // Return immediately (jobs process async via cron)
-    return NextResponse.json({ success: true, queued: events.length }, { status: 201 })
+    return NextResponse.json({ success: true, queued: queuedCount }, { status: 201 })
   } catch (error) {
     console.error('Analytics API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

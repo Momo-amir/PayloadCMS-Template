@@ -30,26 +30,32 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateCookieConsent = useCallback(async (accepted: boolean) => {
     try {
-      // 1. Set first-party cookie (readable by track() function)
-      setConsentCookie(accepted)
-
-      // 2. Update in-memory state (React context)
-      setCookieConsent(accepted)
-
-      // 3. Update analytics client consent status
-      updateAnalyticsConsent(accepted)
-
-      // 4. Persist to server database (for audit trail)
-      await fetch('/api/consent', {
+      // 1. Persist to server database first (source of truth / audit trail)
+      const response = await fetch('/api/consent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ analytics: accepted }),
       })
 
-      // 5. Hide banner
+      if (!response.ok) {
+        throw new Error(`Consent update failed with status ${response.status}`)
+      }
+
+      // 2. Set first-party cookie (readable by track() function)
+      setConsentCookie(accepted)
+
+      // 3. Update in-memory state (React context)
+      setCookieConsent(accepted)
+
+      // 4. Update analytics client consent status
+      updateAnalyticsConsent(accepted)
+
+      // 5. Hide banner after persistence + local sync
       setShowConsent(false)
     } catch (error) {
       console.error('Failed to update consent:', error)
+      // Keep banner open so user can retry
+      setShowConsent(true)
     }
   }, [])
 
