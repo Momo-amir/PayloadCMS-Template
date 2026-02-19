@@ -1,5 +1,6 @@
 import Path from "path";
 import fs from "fs";
+import os from "os";
 import Command from "./Command";
 
 interface Config {
@@ -11,7 +12,7 @@ const dirname = import.meta.dirname;
 const root = Path.resolve(dirname, "../../");
 const configPath = Path.resolve(root, ".cli/config.json");
 const config: Config = await import(configPath);
-const exportsPath = Path.resolve(root, config.blockDirectory, "exports.ts");
+const exportsPath = (os.platform() == "win32" ? "file://" : "") + Path.resolve(root, config.blockDirectory, "exports.ts");
 
 Command.register(
   new Command("create:block")
