@@ -11,6 +11,14 @@ export const searchFields: Field[] = [
     },
   },
   {
+    name: 'searchableText',
+    type: 'textarea',
+    index: true,
+    admin: {
+      readOnly: true,
+    },
+  },
+  {
     name: 'meta',
     label: 'Meta',
     type: 'group',

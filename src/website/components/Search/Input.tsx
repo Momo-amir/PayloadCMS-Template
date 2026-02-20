@@ -8,7 +8,7 @@ import { trackSearch } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 import { useTranslations } from 'next-intl'
 
-export const Search: React.FC<{
+export const SearchInput: React.FC<{
   resultsCount?: number
   searchPath?: string
   liveSearch?: boolean
@@ -28,7 +28,6 @@ export const Search: React.FC<{
       scroll: false,
     })
 
-    // Track search query when user stops typing
     if (cookieConsent && debouncedValue) {
       trackSearch(debouncedValue, resultsCount)
     }

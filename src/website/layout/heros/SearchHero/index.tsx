@@ -5,23 +5,14 @@ import type { TypedLocale } from 'payload'
 import configPromise from '@/payload.config'
 import { getPayload } from 'payload'
 import RichText from '@/website/components/RichText'
-import { Search } from '@/website/layout/search/Component'
-import { resolveSearchPath } from '@/website/components/Search/SearchShell'
-import {
-  getSearchPostsResults,
-  type SearchPostsResultsArgs,
-} from '@/website/components/Search/SearchPosts'
-import {
-  getSearchPeopleResults,
-  type SearchPeopleResultsArgs,
-} from '@/website/components/Search/SearchPeople'
+import { SearchInput } from '@/website/components/Search/Input'
+import { querySearchResults, type SearchCollection } from '@/website/components/Search/query'
+import { SearchResultsPaginated } from '@/website/components/Search/ResultsPaginated.client'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 
 type SearchHeroProps = Page['hero'] & {
-  searchPathMode?: 'current' | 'select' | null
-  searchPage?: number | string | { id?: number | string; slug?: string | null } | null
-  resultsPerPage?: number | null
   resultCollection?: 'posts' | 'people' | null
+  resultsPerPage?: number | null
   postCategories?: Array<number | string | { id?: number | string | null }> | null
   emptyText?: string | null
   locale?: TypedLocale
@@ -34,10 +25,8 @@ type SearchHeroProps = Page['hero'] & {
 export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
   const {
     richText,
-    searchPathMode,
-    searchPage,
-    resultsPerPage,
     resultCollection,
+    resultsPerPage,
     postCategories,
     emptyText,
     locale: localeFromProps,
@@ -47,21 +36,16 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
 
   const locale = localeFromProps ?? 'da'
   const payload = await getPayload({ config: configPromise })
-
-  const searchPath = await resolveSearchPath({
-    locale,
-    pageSlug,
-    searchPathMode,
-    searchPage,
-    payload,
-  })
-  const liveSearch = (searchPathMode ?? 'current') === 'current'
+  const prefix = locale !== 'da' ? `/${locale}` : ''
+  const searchPath = `${prefix}/${pageSlug ?? ''}`
+  const liveSearch = true
 
   const rawQuery = searchParams?.q
   const query = Array.isArray(rawQuery) ? rawQuery[0] : rawQuery
+  const normalizedQuery = query?.trim()
 
-  const limit = resultsPerPage || 12
-  const collectionType = resultCollection ?? 'posts'
+  const limit = Math.max(1, resultsPerPage || 12)
+  const collection: SearchCollection = resultCollection ?? 'posts'
   const categoryIDs =
     postCategories
       ?.map((category) => {
@@ -70,32 +54,17 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
         return null
       })
       .filter((id): id is string => id !== null) || []
+  const fallbackEmptyText = emptyText || (locale === 'da' ? 'Ingen resultater fundet.' : 'No results found')
 
-  const fallbackEmptyText = locale === 'da' ? 'Ingen resultater fundet.' : 'No results found'
-
-  let resultsCount = 0
-  let resultsNode: React.ReactNode = null
-
-  if (collectionType === 'people') {
-    const { resultsCount: count, resultsNode: node } = await getSearchPeopleResults({
-      payload,
-      locale,
-      query,
-      limit,
-    } satisfies SearchPeopleResultsArgs)
-    resultsCount = count
-    resultsNode = node
-  } else {
-    const { resultsCount: count, resultsNode: node } = await getSearchPostsResults({
-      payload,
-      locale,
-      query,
-      limit,
-      categoryIDs,
-    } satisfies SearchPostsResultsArgs)
-    resultsCount = count
-    resultsNode = node
-  }
+  const { totalDocs, postDocs, peopleDocs } = await querySearchResults({
+    payload,
+    locale,
+    query: normalizedQuery,
+    limit,
+    collection,
+    categoryIDs,
+  })
+  const resultsCount = totalDocs
 
   return (
     <TrackImpression componentName="Search Hero" componentType="searh_hero">
@@ -105,7 +74,11 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
             {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
 
             <div className="my-6">
-              <Search resultsCount={resultsCount} searchPath={searchPath} liveSearch={liveSearch} />
+              <SearchInput
+                resultsCount={resultsCount}
+                searchPath={searchPath}
+                liveSearch={liveSearch}
+              />
             </div>
           </div>
         </div>
@@ -113,9 +86,15 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
 
       <div className="pb-24">
         {resultsCount < 1 ? (
-          <div className="container">{emptyText || fallbackEmptyText}</div>
+          <div className="container">{fallbackEmptyText}</div>
         ) : (
-          resultsNode
+          <SearchResultsPaginated
+            collection={collection}
+            posts={postDocs}
+            people={peopleDocs}
+            perPage={limit}
+            queryKey={`${normalizedQuery || ''}:${collection}:${categoryIDs.join(',')}`}
+          />
         )}
       </div>
     </TrackImpression>
