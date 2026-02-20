@@ -16,6 +16,7 @@ import { phoneField, privacyPolicyField } from '@/cms/fields/formBuilder'
 import { formActionOptions } from '@/cms/forms/actions'
 import { copyFormActionToSubmission } from '@/cms/forms/copyFormActionToSubmission'
 import { runFormAction } from '@/cms/forms/runFormAction'
+import { People } from '../collections/People'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Kollab Website Template` : 'Kollab Website Template'
@@ -88,36 +89,37 @@ export const plugins: Plugin[] = [
         },
       },
       fields: ({ defaultFields }) => {
-        return defaultFields.map((field) => {
-          if ('name' in field && field.name === 'confirmationMessage') {
-            return {
-              ...field,
-              editor: lexicalEditor({
-                features: ({ rootFeatures }) => {
-                  return [
-                    ...rootFeatures,
-                    FixedToolbarFeature(),
-                    HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                  ]
-                },
-              }),
+        return defaultFields
+          .map((field) => {
+            if ('name' in field && field.name === 'confirmationMessage') {
+              return {
+                ...field,
+                editor: lexicalEditor({
+                  features: ({ rootFeatures }) => {
+                    return [
+                      ...rootFeatures,
+                      FixedToolbarFeature(),
+                      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+                    ]
+                  },
+                }),
+              }
             }
-          }
-          return field
-        }).concat([
-          {
-            name: 'action',
-            type: 'select',
-            label: 'Submission Action',
-            options: formActionOptions,
-            defaultValue: 'none',
-            admin: {
-              position: 'sidebar',
-              description:
-                'Used to trigger server-side callbacks when a submission is created.',
+            return field
+          })
+          .concat([
+            {
+              name: 'action',
+              type: 'select',
+              label: 'Submission Action',
+              options: formActionOptions,
+              defaultValue: 'none',
+              admin: {
+                position: 'sidebar',
+                description: 'Used to trigger server-side callbacks when a submission is created.',
+              },
             },
-          },
-        ])
+          ])
       },
     },
     formSubmissionOverrides: {
@@ -149,7 +151,7 @@ export const plugins: Plugin[] = [
     },
   }),
   searchPlugin({
-    collections: ['posts'],
+    collections: ['posts', 'people'],
     beforeSync: beforeSyncWithSearch,
     localize: true,
     searchOverrides: {

@@ -1,65 +1,72 @@
 'use client'
 
-import React, { useState } from 'react'
-import RichText from '@/website/components/RichText'
+import React from 'react'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
+import { Accordion } from '@/website/components/Accordion'
+import type { AccordionBlock as AccordionBlockProps } from '@/payload-types'
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+import RichText from '@/website/components/RichText'
 import { cn } from '@/cms/utilities/ui'
-import { ChevronDown, Plus } from 'lucide-react'
 
-export interface AccordionProps {
-  title: string;
-  content: any;
-  // Optional props for when Accordion is used within an AccordionGroup
-  grouped?: boolean;
-  lastInGroup?: boolean;
-  opened?: boolean;
-  onOpen?: () => void;
-  onClose?: () => void;
+type Props = AccordionBlockProps & {
+  introContent?: SerializedEditorState
+  sideBySideWithIntro?: boolean | null
 }
 
-export const Accordion: React.FC<AccordionProps> = ({ title, content, grouped, lastInGroup, opened = null, onOpen, onClose }) => {
-  const [isOpen, setIsOpen] = useState(opened || false)
+export const AccordionBlockComponent: React.FC<Props> = ({
+  accordions,
+  singleOpen = false,
+  introContent,
+  sideBySideWithIntro = false,
+}) => {
+  const [openedIndex, setOpenedIndex] = React.useState<number | null>(null)
+  const items = accordions ?? []
+  const intro = introContent ?? null
+  const shouldShowSideBySide = Boolean(sideBySideWithIntro && intro)
 
-  const actualOpen = opened == null ? isOpen : opened;
+  const accordionList = (
+    <>
+      {items.map((accordion, index) => (
+        <Accordion
+          {...(singleOpen
+            ? {
+                opened: openedIndex === index,
+                onOpen: () => setOpenedIndex(index),
+                onClose: () => setOpenedIndex(null),
+              }
+            : {})}
+          grouped
+          key={accordion.id ?? index}
+          title={accordion.title}
+          content={accordion.content}
+          lastInGroup={index === items.length - 1}
+        />
+      ))}
+    </>
+  )
+
   return (
-    <div className={cn(
-      grouped ? '' : 'my-4'
-    )}>
-      <TrackImpression
-        componentName={title || "Accordion"}
-        componentType="Accordion"
-      >
-        <div className={cn(
-          "border-t-1",
-          grouped && !lastInGroup ? null : "border-b-1",
-          "rounded",
-          "container",
-        )}>
-          <button
-            type="button"
-            onClick={() => opened == null ? setIsOpen((prev) => !prev) : actualOpen ? onClose?.() : onOpen?.()}
-            className="flex w-full items-center justify-between py-4 text-left font-semibold text-body transition-colors hover:cursor-pointer"
-            aria-expanded={actualOpen}
-          >
-            <span>{title}</span>
-            <Plus
-              className={cn(
-                'h-5 w-5 shrink-0 transition-transform duration-200',
-                actualOpen && 'rotate-225', // Spinning more than just 45 for a little spinout effect
-              )}
-            />
-          </button>
-          <div
-            className={cn(
-              'overflow-hidden transition-all duration-200',
-              actualOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0',
-            )}
-          >
-            <div className="pb-4">
-              <RichText data={content} enableGutter={false} />
+    <div className="my-16">
+      <TrackImpression componentName="Accordion" componentType="Accordion">
+        {shouldShowSideBySide ? (
+          <div className="container">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+              <div className="lg:col-span-5">
+                {intro && <RichText className="ms-0" data={intro} enableGutter={false} />}
+              </div>
+              <div className={cn('lg:col-span-7')}>{accordionList}</div>
             </div>
           </div>
-        </div>
+        ) : (
+          <>
+            {intro && (
+              <div className="container mb-16">
+                <RichText className="ms-0" data={intro} enableGutter={false} />
+              </div>
+            )}
+            {accordionList}
+          </>
+        )}
       </TrackImpression>
     </div>
   )
