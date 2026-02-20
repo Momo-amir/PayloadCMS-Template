@@ -36,20 +36,71 @@ const series = [
 ]
 
 const formatNumber = (value: number) => value.toLocaleString()
+const COPENHAGEN_TZ = 'Europe/Copenhagen'
+const DA_LOCALE = 'da-DK'
+
+const toDateKey = (value: string): string => {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value
+  const [datePart] = value.split('T')
+  return datePart || value
+}
+
+const getDateKeyInTimezone = (date: Date, timeZone: string): string => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date)
+
+  const year = parts.find((part) => part.type === 'year')?.value
+  const month = parts.find((part) => part.type === 'month')?.value
+  const day = parts.find((part) => part.type === 'day')?.value
+  return `${year}-${month}-${day}`
+}
+
+const shiftDateKey = (dateKey: string, days: number): string => {
+  const [year, month, day] = dateKey.split('-').map(Number)
+  const date = new Date(Date.UTC(year || 0, (month || 1) - 1, day || 1))
+  date.setUTCDate(date.getUTCDate() + days)
+  return date.toISOString().slice(0, 10)
+}
+
+const dateKeyToDate = (dateKey: string): Date => {
+  const [year, month, day] = dateKey.split('-').map(Number)
+  return new Date(Date.UTC(year || 0, (month || 1) - 1, day || 1, 12))
+}
 
 const formatAxisDate = (dateStr: string, period: PeriodKey) => {
-  const date = new Date(dateStr)
+  const date = dateKeyToDate(toDateKey(dateStr))
   if (period === '3d') {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    return date.toLocaleDateString(DA_LOCALE, {
+      month: 'short',
+      day: 'numeric',
+      timeZone: COPENHAGEN_TZ,
+    })
   }
   if (period === '7d') {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    return date.toLocaleDateString(DA_LOCALE, {
+      month: 'short',
+      day: 'numeric',
+      timeZone: COPENHAGEN_TZ,
+    })
   }
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return date.toLocaleDateString(DA_LOCALE, {
+    month: 'short',
+    day: 'numeric',
+    timeZone: COPENHAGEN_TZ,
+  })
 }
 
 const formatTooltipDate = (dateStr: string) =>
-  new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  dateKeyToDate(toDateKey(dateStr)).toLocaleDateString(DA_LOCALE, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: COPENHAGEN_TZ,
+  })
 
 const getSeriesByLabel = (label: string) => series.find((s) => s.label === label)
 
@@ -108,12 +159,12 @@ export default function UserActivityChart({ data, initialPeriod = '30d' }: UserA
 
   const filteredData = useMemo(() => {
     if (!data?.length) return []
-    const now = new Date()
-    const start = new Date(now)
-    if (period === '3d') start.setDate(now.getDate() - 2)
-    if (period === '7d') start.setDate(now.getDate() - 6)
-    if (period === '30d') start.setDate(now.getDate() - 29)
-    return data.filter((point) => new Date(point.date) >= start)
+    const todayKey = getDateKeyInTimezone(new Date(), COPENHAGEN_TZ)
+    let startKey = shiftDateKey(todayKey, -29)
+    if (period === '3d') startKey = shiftDateKey(todayKey, -2)
+    if (period === '7d') startKey = shiftDateKey(todayKey, -6)
+
+    return data.filter((point) => toDateKey(point.date) >= startKey)
   }, [data, period])
 
   if (filteredData.length === 0) {

@@ -19,73 +19,106 @@ const interactionEvents = new Set([
   'post_card_click',
   'video_interaction',
 ])
+const COPENHAGEN_TZ = 'Europe/Copenhagen'
+
+const normalizeDateKey = (value: string): string => {
+  if (!value) return value
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value
+  const [datePart] = value.split('T')
+  return datePart || value
+}
+
+const getDateKeyInTimezone = (date: Date, timeZone: string): string => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date)
+
+  const year = parts.find((part) => part.type === 'year')?.value
+  const month = parts.find((part) => part.type === 'month')?.value
+  const day = parts.find((part) => part.type === 'day')?.value
+  return `${year}-${month}-${day}`
+}
+
+const shiftDateKey = (dateKey: string, days: number): string => {
+  const [year, month, day] = dateKey.split('-').map(Number)
+  const date = new Date(Date.UTC(year || 0, (month || 1) - 1, day || 1))
+  date.setUTCDate(date.getUTCDate() + days)
+  return date.toISOString().slice(0, 10)
+}
 
 export default async function EventTrackerGraph({ req }: WidgetServerProps) {
   const { payload } = req
 
   try {
-    // Get date 30 days ago
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-
-    // Get analytics aggregates from last 30 days only
-    const { docs: aggregates } = await payload.find({
-      collection: 'analytics-aggregates',
-      where: {
-        date: { greater_than_equal: thirtyDaysAgo.toISOString() },
-      },
-      limit: 1000,
-      sort: 'date',
-    })
+    const todayKey = getDateKeyInTimezone(new Date(), COPENHAGEN_TZ)
+    const thirtyDaysAgoKey = shiftDateKey(todayKey, -29)
+    const sevenDaysAgoKey = shiftDateKey(todayKey, -6)
 
     // Group by date
     const dateMap = new Map<string, DataPoint>()
     let totalEvents = 0
     let recentEvents = 0
-    const sevenDaysAgo = new Date()
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
-    aggregates.forEach((doc) => {
-      // Skip if date or event_name is missing
-      if (!doc.date || !doc.event_name) return
+    // Get analytics aggregates from last 30 days with pagination.
+    // Production can exceed 1000 aggregate docs, which would otherwise hide newer dates.
+    let page = 1
+    const limit = 1000
+    while (true) {
+      const { docs, hasNextPage } = await payload.find({
+        collection: 'analytics-aggregates',
+        where: {
+          date: { greater_than_equal: thirtyDaysAgoKey },
+        },
+        limit,
+        page,
+        sort: '-date',
+      })
 
-      const docDate = new Date(doc.date)
-      if (docDate < thirtyDaysAgo) return
+      docs.forEach((doc) => {
+        // Skip if date or event_name is missing
+        if (!doc.date || !doc.event_name) return
 
-      const dateKey = docDate.toISOString().split('T')[0]!
-      const count = doc.count || 0
-      const eventName = doc.event_name
+        const dateKey = normalizeDateKey(String(doc.date))
+        if (dateKey < thirtyDaysAgoKey) return
 
-      totalEvents += count
-      if (docDate >= sevenDaysAgo) recentEvents += count
+        const count = doc.count || 0
+        const eventName = doc.event_name
 
-      let dataPoint = dateMap.get(dateKey)
-      if (!dataPoint) {
-        dataPoint = {
-          date: dateKey,
-          total: 0,
-          pageViews: 0,
-          interactions: 0,
-          impressions: 0,
+        totalEvents += count
+        if (dateKey >= sevenDaysAgoKey) recentEvents += count
+
+        let dataPoint = dateMap.get(dateKey)
+        if (!dataPoint) {
+          dataPoint = {
+            date: dateKey,
+            total: 0,
+            pageViews: 0,
+            interactions: 0,
+            impressions: 0,
+          }
+          dateMap.set(dateKey, dataPoint)
         }
-        dateMap.set(dateKey, dataPoint)
-      }
 
-      dataPoint.total += count
+        dataPoint.total += count
 
-      if (eventName === 'page_view') {
-        dataPoint.pageViews += count
-      } else if (eventName === 'component_impression') {
-        dataPoint.impressions += count
-      } else if (interactionEvents.has(eventName)) {
-        dataPoint.interactions += count
-      }
-    })
+        if (eventName === 'page_view') {
+          dataPoint.pageViews += count
+        } else if (eventName === 'component_impression') {
+          dataPoint.impressions += count
+        } else if (interactionEvents.has(eventName)) {
+          dataPoint.interactions += count
+        }
+      })
+
+      if (!hasNextPage) break
+      page += 1
+    }
 
     // Convert to sorted array
-    const data = Array.from(dateMap.values()).sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-    )
+    const data = Array.from(dateMap.values()).sort((a, b) => a.date.localeCompare(b.date))
 
     // Calculate growth rate
     const oldHalfTotal = data
