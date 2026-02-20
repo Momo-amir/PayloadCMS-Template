@@ -56,6 +56,29 @@ const buildPluginRedirectsTranslations = (messages: Record<string, string>) => (
   },
 })
 
+const parseCSV = (value: string | undefined): string[] => {
+  if (!value) return []
+
+  return value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+const parsePositiveInt = (value: string | undefined, fallback: number): number => {
+  const parsed = Number.parseInt(value ?? '', 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+}
+
+const serverSideURL = getServerSideURL()
+const payloadCorsOrigins = Array.from(
+  new Set([serverSideURL, ...parseCSV(process.env.PAYLOAD_INTERNAL_SERVER_URL)].filter(Boolean)),
+)
+const payloadCsrfOrigins = Array.from(
+  new Set([serverSideURL, ...parseCSV(process.env.PAYLOAD_INTERNAL_SERVER_URL)].filter(Boolean)),
+)
+const graphQLMaxComplexity = parsePositiveInt(process.env.PAYLOAD_INTERNAL_SERVER_URL, 500)
+
 export default buildConfig({
   blocks: exports.blocks,
   admin: {
@@ -132,7 +155,14 @@ export default buildConfig({
   }),
 
   collections: [Pages, Posts, Media, Categories, Users, People, ConsentTokens, AnalyticsAggregates],
-  cors: [getServerSideURL()].filter(Boolean),
+  cors: payloadCorsOrigins,
+  csrf: payloadCsrfOrigins,
+  maxDepth: 5,
+  graphQL: {
+    disableIntrospectionInProduction: true,
+    disablePlaygroundInProduction: true,
+    maxComplexity: graphQLMaxComplexity,
+  },
   globals: [Header, Footer, BrandingGlobal, AnalyticsConfig],
   plugins: [
     ...plugins,

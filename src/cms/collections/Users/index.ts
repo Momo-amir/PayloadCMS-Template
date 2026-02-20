@@ -12,6 +12,12 @@ export const Users: CollectionConfig = {
   },
   auth: {
     depth: 0,
+    maxLoginAttempts: 5,
+    lockTime: 10 * 60 * 1000,
+    cookies: {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Lax',
+    },
   },
   admin: {
     useAsTitle: 'name',

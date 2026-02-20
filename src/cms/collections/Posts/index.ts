@@ -31,8 +31,8 @@ import { slugField } from 'payload'
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
   labels: {
-    singular: { en: 'Post', da: 'Artikel' },
-    plural: { en: 'Posts', da: 'Artikler' },
+    singular: { en: 'Post', da: 'Indlæg' },
+    plural: { en: 'Posts', da: 'Indlæg' },
   },
 
   access: {
