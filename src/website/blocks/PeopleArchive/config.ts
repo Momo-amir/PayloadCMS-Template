@@ -67,6 +67,15 @@ export const PeopleArchiveBlock: ComponentBlock = {
       label: 'Selection',
       relationTo: ['people'],
     },
+    {
+      name: 'enablePagination',
+      type: 'checkbox',
+      admin: {
+        condition: (_, siblingData) => siblingData.populateBy === 'collection',
+      },
+      label: 'Enable pagination',
+      defaultValue: false,
+    },
   ],
   labels: {
     plural: 'People Archive',

@@ -98,6 +98,15 @@ export const Archive: ComponentBlock = {
       label: 'Enable category tag filtering',
       defaultValue: false,
     },
+    {
+      name: 'enablePagination',
+      type: 'checkbox',
+      admin: {
+        condition: (_, siblingData) => siblingData.populateBy === 'collection',
+      },
+      label: 'Enable pagination',
+      defaultValue: false,
+    },
   ],
   labels: {
     plural: 'Archives',

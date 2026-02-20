@@ -9,11 +9,17 @@ import { getLocale } from 'next-intl/server'
 
 import { CollectionArchive } from '@/website/components/CollectionArchive'
 import { ArchiveCategoryFilter } from './ArchiveCategoryFilter.client'
+import { ArchivePagination } from '@/website/components/ArchivePagination'
+import {
+  getPageFromSearchParams,
+  getPaginationData,
+  type PaginationProps,
+} from '@/website/utilities/pagination'
 
 export const ArchiveBlock: React.FC<
   ArchiveBlockProps & {
     id?: string
-  }
+  } & PaginationProps
 > = async (props) => {
   const {
     id,
@@ -23,27 +29,32 @@ export const ArchiveBlock: React.FC<
     populateBy,
     selectedDocs,
     enableCategoryFilter,
+    enablePagination,
+    searchParams,
   } = props
 
-  const limit = limitFromProps || 3
+  const limit = limitFromProps || 10
   const locale = (await getLocale()) as TypedLocale
+  const requestedPage = getPageFromSearchParams(searchParams)
 
   let posts: Post[] = []
+  let result = null
 
   if (populateBy === 'collection') {
     const payload = await getPayload({ config: configPromise })
 
-    const flattenedCategories = categories?.map((category) => {
+    const flattenedCategories = categories?.map((category: any) => {
       if (typeof category === 'object') return category.id
       else return category
     })
 
-    const fetchedPosts = await payload.find({
+    result = await payload.find({
       collection: 'posts',
       locale,
       fallbackLocale: 'da',
       depth: 1,
       limit,
+      page: enablePagination ? requestedPage : undefined,
       ...(flattenedCategories && flattenedCategories.length > 0
         ? {
             where: {
@@ -55,16 +66,10 @@ export const ArchiveBlock: React.FC<
         : {}),
     })
 
-    posts = fetchedPosts.docs
-  } else {
-    if (selectedDocs?.length) {
-      const filteredSelectedPosts = selectedDocs.map((post) => {
-        if (typeof post.value === 'object') return post.value
-      }) as Post[]
-
-      posts = filteredSelectedPosts
-    }
+    posts = result.docs
   }
+
+  const pagination = getPaginationData(result, enablePagination, populateBy)
 
   return (
     <div className="my-16" id={`block-${id}`}>
@@ -78,6 +83,14 @@ export const ArchiveBlock: React.FC<
           <ArchiveCategoryFilter posts={posts} />
         ) : (
           <CollectionArchive posts={posts} />
+        )}
+        {pagination.shouldShow && (
+          <div className="container">
+            <ArchivePagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+            />
+          </div>
         )}
       </TrackImpression>
     </div>

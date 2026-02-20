@@ -5,6 +5,12 @@ import { getPayload } from 'payload'
 import RichText from '@/website/components/RichText'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 import { PersonCard } from '@/website/components/Card/PersonCard'
+import { ArchivePagination } from '@/website/components/ArchivePagination'
+import {
+  getPageFromSearchParams,
+  getPaginationData,
+  type PaginationProps,
+} from '@/website/utilities/pagination'
 
 const columnClass = (cardCount: number) => {
   switch (cardCount) {
@@ -21,38 +27,39 @@ const columnClass = (cardCount: number) => {
 export const PeopleArchive: React.FC<
   PeopleArchiveProps & {
     id?: string
-  }
+  } & PaginationProps
 > = async (props) => {
-  const { id, introContent, limit: limitFromProps, populateBy, selectedDocs } = props
+  const {
+    id,
+    introContent,
+    limit: limitFromProps,
+    populateBy,
+    selectedDocs,
+    enablePagination,
+    searchParams,
+  } = props
 
   const limit = limitFromProps || 10
+  const requestedPage = getPageFromSearchParams(searchParams)
 
   let people: Person[] = []
+  let result = null
 
   if (populateBy === 'collection') {
     const payload = await getPayload({ config: configPromise })
 
-    const fetchedPeople = await payload.find({
+    result = await payload.find({
       collection: 'people',
       depth: 1,
       limit,
+      page: enablePagination ? requestedPage : undefined,
       sort: 'firstName',
     })
 
-    people = fetchedPeople.docs
-  } else {
-    if (selectedDocs?.length) {
-      const filteredSelectedPeople = selectedDocs
-        .map((person) => {
-          if (typeof person.value === 'object') return person.value
-        })
-        .filter(Boolean) as Person[]
-
-      people = filteredSelectedPeople.sort((a, b) =>
-        a.firstName.localeCompare(b.firstName),
-      )
-    }
+    people = result.docs
   }
+
+  const pagination = getPaginationData(result, enablePagination, populateBy)
 
   return (
     <div className="my-16" id={`block-${id}`}>
@@ -78,6 +85,14 @@ export const PeopleArchive: React.FC<
             )}
           </div>
         </div>
+        {pagination.shouldShow && (
+          <div className="container">
+            <ArchivePagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+            />
+          </div>
+        )}
       </TrackImpression>
     </div>
   )
