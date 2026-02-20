@@ -7,8 +7,10 @@ import { getPayload } from 'payload'
 import RichText from '@/website/components/RichText'
 import { SearchInput } from '@/website/components/Search/Input'
 import { querySearchResults, type SearchCollection } from '@/website/components/Search/query'
-import { SearchResultsPaginated } from '@/website/components/Search/ResultsPaginated.client'
+import { SearchPaginationControls } from '@/website/components/Search/PaginationControls.client'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
+import { PostCard } from '@/website/components/Card/PostCard'
+import { PersonCard } from '@/website/components/Card/PersonCard'
 
 type SearchHeroProps = Page['hero'] & {
   resultCollection?: 'posts' | 'people' | null
@@ -19,6 +21,7 @@ type SearchHeroProps = Page['hero'] & {
   pageSlug?: string
   searchParams?: {
     q?: string | string[] | null
+    page?: string | string[] | null
   }
 }
 
@@ -43,6 +46,10 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
   const rawQuery = searchParams?.q
   const query = Array.isArray(rawQuery) ? rawQuery[0] : rawQuery
   const normalizedQuery = query?.trim()
+  const rawPage = searchParams?.page
+  const pageParam = Array.isArray(rawPage) ? rawPage[0] : rawPage
+  const requestedPageRaw = Number.parseInt(pageParam || '1', 10)
+  const requestedPage = Number.isFinite(requestedPageRaw) ? requestedPageRaw : 1
 
   const limit = Math.max(1, resultsPerPage || 12)
   const collection: SearchCollection = resultCollection ?? 'posts'
@@ -56,11 +63,12 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
       .filter((id): id is string => id !== null) || []
   const fallbackEmptyText = emptyText || (locale === 'da' ? 'Ingen resultater fundet.' : 'No results found')
 
-  const { totalDocs, postDocs, peopleDocs } = await querySearchResults({
+  const { totalDocs, totalPages, currentPage, postDocs, peopleDocs } = await querySearchResults({
     payload,
     locale,
     query: normalizedQuery,
     limit,
+    page: requestedPage,
     collection,
     categoryIDs,
   })
@@ -88,13 +96,38 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
         {resultsCount < 1 ? (
           <div className="container">{fallbackEmptyText}</div>
         ) : (
-          <SearchResultsPaginated
-            collection={collection}
-            posts={postDocs}
-            people={peopleDocs}
-            perPage={limit}
-            queryKey={`${normalizedQuery || ''}:${collection}:${categoryIDs.join(',')}`}
-          />
+          <>
+            <div className="container">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {collection === 'posts'
+                  ? postDocs.map((post, index) => (
+                      <PostCard
+                        key={`post-${post.slug}-${index}`}
+                        className="h-full"
+                        doc={post}
+                        relationTo="posts"
+                        showCategories
+                        position={(currentPage - 1) * limit + index + 1}
+                        listContext="search"
+                      />
+                    ))
+                  : peopleDocs.map((person, index) => (
+                      <PersonCard key={`person-${person.id}-${index}`} doc={person} />
+                    ))}
+              </div>
+            </div>
+
+            {totalPages > 1 && (
+              <div className="container mt-10">
+                <SearchPaginationControls
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  searchPath={searchPath}
+                  query={normalizedQuery}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </TrackImpression>

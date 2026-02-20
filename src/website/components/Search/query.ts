@@ -9,18 +9,21 @@ export type SearchQueryArgs = {
   locale: TypedLocale
   query?: string | null
   limit: number
+  page?: number
   collection: SearchCollection
   categoryIDs?: string[]
 }
 
 type SearchResultBuckets = {
   totalDocs: number
+  totalPages: number
+  currentPage: number
   postDocs: CardPostData[]
   peopleDocs: Person[]
 }
 
 export const querySearchResults = async (args: SearchQueryArgs): Promise<SearchResultBuckets> => {
-  const { payload, locale, query, limit, collection, categoryIDs = [] } = args
+  const { payload, locale, query, limit, page = 1, collection, categoryIDs = [] } = args
 
   const filters: Where[] = []
 
@@ -58,18 +61,33 @@ export const querySearchResults = async (args: SearchQueryArgs): Promise<SearchR
 
   const where = filters.length === 1 ? filters[0] : { and: filters }
 
-  const results = await payload.find({
-    collection: 'search',
-    locale,
-    fallbackLocale: 'da',
-    depth: 1,
-    // Fetch a larger window so we can apply collection/category filters safely in-memory.
-    limit: Math.min(Math.max(limit * 20, 200), 1000),
-    pagination: false,
-    ...(filters.length > 0 ? { where } : {}),
-  })
+  const batchSize = Math.min(Math.max(limit * 20, 200), 1000)
+  let batchPage = 1
+  let hasNextPage = true
+  const docs: Search[] = []
 
-  const docs = results.docs as Search[]
+  while (hasNextPage) {
+    const batch = await payload.find({
+      collection: 'search',
+      locale,
+      fallbackLocale: 'da',
+      depth: 1,
+      limit: batchSize,
+      page: batchPage,
+      pagination: true,
+      ...(filters.length > 0 ? { where } : {}),
+    })
+
+    docs.push(...(batch.docs as Search[]))
+    hasNextPage = Boolean(batch.hasNextPage)
+    batchPage += 1
+
+    // Safety guard for pathological datasets.
+    if (batchPage > 200) {
+      break
+    }
+  }
+
   const postDocs: CardPostData[] = []
   const peopleDocs: Person[] = []
   const unresolvedPeopleIDs: Array<number | string> = []
@@ -144,11 +162,19 @@ export const querySearchResults = async (args: SearchQueryArgs): Promise<SearchR
     })
   }
 
-  const totalDocs = collection === 'posts' ? postDocs.length : peopleDocs.length
+  const sourceDocs = collection === 'posts' ? postDocs : peopleDocs
+  const totalDocs = sourceDocs.length
+  const totalPages = Math.max(1, Math.ceil(totalDocs / limit))
+  const currentPage = Math.min(Math.max(page, 1), totalPages)
+  const start = (currentPage - 1) * limit
+  const end = start + limit
+  const pagedDocs = sourceDocs.slice(start, end)
 
   return {
     totalDocs,
-    postDocs,
-    peopleDocs,
+    totalPages,
+    currentPage,
+    postDocs: collection === 'posts' ? (pagedDocs as CardPostData[]) : [],
+    peopleDocs: collection === 'people' ? (pagedDocs as Person[]) : [],
   }
 }
