@@ -67,16 +67,11 @@ export const ArchiveCategoryFilter: React.FC<{ posts: Post[] }> = ({ posts }) =>
               <Button
                 key={category.id}
                 type="button"
-                variant="ghost"
-                size="sm"
-                className={`group relative rounded-full px-3 py-1 text-sm transition-all duration-200 ${
-                  activeCategoryIds.has(category.id)
-                    ? 'bg-neutral dark:bg-surface text-primary hover:text-primary hover:bg-neutral/90 dark:hover:bg-surface/90 '
-                    : 'bg-transparent text-primary hover:text-primary hover:bg-neutral/70 dark:hover:bg-surface/60'
-                }`}
+                variant={activeCategoryIds.has(category.id) ? 'pillActive' : 'pill'}
+                size="clear"
                 onClick={() => applyFilter(category.id)}
               >
-                <span className="relative inline-flex items-center">{category.title}</span>
+                {category.title}
               </Button>
             ))}
           </div>

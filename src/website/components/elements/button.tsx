@@ -31,6 +31,9 @@ const buttonVariants = cva(
         tertiary: 'bg-white text-black hover:bg-accentthree active:bg-accentthree',
         circle:
           'cursor-pointer w-12 h-12 rounded-full bg-primary text-base shadow disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-primary disabled:hover:text-base transition-colors duration-200 ease-in-out hover:bg-accent hover:text-white',
+        pill: 'rounded-full px-3 py-1 text-sm bg-transparent text-primary hover:text-primary hover:bg-neutral/70 dark:hover:bg-surface/60 transition-all duration-200',
+        pillActive:
+          'rounded-full px-3 py-1 text-sm bg-neutral dark:bg-surface text-primary hover:text-primary hover:bg-neutral/90 dark:hover:bg-surface/90 transition-all duration-200',
       },
     },
   },
