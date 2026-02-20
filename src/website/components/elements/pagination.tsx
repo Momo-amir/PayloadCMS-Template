@@ -34,10 +34,10 @@ const PaginationLink = ({ className, isActive, size = 'icon', ...props }: Pagina
   <button
     aria-current={isActive ? 'page' : undefined}
     className={cn(
-      buttonVariants({
-        size,
-        variant: isActive ? 'outline' : 'ghost',
-      }),
+      'rounded-full px-3 py-1 text-sm transition-all duration-200',
+      isActive
+        ? 'bg-neutral dark:bg-surface text-primary hover:text-primary hover:bg-neutral/90 dark:hover:bg-surface/90'
+        : 'bg-transparent text-primary hover:text-primary hover:bg-neutral/70 dark:hover:bg-surface/60',
       className,
     )}
     {...props}
@@ -52,7 +52,7 @@ const PaginationPrevious = ({
   return (
     <PaginationLink
       aria-label="Go to previous page"
-      className={cn('gap-1 pl-2.5', className)}
+      className={cn('gap-1 pl-2.5 rounded-full', className)}
       size="default"
       {...props}
     >
@@ -67,7 +67,7 @@ const PaginationNext = ({ className, ...props }: React.ComponentProps<typeof Pag
   return (
     <PaginationLink
       aria-label="Go to next page"
-      className={cn('gap-1 pr-2.5', className)}
+      className={cn('gap-1 pr-2.5 rounded-full', className)}
       size="default"
       {...props}
     >

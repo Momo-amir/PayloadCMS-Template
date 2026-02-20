@@ -23,7 +23,8 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-primary border border-primary text-base hover:bg-base hover:text-primary',
         accent: 'bg-accent text-primary hover:bg-accentthree hover:text-primary',
-        ghost: ' hover:text-accent',
+        ghost:
+          'bg-transparent text-primary hover:text-primary hover:bg-neutral/70 dark:hover:bg-surface/60',
         link: 'text-primary items-start justify-start relative after:absolute after:bottom-0 after:left-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full hover:cursor-pointer max-w-min @max-md:active:text-accentthree transition-colors duration-200 ',
         outline: 'border border-primary bg-transparent hover:bg-primary hover:text-base',
         secondary: 'bg-black text-white hover:bg-accent active:bg-accent',
