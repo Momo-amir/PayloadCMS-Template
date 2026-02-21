@@ -18,6 +18,7 @@ type ArchivePaginationProps = {
   totalPages: number
   basePath?: string
   className?: string
+  scrollTargetId?: string
 }
 
 export const ArchivePagination: React.FC<ArchivePaginationProps> = ({
@@ -25,6 +26,7 @@ export const ArchivePagination: React.FC<ArchivePaginationProps> = ({
   totalPages,
   basePath = '',
   className,
+  scrollTargetId,
 }) => {
   const router = useRouter()
 
@@ -43,6 +45,15 @@ export const ArchivePagination: React.FC<ArchivePaginationProps> = ({
   }, [currentPage, totalPages])
 
   const navigate = (page: number) => {
+    if (page < 1 || page > totalPages || page === currentPage) return
+
+    if (scrollTargetId) {
+      const target = document.getElementById(scrollTargetId)
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+
     const params = new URLSearchParams(window.location.search)
 
     if (page > 1) {
