@@ -4,19 +4,20 @@
  * Uses client-readable cookies (not HttpOnly) so track() can check consent
  * before sending analytics events.
  */
+import {
+  buildStoredConsentState,
+  normalizeConsentState,
+  type ConsentPreferences,
+  type StoredConsentState,
+} from './consent-model'
 
 export const CONSENT_COOKIE_NAME = 'analytics_consent'
 export const CONSENT_TOKEN_COOKIE_NAME = 'consent_token'
 // GDPR: 12 months balances user convenience with periodic re-consent requirement
 const COOKIE_MAX_AGE = 365 * 24 * 60 * 60 // 12 months in seconds
 
-// Current privacy policy version - increment this when policy changes materially
-export const CURRENT_CONSENT_VERSION = 1
-
-export interface ConsentState {
+export type ConsentState = StoredConsentState & {
   analytics: boolean
-  timestamp: number
-  version: number
 }
 
 /**
@@ -35,7 +36,13 @@ export function getConsentFromCookie(): ConsentState | null {
     if (!value) return null
 
     const decoded = decodeURIComponent(value)
-    return JSON.parse(decoded)
+    const normalized = normalizeConsentState(JSON.parse(decoded))
+    if (!normalized) return null
+
+    return {
+      ...normalized,
+      analytics: normalized.preferences.analytics,
+    }
   } catch {
     return null
   }
@@ -44,14 +51,17 @@ export function getConsentFromCookie(): ConsentState | null {
 /**
  * Set consent state in first-party cookie (client-side)
  */
-export function setConsentCookie(analytics: boolean): void {
+export function setConsentCookie(preferences: boolean | Partial<ConsentPreferences>): void {
   if (typeof document === 'undefined') return
 
-  const consentState: ConsentState = {
-    analytics,
-    timestamp: Date.now(),
-    version: 1,
-  }
+  const consentState =
+    typeof preferences === 'boolean'
+      ? buildStoredConsentState({
+          analytics: preferences,
+          analyticsLocalStorage: preferences,
+          analyticsThirdPartySharing: false,
+        })
+      : buildStoredConsentState(preferences)
 
   const value = encodeURIComponent(JSON.stringify(consentState))
 
@@ -88,7 +98,12 @@ export function getConsentFromHeaders(cookieHeader: string | null): ConsentState
     if (!value) return null
 
     const decoded = decodeURIComponent(value)
-    return JSON.parse(decoded)
+    const normalized = normalizeConsentState(JSON.parse(decoded))
+    if (!normalized) return null
+    return {
+      ...normalized,
+      analytics: normalized.preferences.analytics,
+    }
   } catch {
     return null
   }

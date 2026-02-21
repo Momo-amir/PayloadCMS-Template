@@ -4,7 +4,7 @@ export const ConsentTokens: CollectionConfig = {
   slug: 'consent-tokens',
   admin: {
     useAsTitle: 'token',
-    defaultColumns: ['token', 'analytics', 'updated_at'],
+    defaultColumns: ['token', 'analytics', 'analyticsThirdPartySharing', 'updated_at'],
     group: 'Privacy',
     description: 'User consent preferences (pseudonymous)',
     hidden: true, // Hidden from nav - programmatic data only
@@ -32,7 +32,43 @@ export const ConsentTokens: CollectionConfig = {
       defaultValue: false,
       required: true,
       admin: {
-        description: 'User consent for analytics tracking',
+        description: 'User consent for analytics processing',
+      },
+    },
+    {
+      name: 'analyticsLocalStorage',
+      type: 'checkbox',
+      defaultValue: false,
+      required: true,
+      admin: {
+        description: 'User consent for local first-party aggregated analytics',
+      },
+    },
+    {
+      name: 'analyticsThirdPartySharing',
+      type: 'checkbox',
+      defaultValue: false,
+      required: true,
+      admin: {
+        description: 'User consent to forward analytics to third parties (GA4/Matomo)',
+      },
+    },
+    {
+      name: 'marketing',
+      type: 'checkbox',
+      defaultValue: false,
+      required: true,
+      admin: {
+        description: 'User consent for marketing/ad storage usage',
+      },
+    },
+    {
+      name: 'personalization',
+      type: 'checkbox',
+      defaultValue: false,
+      required: true,
+      admin: {
+        description: 'User consent for personalization/ad personalization',
       },
     },
     {

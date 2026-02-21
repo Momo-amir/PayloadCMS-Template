@@ -36,7 +36,18 @@
   "cookie-consent:message": "We use cookies, subject to your consent, to analyze the use of our website and to ensure you get the best experience. Third parties with whom we collaborate can also install cookies in order to show you personalized content. Read our",
   "cookie-consent:privacy-policy": "privacy policy",
   "cookie-consent:more-info": "for more information.",
-  "cookie-consent:accept": "Accept",
+  "cookie-consent:accept": "Accept all",
   "cookie-consent:decline": "Dismiss all non-essential",
-  "cookie-consent:settings": "Cookies"
+  "cookie-consent:settings": "Cookies",
+  "cookie-consent:customize-aria-label": "Customize consent settings",
+  "cookie-consent:back": "Back",
+  "cookie-consent:save-choices": "Save choices",
+  "cookie-consent:essential-cookies": "Essential cookies",
+  "cookie-consent:essential-description": "Required for the website to function properly.",
+  "cookie-consent:always-active": "Always active",
+  "cookie-consent:analytics": "Allow analytics",
+  "cookie-consent:analytics-local-storage": "Allow local aggregated analytics",
+  "cookie-consent:analytics-third-party-sharing": "Allow third-party analytics sharing",
+  "cookie-consent:marketing": "Marketing",
+  "cookie-consent:personalization": "Personalization"
 }

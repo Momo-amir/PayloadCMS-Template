@@ -257,6 +257,10 @@ export async function POST(request: NextRequest) {
       // User hasn't consented - reject immediately
       return NextResponse.json({ error: 'Analytics consent not given' }, { status: 403 })
     }
+    const consent = consentRecord.docs[0] as {
+      analyticsLocalStorage?: boolean | null
+      analyticsThirdPartySharing?: boolean | null
+    }
 
     const rawBody = await request.text()
     if (byteLength(rawBody) > MAX_BODY_BYTES) {
@@ -352,6 +356,20 @@ export async function POST(request: NextRequest) {
         finalEventData = {}
       }
 
+      const storeAggregates =
+        (analyticsConfig?.store_aggregates || false) && (consent.analyticsLocalStorage ?? true)
+      const ga4Enabled =
+        (analyticsConfig?.ga4_enabled || false) && (consent.analyticsThirdPartySharing ?? false)
+      const matomoEnabled =
+        (analyticsConfig?.matomo_enabled || false) &&
+        (consent.analyticsThirdPartySharing ?? false)
+
+      // Valid consent exists, but this project/user combination disables all sinks.
+      // Accept the request and skip queueing side-effect-free jobs.
+      if (!storeAggregates && !ga4Enabled && !matomoEnabled) {
+        continue
+      }
+
       jobInputs.push({
         event_name: eventRecord.event_name,
         page_path: normalizedPath,
@@ -359,9 +377,9 @@ export async function POST(request: NextRequest) {
         country: country || 'unknown',
         date: today,
         consent_token: consentToken,
-        store_aggregates: analyticsConfig?.store_aggregates || false,
-        ga4_enabled: analyticsConfig?.ga4_enabled || false,
-        matomo_enabled: analyticsConfig?.matomo_enabled || false,
+        store_aggregates: storeAggregates,
+        ga4_enabled: ga4Enabled,
+        matomo_enabled: matomoEnabled,
       })
     }
 

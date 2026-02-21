@@ -36,7 +36,18 @@
   "cookie-consent:message": "Vi bruger cookies, med dit samtykke, til at analysere brugen af vores hjemmeside og for at sikre, at du får den bedste oplevelse. Tredjeparter, som vi samarbejder med, kan også installere cookies for at vise dig personligt indhold. Læs vores",
   "cookie-consent:privacy-policy": "privatlivspolitik",
   "cookie-consent:more-info": "for mere information.",
-  "cookie-consent:accept": "Acceptér",
+  "cookie-consent:accept": "Acceptér alle",
   "cookie-consent:decline": "Kun nødvendige",
-  "cookie-consent:settings": "Cookies"
+  "cookie-consent:settings": "Cookies",
+  "cookie-consent:customize-aria-label": "Tilpas samtykkeindstillinger",
+  "cookie-consent:back": "Tilbage",
+  "cookie-consent:save-choices": "Gem valg",
+  "cookie-consent:essential-cookies": "Nødvendige cookies",
+  "cookie-consent:essential-description": "Nødvendige for at hjemmesiden fungerer korrekt.",
+  "cookie-consent:always-active": "Altid aktiv",
+  "cookie-consent:analytics": "Tillad analyse",
+  "cookie-consent:analytics-local-storage": "Tillad lokal aggregeret analyse",
+  "cookie-consent:analytics-third-party-sharing": "Tillad deling af analyse med tredjeparter",
+  "cookie-consent:marketing": "Markedsføring",
+  "cookie-consent:personalization": "Personalisering"
 }
