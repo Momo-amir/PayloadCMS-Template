@@ -8,6 +8,7 @@
  */
 
 import type { WorkflowConfig } from 'payload'
+import { CONSENT_POLICY_VERSION } from '@/cms/utilities/consent-model'
 
 export const processAnalyticsEventWorkflow = {
   slug: 'processAnalyticsEvent',
@@ -37,6 +38,7 @@ export const processAnalyticsEventWorkflow = {
         and: [
           { token: { equals: input.consent_token } },
           { analytics: { equals: true } },
+          { version: { equals: CONSENT_POLICY_VERSION } },
         ],
       },
       limit: 1,

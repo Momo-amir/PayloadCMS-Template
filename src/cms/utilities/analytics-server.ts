@@ -4,8 +4,6 @@
  * Keeps the SAME API so your components don't need changes
  */
 
-import { getConsentFromCookie } from './consent-cookie'
-
 interface AnalyticsEvent {
   event_name: string
   event_data?: Record<string, unknown>
@@ -22,9 +20,6 @@ class AnalyticsClient {
   constructor() {
     if (typeof window === 'undefined') return
 
-    // Check consent from first-party cookie (synchronous)
-    this.syncConsentFromCookie()
-
     // Auto-flush every 25 seconds (catches low-activity pages)
     this.flushInterval = setInterval(() => this.flush(), this.FLUSH_INTERVAL)
 
@@ -35,11 +30,6 @@ class AnalyticsClient {
         this.flush()
       }
     })
-  }
-
-  private syncConsentFromCookie() {
-    const consentState = getConsentFromCookie()
-    this.consentGiven = consentState?.analytics === true
   }
 
   track(eventName: string, eventData?: Record<string, unknown>) {
@@ -75,6 +65,10 @@ class AnalyticsClient {
       // Clear queue if consent revoked
       this.queue = []
     }
+  }
+
+  hasConsent(): boolean {
+    return this.consentGiven
   }
 
   private async flush() {
@@ -146,6 +140,10 @@ export function updateAnalyticsConsent(granted: boolean) {
   analyticsClient.updateConsent(granted)
 }
 
+export function hasAnalyticsConsent(): boolean {
+  return analyticsClient.hasConsent()
+}
+
 // All your existing helper functions - SAME API
 export const trackButtonClick = (
   buttonName: string,
@@ -206,6 +204,8 @@ export const trackVideoInteraction = (
   videoTitle: string,
   progress?: number,
 ): void => {
+  if (!hasAnalyticsConsent()) return
+
   const sessionKey = `analytics_video_${action}_${videoTitle}`
   if (wasTrackedThisSession(sessionKey)) {
     return
@@ -237,6 +237,8 @@ function bucketViewport(width: number, height: number): string {
 }
 
 export const trackPageView = (title?: string, referrer?: string): void => {
+  if (!hasAnalyticsConsent()) return
+
   const pagePath = typeof window !== 'undefined' ? window.location.pathname : 'unknown'
   const sessionKey = `analytics_page_view_${pagePath}`
   if (wasTrackedThisSession(sessionKey)) {

@@ -2,8 +2,12 @@
 
 import React, { createContext, use, useCallback, useEffect, useState } from 'react'
 import { updateAnalyticsConsent } from '@/cms/utilities/analytics-server'
-import { getConsentFromCookie, setConsentCookie } from '@/cms/utilities/consent-cookie'
-import { type ConsentPreferences } from '@/cms/utilities/consent-model'
+import { clearConsentCookie, setConsentCookie } from '@/cms/utilities/consent-cookie'
+import {
+  CONSENT_POLICY_VERSION,
+  defaultConsentPreferences,
+  type ConsentPreferences,
+} from '@/cms/utilities/consent-model'
 import { updateConsent as updateGoogleConsentMode } from '@/cms/utilities/analytics'
 import { resolveConsentPreferences, toGoogleConsentModeParams } from './helpers'
 
@@ -80,27 +84,65 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       ad_personalization: 'denied',
     })
 
-    // Check first-party cookie for existing consent
-    const consentState = getConsentFromCookie()
+    let cancelled = false
 
-    if (consentState) {
-      // User has made a choice - sync to in-memory state
-      const normalizedPreferences = consentState.preferences
-      const hasConsent = normalizedPreferences.analytics
-      setConsentPreferences(normalizedPreferences)
-      setCookieConsent(hasConsent)
-      updateAnalyticsConsent(hasConsent)
-      updateGoogleConsentMode('update', toGoogleConsentModeParams(normalizedPreferences))
-      setShowConsent(false) // Don't show banner
-    } else {
-      // No consent cookie found - first visit or expired
-      // Show banner for user to make choice
-      setConsentPreferences(undefined)
-      setCookieConsent(undefined)
-      setShowConsent(true)
+    const initializeConsent = async () => {
+      try {
+        const response = await fetch('/api/consent', {
+          method: 'GET',
+          cache: 'no-store',
+        })
+
+        if (!response.ok) {
+          throw new Error(`Consent bootstrap failed with status ${response.status}`)
+        }
+
+        const payload = (await response.json()) as {
+          hasStoredConsent?: boolean
+          preferences?: Partial<ConsentPreferences>
+          version?: number
+        }
+
+        if (cancelled) return
+
+        const hasStoredConsent = payload.hasStoredConsent === true
+        const version = typeof payload.version === 'number' ? payload.version : 1
+        const preferences = resolveConsentPreferences(payload.preferences || defaultConsentPreferences())
+
+        if (!hasStoredConsent || version !== CONSENT_POLICY_VERSION) {
+          clearConsentCookie()
+          setConsentPreferences(undefined)
+          setCookieConsent(undefined)
+          updateAnalyticsConsent(false)
+          setShowConsent(true)
+          return
+        }
+
+        setConsentCookie(preferences)
+        setConsentPreferences(preferences)
+        setCookieConsent(preferences.analytics)
+        updateAnalyticsConsent(preferences.analytics)
+        updateGoogleConsentMode('update', toGoogleConsentModeParams(preferences))
+        setShowConsent(false)
+      } catch (error) {
+        console.error('Failed to initialize consent:', error)
+        if (cancelled) return
+
+        clearConsentCookie()
+        setConsentPreferences(undefined)
+        setCookieConsent(undefined)
+        updateAnalyticsConsent(false)
+        setShowConsent(true)
+      }
     }
 
+    initializeConsent()
+
     setCountry('GDPR')
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const openConsentBanner = useCallback(() => {

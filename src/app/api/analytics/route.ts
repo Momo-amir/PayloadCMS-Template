@@ -4,6 +4,7 @@ import config from '@payload-config'
 import { cookies } from 'next/headers'
 import { ANALYTICS_ALLOWED_KEYS, validateAllowlist } from '@/cms/utilities/analytics-allowlist'
 import { isTrustedOrigin } from '@/cms/utilities/isTrustedOrigin'
+import { CONSENT_POLICY_VERSION } from '@/cms/utilities/consent-model'
 
 type RateLimitRecord = {
   count: number
@@ -260,6 +261,11 @@ export async function POST(request: NextRequest) {
     const consent = consentRecord.docs[0] as {
       analyticsLocalStorage?: boolean | null
       analyticsThirdPartySharing?: boolean | null
+      version?: number | null
+    }
+    const consentVersion = consent.version ?? 1
+    if (consentVersion !== CONSENT_POLICY_VERSION) {
+      return NextResponse.json({ error: 'Consent version is outdated' }, { status: 403 })
     }
 
     const rawBody = await request.text()

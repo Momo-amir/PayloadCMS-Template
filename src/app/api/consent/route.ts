@@ -167,7 +167,12 @@ export async function GET() {
     const consentToken = cookieStore.get('consent_token')?.value
 
     if (!consentToken) {
-      return NextResponse.json({ preferences: defaultConsentPreferences(), analytics: false })
+      return NextResponse.json({
+        hasStoredConsent: false,
+        preferences: defaultConsentPreferences(),
+        analytics: false,
+        version: CONSENT_POLICY_VERSION,
+      })
     }
 
     const payload = await getPayload({ config })
@@ -179,7 +184,12 @@ export async function GET() {
     })
 
     if (existing.docs.length === 0 || !existing.docs[0]) {
-      return NextResponse.json({ preferences: defaultConsentPreferences(), analytics: false })
+      return NextResponse.json({
+        hasStoredConsent: false,
+        preferences: defaultConsentPreferences(),
+        analytics: false,
+        version: CONSENT_POLICY_VERSION,
+      })
     }
 
     const consentDoc = existing.docs[0] as {
@@ -188,6 +198,7 @@ export async function GET() {
       analyticsThirdPartySharing?: boolean | null
       marketing?: boolean | null
       personalization?: boolean | null
+      version?: number | null
     }
 
     const preferences: ConsentPreferences = {
@@ -199,9 +210,19 @@ export async function GET() {
       personalization: consentDoc.personalization ?? false,
     }
 
-    return NextResponse.json({ preferences, analytics: preferences.analytics })
+    return NextResponse.json({
+      hasStoredConsent: true,
+      preferences,
+      analytics: preferences.analytics,
+      version: consentDoc.version ?? 1,
+    })
   } catch (error) {
     console.error('Consent get error:', error)
-    return NextResponse.json({ preferences: defaultConsentPreferences(), analytics: false })
+    return NextResponse.json({
+      hasStoredConsent: false,
+      preferences: defaultConsentPreferences(),
+      analytics: false,
+      version: CONSENT_POLICY_VERSION,
+    })
   }
 }

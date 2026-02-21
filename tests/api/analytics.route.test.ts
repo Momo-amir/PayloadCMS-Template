@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { CONSENT_POLICY_VERSION } from '@/cms/utilities/consent-model'
 
 type PayloadMock = {
   find: ReturnType<typeof vi.fn>
@@ -92,6 +93,7 @@ describe('/api/analytics route', () => {
             analytics: true,
             analyticsLocalStorage: false,
             analyticsThirdPartySharing: false,
+            version: CONSENT_POLICY_VERSION,
           },
         ],
       })),
@@ -122,6 +124,7 @@ describe('/api/analytics route', () => {
             analytics: true,
             analyticsLocalStorage: true,
             analyticsThirdPartySharing: false,
+            version: CONSENT_POLICY_VERSION,
           },
         ],
       })),
@@ -152,5 +155,32 @@ describe('/api/analytics route', () => {
         }),
       }),
     )
+  })
+
+  it('rejects when consent version is outdated', async () => {
+    const payload: PayloadMock = {
+      find: vi.fn(async () => ({
+        docs: [
+          {
+            analytics: true,
+            analyticsLocalStorage: true,
+            analyticsThirdPartySharing: true,
+            version: CONSENT_POLICY_VERSION - 1,
+          },
+        ],
+      })),
+      findGlobal: vi.fn(async () => ({
+        enabled: true,
+      })),
+      jobs: { queue: vi.fn(async () => ({})) },
+    }
+    const { route, request } = await setupRoute({ payload })
+
+    const response = await route.POST(request as never)
+    const data = await response.json()
+
+    expect(response.status).toBe(403)
+    expect(data).toEqual({ error: 'Consent version is outdated' })
+    expect(payload.jobs.queue).not.toHaveBeenCalled()
   })
 })

@@ -154,6 +154,7 @@ describe('/api/consent route', () => {
 
     expect(response.status).toBe(200)
     expect(data).toEqual({
+      hasStoredConsent: false,
       preferences: {
         essential: true,
         analytics: false,
@@ -163,6 +164,7 @@ describe('/api/consent route', () => {
         personalization: false,
       },
       analytics: false,
+      version: CONSENT_POLICY_VERSION,
     })
   })
 })
