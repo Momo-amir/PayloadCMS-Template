@@ -9,6 +9,7 @@ import type { Post } from '@/payload-types'
 
 import { PostCard } from '@/website/components/Card/PostCard'
 import { DEFAULT_POSTS_PARENT_PATH, getPostsParentCrumb } from '@/website/components/Breadcrumbs'
+import { STAGGER_GRID_CLASS, getStaggerItemProps } from '@/website/utilities/stagger'
 
 export type RelatedPostsProps = {
   className?: string
@@ -50,19 +51,22 @@ export const RelatedPosts = async (props: RelatedPostsProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-stretch">
+      <div
+        className={`${STAGGER_GRID_CLASS} grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-stretch`}
+      >
         {docs?.map((doc, index) => {
           if (typeof doc === 'string') return null
 
           return (
-            <PostCard
-              key={index}
-              doc={doc}
-              relationTo="posts"
-              showCategories
-              position={index + 1}
-              listContext="related"
-            />
+            <div key={doc.id} {...getStaggerItemProps(index)}>
+              <PostCard
+                doc={doc}
+                relationTo="posts"
+                showCategories
+                position={index + 1}
+                listContext="related"
+              />
+            </div>
           )
         })}
       </div>

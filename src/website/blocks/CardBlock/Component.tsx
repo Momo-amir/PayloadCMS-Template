@@ -6,6 +6,7 @@ import { cn } from '@/cms/utilities/ui'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 import RichText from '@/website/components/RichText'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+import { STAGGER_GRID_CLASS, getStaggerItemProps } from '@/website/utilities/stagger'
 
 type LinkCardItem = NonNullable<CardBlockType['cards']>[number]
 type InfoCardItem = NonNullable<CardBlockType['infoCards']>[number]
@@ -55,9 +56,13 @@ export const CardBlock: React.FC<Props> = ({
               </div>
             )}
             <div className="container">
-              <div className={cn('grid gap-8', columnClass(safeInfoCards.length))}>
+              <div
+                className={cn('grid gap-8', STAGGER_GRID_CLASS, columnClass(safeInfoCards.length))}
+              >
                 {safeInfoCards.map((card, i) => (
-                  <InfoCard key={card.id ?? i} card={card} variant={variant} />
+                  <div key={card.id ?? i} {...getStaggerItemProps(i)}>
+                    <InfoCard card={card} variant={variant} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -75,9 +80,11 @@ export const CardBlock: React.FC<Props> = ({
             </div>
           )}
           <div className="container">
-            <div className={cn('grid gap-8', columnClass(safeCards.length))}>
+            <div className={cn('grid gap-8', STAGGER_GRID_CLASS, columnClass(safeCards.length))}>
               {safeCards.map((card, i) => (
-                <Card key={card.id ?? i} card={card} variant={variant} />
+                <div key={card.id ?? i} {...getStaggerItemProps(i)}>
+                  <Card card={card} variant={variant} />
+                </div>
               ))}
             </div>
           </div>

@@ -80,9 +80,9 @@ export const ArchiveBlock: React.FC<
           </div>
         )}
         {enableCategoryFilter ? (
-          <ArchiveCategoryFilter posts={posts} />
+          <ArchiveCategoryFilter posts={posts} animationKey={pagination.currentPage} />
         ) : (
-          <CollectionArchive posts={posts} />
+          <CollectionArchive posts={posts} animateOnLoad animationKey={pagination.currentPage} />
         )}
         {pagination.shouldShow && (
           <div className="container">

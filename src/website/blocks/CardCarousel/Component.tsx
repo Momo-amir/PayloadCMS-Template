@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { CardCarouselBlock as CardCarouselBlockType } from '@/payload-types'
 import Card from '@/website/components/Card/CustomCard'
 import InfoCard from '@/website/components/Card/InfoCard'
@@ -43,9 +43,10 @@ export const CardCarouselBlock: React.FC<Props> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [containerWidth, setContainerWidth] = useState(0)
+  const [isMeasured, setIsMeasured] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [touchStart, setTouchStart] = useState(0)
-  const [touchEnd, setTouchEnd] = useState(0)
+  const touchStartRef = useRef<number | null>(null)
+  const touchEndRef = useRef<number | null>(null)
 
   // Track when carousel becomes visible
   const resolvedCards = (cardType === 'info' ? infoCards : cards) ?? []
@@ -57,17 +58,46 @@ export const CardCarouselBlock: React.FC<Props> = ({
 
   const perView = getColumnsPerView(resolvedCards.length, containerWidth)
   const pageCount = Math.ceil(resolvedCards.length / perView)
+  const variant = useMemo(() => {
+    const variantRaw = cardBackgroundColor
+    return typeof variantRaw === 'string' && variantRaw !== ''
+      ? (variantRaw as 'default' | 'accent' | 'accentThree' | 'dark' | 'secondary' | 'neutral')
+      : 'default'
+  }, [cardBackgroundColor])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const element = containerRef.current
+    if (!element) return
+
+    let frame = 0
     const measure = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth)
-      }
+      const next = element.offsetWidth
+      setContainerWidth((prev) => (prev === next ? prev : next))
+      if (next > 0) setIsMeasured(true)
     }
+
     measure()
-    window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', measure)
+      return () => window.removeEventListener('resize', measure)
+    }
+
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(measure)
+    })
+    observer.observe(element)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      observer.disconnect()
+    }
   }, [])
+
+  React.useEffect(() => {
+    setCurrentIndex((prev) => Math.max(0, Math.min(prev, pageCount - 1)))
+  }, [pageCount])
 
   if (!resolvedCards.length) return null
 
@@ -82,18 +112,22 @@ export const CardCarouselBlock: React.FC<Props> = ({
   // Touch/swipe handlers for mobile - allow swiping to change slides
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.targetTouches[0]) {
-      setTouchStart(e.targetTouches[0].clientX)
+      touchStartRef.current = e.targetTouches[0].clientX
+      touchEndRef.current = null
     }
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (e.targetTouches[0]) {
-      setTouchEnd(e.targetTouches[0].clientX)
+      touchEndRef.current = e.targetTouches[0].clientX
     }
   }
 
   const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return
+    const touchStart = touchStartRef.current
+    const touchEnd = touchEndRef.current
+
+    if (touchStart === null || touchEnd === null) return
 
     const distance = touchStart - touchEnd
     const isLeftSwipe = distance > 50
@@ -107,8 +141,8 @@ export const CardCarouselBlock: React.FC<Props> = ({
     }
 
     // Reset
-    setTouchStart(0)
-    setTouchEnd(0)
+    touchStartRef.current = null
+    touchEndRef.current = null
   }
 
   const slideWidth = containerWidth / perView
@@ -137,30 +171,22 @@ export const CardCarouselBlock: React.FC<Props> = ({
                 'min-[90rem]:absolute min-[90rem]:-left-16 min-[90rem]:top-1/2 min-[90rem]:-translate-y-1/2',
               )}
             />
-            <div ref={containerRef} className="overflow-hidden w-full py-2">
+            <div ref={containerRef} className="overflow-hidden w-full py-2 touch-pan-y">
               <div
-                className="slide-track flex items-stretch transition-transform duration-500 ease-in-out gap-x-4"
+                className={cn(
+                  'slide-track carousel-track flex items-stretch gap-x-4',
+                  isMeasured && 'transition-transform duration-500 ease-in-out',
+                )}
                 style={{
                   width: trackWidth,
-                  transform: `translateX(${offset}px)`,
+                  transform: `translate3d(${offset}px, 0, 0)`,
+                  visibility: isMeasured ? 'visible' : 'hidden',
                 }}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
                 {resolvedCards.map((card, i) => {
-                  const variantRaw = cardBackgroundColor
-                  const variant =
-                    typeof variantRaw === 'string' && variantRaw !== ''
-                      ? (variantRaw as
-                          | 'default'
-                          | 'accent'
-                          | 'accentThree'
-                          | 'dark'
-                          | 'secondary'
-                          | 'neutral')
-                      : 'default'
-
                   return (
                     <div
                       key={card.id ?? i}
@@ -191,18 +217,20 @@ export const CardCarouselBlock: React.FC<Props> = ({
               )}
             />
           </div>
-          <div className="mt-6 flex justify-center gap-2">
-            {Array.from({ length: pageCount }).map((_, p) => (
-              <button
-                key={p}
-                onClick={() => goToPage(p)}
-                className={cn(
-                  'w-3.75 h-3.75 rounded-full cursor-pointer',
-                  p === currentIndex ? 'bg-primary' : 'bg-neutral',
-                )}
-              />
-            ))}
-          </div>
+          {pageCount > 1 && (
+            <div className="mt-6 flex justify-center gap-2">
+              {Array.from({ length: pageCount }).map((_, p) => (
+                <button
+                  key={p}
+                  onClick={() => goToPage(p)}
+                  className={cn(
+                    'w-3.75 h-3.75 rounded-full cursor-pointer',
+                    p === currentIndex ? 'bg-primary' : 'bg-neutral',
+                  )}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

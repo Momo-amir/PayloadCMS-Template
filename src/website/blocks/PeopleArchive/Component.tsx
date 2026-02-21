@@ -6,6 +6,7 @@ import RichText from '@/website/components/RichText'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 import { PersonCard } from '@/website/components/Card/PersonCard'
 import { ArchivePagination } from '@/website/components/ArchivePagination'
+import { STAGGER_GRID_CLASS, getStaggerItemProps } from '@/website/utilities/stagger'
 import {
   getPageFromSearchParams,
   getPaginationData,
@@ -70,11 +71,18 @@ export const PeopleArchive: React.FC<
           </div>
         )}
         <div className="container">
-          <div className={`grid grid-cols-1 ${columnClass(people.length)} gap-6`}>
+          <div
+            key={pagination.currentPage}
+            className={`grid grid-cols-1 ${columnClass(people.length)} gap-6 ${STAGGER_GRID_CLASS}`}
+          >
             {people && people.length > 0 ? (
               people.map((person, index) => {
                 if (typeof person === 'object' && person !== null) {
-                  return <PersonCard key={index} doc={person} />
+                  return (
+                    <div key={person.id} {...getStaggerItemProps(index)}>
+                      <PersonCard doc={person} />
+                    </div>
+                  )
                 }
                 return null
               })

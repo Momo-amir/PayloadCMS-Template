@@ -5,7 +5,10 @@ import type { Category, Post } from '@/payload-types'
 import { CollectionArchive } from '@/website/components/CollectionArchive'
 import { Button } from '@/website/components/elements/button'
 
-export const ArchiveCategoryFilter: React.FC<{ posts: Post[] }> = ({ posts }) => {
+export const ArchiveCategoryFilter: React.FC<{ posts: Post[]; animationKey?: string | number }> = ({
+  posts,
+  animationKey,
+}) => {
   const [activeCategoryIds, setActiveCategoryIds] = useState<Set<string>>(() => new Set())
   const [isVisible, setIsVisible] = useState(true)
   const fadeTimeoutRef = useRef<number | null>(null)
@@ -78,7 +81,7 @@ export const ArchiveCategoryFilter: React.FC<{ posts: Post[] }> = ({ posts }) =>
         </div>
       )}
       <div className={`transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-        <CollectionArchive posts={filteredPosts} />
+        <CollectionArchive posts={filteredPosts} animateOnLoad animationKey={animationKey} />
       </div>
     </div>
   )

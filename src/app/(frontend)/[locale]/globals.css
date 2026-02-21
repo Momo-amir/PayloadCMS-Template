@@ -337,3 +337,41 @@ main {
     transform: translateY(0);
   }
 }
+
+@keyframes archive-card-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.archive-stagger-grid {
+  contain: layout;
+}
+
+.archive-stagger-grid .archive-stagger-item {
+  opacity: 0;
+  animation: archive-card-enter 420ms ease-out both;
+  animation-delay: calc(var(--archive-stagger-index, 0) * 80ms);
+}
+
+.carousel-track {
+  contain: layout;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-stagger-grid .archive-stagger-item {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+
+  .carousel-track {
+    transition: none !important;
+  }
+}

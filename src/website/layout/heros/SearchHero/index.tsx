@@ -11,6 +11,7 @@ import { SearchPaginationControls } from '@/website/components/Search/Pagination
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 import { PostCard } from '@/website/components/Card/PostCard'
 import { PersonCard } from '@/website/components/Card/PersonCard'
+import { STAGGER_GRID_CLASS, getStaggerItemProps } from '@/website/utilities/stagger'
 
 type SearchHeroProps = Page['hero'] & {
   resultCollection?: 'posts' | 'people' | null
@@ -61,7 +62,8 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
         return null
       })
       .filter((id): id is string => id !== null) || []
-  const fallbackEmptyText = emptyText || (locale === 'da' ? 'Ingen resultater fundet.' : 'No results found')
+  const fallbackEmptyText =
+    emptyText || (locale === 'da' ? 'Ingen resultater fundet.' : 'No results found')
 
   const { totalDocs, totalPages, currentPage, postDocs, peopleDocs } = await querySearchResults({
     payload,
@@ -73,6 +75,7 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
     categoryIDs,
   })
   const resultsCount = totalDocs
+  const resultsAnimationKey = `search-${collection}-${normalizedQuery || ''}-${currentPage}`
 
   return (
     <TrackImpression componentName="Search Hero" componentType="searh_hero">
@@ -98,21 +101,27 @@ export const SearchHero: React.FC<SearchHeroProps> = async (props) => {
         ) : (
           <>
             <div className="container">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div
+                key={resultsAnimationKey}
+                className={`${STAGGER_GRID_CLASS} grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3`}
+              >
                 {collection === 'posts'
                   ? postDocs.map((post, index) => (
-                      <PostCard
-                        key={`post-${post.slug}-${index}`}
-                        className="h-full"
-                        doc={post}
-                        relationTo="posts"
-                        showCategories
-                        position={(currentPage - 1) * limit + index + 1}
-                        listContext="search"
-                      />
+                      <div key={`post-${post.slug}-${index}`} {...getStaggerItemProps(index)}>
+                        <PostCard
+                          className="h-full"
+                          doc={post}
+                          relationTo="posts"
+                          showCategories
+                          position={(currentPage - 1) * limit + index + 1}
+                          listContext="search"
+                        />
+                      </div>
                     ))
                   : peopleDocs.map((person, index) => (
-                      <PersonCard key={`person-${person.id}-${index}`} doc={person} />
+                      <div key={`person-${person.id}`} {...getStaggerItemProps(index)}>
+                        <PersonCard doc={person} />
+                      </div>
                     ))}
               </div>
             </div>
