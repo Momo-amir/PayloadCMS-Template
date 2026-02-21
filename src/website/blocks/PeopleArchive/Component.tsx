@@ -90,6 +90,7 @@ export const PeopleArchive: React.FC<
             <ArchivePagination
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
+              scrollTargetId={`block-${id}`}
             />
           </div>
         )}
