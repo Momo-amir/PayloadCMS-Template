@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import * as React from 'react'
+import { Checkbox } from '@/website/components/elements/checkbox'
 
 type PrivacyBannerProps = {
   iconUrl: string
@@ -25,6 +26,8 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
 
   const { showConsent, updateCookieConsent, bannerRequestId, consentPreferences } = usePrivacy()
   const t = useTranslations()
+  const checkboxClassName =
+    'h-4 w-4 border-white/60 bg-transparent data-[state=checked]:bg-white data-[state=checked]:text-black data-[state=checked]:border-white'
 
   const handleCloseBanner = () => {
     setAnimateOut(true)
@@ -132,58 +135,49 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
                 {t('cookie-consent:essential-description')}
               </p>
             </div>
-            <input
-              type="checkbox"
-              checked
-              disabled
-              className="h-4 w-4 accent-[rgba(255,255,255,0.1)] disabled:opacity-70"
-            />
+            <Checkbox checked disabled className={`${checkboxClassName} disabled:opacity-70`} />
           </div>
 
           <label className="flex items-center justify-between gap-3">
             <span>{t('cookie-consent:analytics')}</span>
-            <input
-              type="checkbox"
+            <Checkbox
               checked={analyticsEnabled}
-              onChange={(event) => {
-                const checked = event.target.checked
-                setAnalyticsEnabled(checked)
-                if (!checked) {
+              onCheckedChange={(checked) => {
+                const enabled = checked === true
+                setAnalyticsEnabled(enabled)
+                if (!enabled) {
                   setAnalyticsThirdPartySharing(false)
                 }
               }}
-              className="h-4 w-4 accent-[rgba(255,255,255,0.1)]"
+              className={checkboxClassName}
             />
           </label>
 
           <label className="flex items-center justify-between gap-3 pl-3 opacity-90">
             <span>{t('cookie-consent:analytics-third-party-sharing')}</span>
-            <input
-              type="checkbox"
+            <Checkbox
               checked={analyticsEnabled && analyticsThirdPartySharing}
               disabled={!analyticsEnabled}
-              onChange={(event) => setAnalyticsThirdPartySharing(event.target.checked)}
-              className="h-4 w-4 accent-[rgba(255,255,255,0.1)] disabled:opacity-40"
+              onCheckedChange={(checked) => setAnalyticsThirdPartySharing(checked === true)}
+              className={`${checkboxClassName} disabled:opacity-40`}
             />
           </label>
 
           <label className="flex items-center justify-between gap-3">
             <span>{t('cookie-consent:marketing')}</span>
-            <input
-              type="checkbox"
+            <Checkbox
               checked={marketingEnabled}
-              onChange={(event) => setMarketingEnabled(event.target.checked)}
-              className="h-4 w-4 accent-[rgba(255,255,255,0.1)]"
+              onCheckedChange={(checked) => setMarketingEnabled(checked === true)}
+              className={checkboxClassName}
             />
           </label>
 
           <label className="flex items-center justify-between gap-3">
             <span>{t('cookie-consent:personalization')}</span>
-            <input
-              type="checkbox"
+            <Checkbox
               checked={personalizationEnabled}
-              onChange={(event) => setPersonalizationEnabled(event.target.checked)}
-              className="h-4 w-4 accent-[rgba(255,255,255,0.1)]"
+              onCheckedChange={(checked) => setPersonalizationEnabled(checked === true)}
+              className={checkboxClassName}
             />
           </label>
         </div>
