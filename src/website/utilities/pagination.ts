@@ -21,22 +21,37 @@ const sanitizeParamToken = (value?: string): string | null => {
   return cleaned.length > 0 ? cleaned : null
 }
 
+const toShortStableToken = (value: string): string => {
+  // FNV-1a 32-bit hash -> compact base36 token for shorter, stable URL params.
+  let hash = 0x811c9dc5
+  for (let index = 0; index < value.length; index++) {
+    hash ^= value.charCodeAt(index)
+    hash = Math.imul(hash, 0x01000193)
+  }
+
+  // Keep only first 4 chars to minimize URL length.
+  return (hash >>> 0).toString(36).slice(0, 4)
+}
+
 export function getPaginationScopeIds(
   scope: 'archive' | 'people',
   blockId?: string,
 ): { pageParamKey: string; anchorId: string } {
   const token = sanitizeParamToken(blockId)
+  const scopePrefix = scope === 'archive' ? 'a' : 'p'
 
   if (!token) {
     return {
-      pageParamKey: `${scope}Page`,
-      anchorId: scope,
+      pageParamKey: scopePrefix,
+      anchorId: scopePrefix,
     }
   }
 
+  const shortToken = toShortStableToken(token)
+
   return {
-    pageParamKey: `${scope}Page_${token}`,
-    anchorId: `${scope}-${token}`,
+    pageParamKey: `${scopePrefix}_${shortToken}`,
+    anchorId: `${scopePrefix}-${shortToken}`,
   }
 }
 
