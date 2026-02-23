@@ -42,12 +42,18 @@
   "cookie-consent:customize-aria-label": "Tilpas samtykkeindstillinger",
   "cookie-consent:back": "Tilbage",
   "cookie-consent:save-choices": "Gem valg",
-  "cookie-consent:essential-cookies": "Nødvendige cookies",
-  "cookie-consent:essential-description": "Nødvendige for at hjemmesiden fungerer korrekt.",
+  "cookie-consent:essential-cookies": "Strengt nødvendige",
+  "cookie-consent:essential-description": "Strengt nødvendige cookies gør hjemmesiden brugbar ved at aktivere grundlæggende funktioner som sidenavigation og adgang til sikre områder.",
+  "cookie-consent:details-label": "Hvad omfatter dette?",
+  "cookie-consent:essential-details": "Uden disse cookies kan hjemmesiden ikke fungere korrekt. De bruges også til at gemme dine cookievalg og dit sprogvalg.",
   "cookie-consent:always-active": "Altid aktiv",
-  "cookie-consent:analytics": "Tillad analyse",
+  "cookie-consent:analytics": "Statistiske",
+  "cookie-consent:analytics-details": "Statistiske cookies hjælper os med at forstå, hvordan besøgende bruger hjemmesiden ved at indsamle og rapportere information.",
   "cookie-consent:analytics-local-storage": "Tillad lokal aggregeret analyse",
-  "cookie-consent:analytics-third-party-sharing": "Tillad deling af analyse med tredjeparter",
+  "cookie-consent:analytics-third-party-sharing": "Tredjeparts deling af statistik",
+  "cookie-consent:analytics-third-party-details": "Tillader deling af statistiske analysedata med eksterne analysetjenester.",
   "cookie-consent:marketing": "Markedsføring",
-  "cookie-consent:personalization": "Personalisering"
+  "cookie-consent:marketing-details": "Marketingcookies bruges til at spore besøgende på tværs af websites, så annoncer kan blive mere relevante og værdifulde for udgivere og tredjepartsannoncører.",
+  "cookie-consent:personalization": "Annoncepersonalisering",
+  "cookie-consent:personalization-details": "Personaliseringscookies tilpasser annonce- og indholdsoplevelser baseret på dine interaktioner og præferencer."
 }

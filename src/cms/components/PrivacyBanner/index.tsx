@@ -2,7 +2,7 @@
 
 import { defaultConsentPreferences } from '@/cms/utilities/consent-model'
 import { usePrivacy } from '@/providers/Privacy'
-import { IconAdjustmentsHorizontal } from '@tabler/icons-react'
+import { IconAdjustmentsHorizontal, IconChevronDown } from '@tabler/icons-react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
@@ -21,6 +21,7 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
   const [analyticsThirdPartySharing, setAnalyticsThirdPartySharing] = React.useState(false)
   const [marketingEnabled, setMarketingEnabled] = React.useState(false)
   const [personalizationEnabled, setPersonalizationEnabled] = React.useState(false)
+  const [expandedSections, setExpandedSections] = React.useState<Record<string, boolean>>({})
   const [customizePanelHeight, setCustomizePanelHeight] = React.useState(0)
   const customizePanelRef = React.useRef<HTMLDivElement>(null)
 
@@ -50,6 +51,7 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
     setAnalyticsThirdPartySharing(existing.analyticsThirdPartySharing)
     setMarketingEnabled(existing.marketing)
     setPersonalizationEnabled(existing.personalization)
+    setExpandedSections({})
     setCloseBanner(false)
     setAnimateOut(false)
   }, [showConsent, bannerRequestId, consentPreferences])
@@ -90,6 +92,13 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
     requestAnimationFrame(() => handleCloseBanner())
   }
 
+  const toggleSection = (section: string) => {
+    setExpandedSections((current) => ({
+      ...current,
+      [section]: !current[section],
+    }))
+  }
+
   if ((!showConsent && !animateOut) || closeBanner) return null
 
   return (
@@ -124,62 +133,189 @@ export const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ iconUrl }) => {
           } as React.CSSProperties
         }
       >
-        <div
-          ref={customizePanelRef}
-          className="space-y-3 border border-white/20 rounded-md p-3 text-sm"
-        >
+        <div ref={customizePanelRef} className="space-y-3  rounded-md p-3 text-sm">
           <div className="flex items-start justify-between gap-3">
-            <div>
-              <span>{t('cookie-consent:essential-cookies')}</span>
-              <p className="text-white/70 text-xs mt-1">
-                {t('cookie-consent:essential-description')}
-              </p>
+            <div className="min-w-0 flex-1">
+              <button
+                type="button"
+                onClick={() => toggleSection('essential')}
+                className="inline-flex items-center gap-1 text-left text-sm cursor-pointer"
+              >
+                <span>{t('cookie-consent:essential-cookies')}</span>
+                <IconChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${
+                    expandedSections.essential ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <div
+                className={`grid transition-all duration-300 ease-out ${
+                  expandedSections.essential
+                    ? 'grid-rows-[1fr] opacity-100 mt-1'
+                    : 'grid-rows-[0fr] opacity-0'
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <p className="text-sm leading-relaxed text-white/70">
+                    {t('cookie-consent:essential-details')}
+                  </p>
+                </div>
+              </div>
             </div>
             <Checkbox checked disabled className={`${checkboxClassName} disabled:opacity-70`} />
           </div>
 
-          <label className="flex items-center justify-between gap-3">
-            <span>{t('cookie-consent:analytics')}</span>
-            <Checkbox
-              checked={analyticsEnabled}
-              onCheckedChange={(checked) => {
-                const enabled = checked === true
-                setAnalyticsEnabled(enabled)
-                if (!enabled) {
-                  setAnalyticsThirdPartySharing(false)
-                }
-              }}
-              className={checkboxClassName}
-            />
-          </label>
+          <div>
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => toggleSection('analytics')}
+                className="inline-flex items-center gap-1 text-left text-sm cursor-pointer"
+              >
+                <span>{t('cookie-consent:analytics')}</span>
+                <IconChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${
+                    expandedSections.analytics ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <Checkbox
+                checked={analyticsEnabled}
+                onCheckedChange={(checked) => {
+                  const enabled = checked === true
+                  setAnalyticsEnabled(enabled)
+                  if (!enabled) {
+                    setAnalyticsThirdPartySharing(false)
+                  }
+                }}
+                className={checkboxClassName}
+              />
+            </div>
+            <div
+              className={`grid transition-all duration-300 ease-out ${
+                expandedSections.analytics
+                  ? 'grid-rows-[1fr] opacity-100 mt-1'
+                  : 'grid-rows-[0fr] opacity-0'
+              }`}
+            >
+              <div className="overflow-hidden">
+                <p className="text-sm leading-relaxed text-white/70">
+                  {t('cookie-consent:analytics-details')}
+                </p>
+              </div>
+            </div>
+          </div>
 
-          <label className="flex items-center justify-between gap-3 pl-3 opacity-90">
-            <span>{t('cookie-consent:analytics-third-party-sharing')}</span>
-            <Checkbox
-              checked={analyticsEnabled && analyticsThirdPartySharing}
-              disabled={!analyticsEnabled}
-              onCheckedChange={(checked) => setAnalyticsThirdPartySharing(checked === true)}
-              className={`${checkboxClassName} disabled:opacity-40`}
-            />
-          </label>
+          <div className="pl-3 opacity-90">
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => toggleSection('analyticsThirdParty')}
+                className="inline-flex items-center gap-1 text-left text-sm cursor-pointer"
+              >
+                <span>{t('cookie-consent:analytics-third-party-sharing')}</span>
+                <IconChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${
+                    expandedSections.analyticsThirdParty ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <Checkbox
+                checked={analyticsEnabled && analyticsThirdPartySharing}
+                disabled={!analyticsEnabled}
+                onCheckedChange={(checked) => setAnalyticsThirdPartySharing(checked === true)}
+                className={`${checkboxClassName} disabled:opacity-40`}
+              />
+            </div>
+            <div
+              className={`grid transition-all duration-300 ease-out ${
+                expandedSections.analyticsThirdParty
+                  ? 'grid-rows-[1fr] opacity-100 mt-1'
+                  : 'grid-rows-[0fr] opacity-0'
+              }`}
+            >
+              <div className="overflow-hidden">
+                <p className="text-sm leading-relaxed text-white/70">
+                  {t('cookie-consent:analytics-third-party-details')}
+                </p>
+              </div>
+            </div>
+          </div>
 
-          <label className="flex items-center justify-between gap-3">
-            <span>{t('cookie-consent:marketing')}</span>
-            <Checkbox
-              checked={marketingEnabled}
-              onCheckedChange={(checked) => setMarketingEnabled(checked === true)}
-              className={checkboxClassName}
-            />
-          </label>
+          <div>
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => toggleSection('marketing')}
+                className="inline-flex items-center gap-1 text-left text-sm cursor-pointer"
+              >
+                <span>{t('cookie-consent:marketing')}</span>
+                <IconChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${
+                    expandedSections.marketing ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <Checkbox
+                checked={marketingEnabled}
+                onCheckedChange={(checked) => setMarketingEnabled(checked === true)}
+                className={checkboxClassName}
+              />
+            </div>
+            <div
+              className={`grid transition-all duration-300 ease-out ${
+                expandedSections.marketing
+                  ? 'grid-rows-[1fr] opacity-100 mt-1'
+                  : 'grid-rows-[0fr] opacity-0'
+              }`}
+            >
+              <div className="overflow-hidden">
+                <p className="text-sm leading-relaxed text-white/70">
+                  {t('cookie-consent:marketing-details')}
+                </p>
+              </div>
+            </div>
+          </div>
 
-          <label className="flex items-center justify-between gap-3">
-            <span>{t('cookie-consent:personalization')}</span>
-            <Checkbox
-              checked={personalizationEnabled}
-              onCheckedChange={(checked) => setPersonalizationEnabled(checked === true)}
-              className={checkboxClassName}
-            />
-          </label>
+          <div>
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => toggleSection('personalization')}
+                className="inline-flex items-center gap-1 text-left text-sm cursor-pointer"
+              >
+                <span>{t('cookie-consent:personalization')}</span>
+                <IconChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${
+                    expandedSections.personalization ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <Checkbox
+                checked={personalizationEnabled}
+                onCheckedChange={(checked) => setPersonalizationEnabled(checked === true)}
+                className={checkboxClassName}
+              />
+            </div>
+            <div
+              className={`grid transition-all duration-300 ease-out ${
+                expandedSections.personalization
+                  ? 'grid-rows-[1fr] opacity-100 mt-1'
+                  : 'grid-rows-[0fr] opacity-0'
+              }`}
+            >
+              <div className="overflow-hidden">
+                <p className="text-sm leading-relaxed text-white/70">
+                  {t('cookie-consent:personalization-details')}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

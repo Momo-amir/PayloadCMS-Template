@@ -42,12 +42,18 @@
   "cookie-consent:customize-aria-label": "Customize consent settings",
   "cookie-consent:back": "Back",
   "cookie-consent:save-choices": "Save choices",
-  "cookie-consent:essential-cookies": "Essential cookies",
-  "cookie-consent:essential-description": "Required for the website to function properly.",
+  "cookie-consent:essential-cookies": "Strictly necessary",
+  "cookie-consent:essential-description": "Strictly necessary cookies help make the website usable by enabling basic functions such as page navigation and access to secure areas.",
+  "cookie-consent:details-label": "What does this include?",
+  "cookie-consent:essential-details": "Without these cookies, the website cannot function properly. They also store your cookie choices and language preference.",
   "cookie-consent:always-active": "Always active",
-  "cookie-consent:analytics": "Allow analytics",
+  "cookie-consent:analytics": "Statistical",
+  "cookie-consent:analytics-details": "Statistical cookies help us understand how visitors interact with the website by collecting and reporting information.",
   "cookie-consent:analytics-local-storage": "Allow local aggregated analytics",
-  "cookie-consent:analytics-third-party-sharing": "Allow third-party analytics sharing",
+  "cookie-consent:analytics-third-party-sharing": "Third-party statistical sharing",
+  "cookie-consent:analytics-third-party-details": "Allows sharing statistical analytics data with external analytics providers.",
   "cookie-consent:marketing": "Marketing",
-  "cookie-consent:personalization": "Personalization"
+  "cookie-consent:marketing-details": "Marketing cookies are used to track visitors across websites so ads can be relevant and valuable for publishers and third-party advertisers.",
+  "cookie-consent:personalization": "Ad personalization",
+  "cookie-consent:personalization-details": "Personalization cookies tailor ad and content experiences based on your interactions and preferences."
 }
