@@ -10,6 +10,7 @@ import { STAGGER_GRID_CLASS, getStaggerItemProps } from '@/website/utilities/sta
 import {
   getPageFromSearchParams,
   getPaginationData,
+  getPaginationScopeIds,
   type PaginationProps,
 } from '@/website/utilities/pagination'
 
@@ -41,7 +42,8 @@ export const PeopleArchive: React.FC<
   } = props
 
   const limit = limitFromProps || 10
-  const requestedPage = getPageFromSearchParams(searchParams)
+  const { pageParamKey, anchorId } = getPaginationScopeIds('people', id)
+  const requestedPage = getPageFromSearchParams(searchParams, pageParamKey)
 
   let people: Person[] = []
   let result = null
@@ -63,7 +65,7 @@ export const PeopleArchive: React.FC<
   const pagination = getPaginationData(result, enablePagination, populateBy)
 
   return (
-    <div className="my-16" id={`block-${id}`}>
+    <div className="my-16" id={anchorId} data-block-id={id ? `block-${id}` : undefined}>
       <TrackImpression componentName="People Archive" componentType="people-archive">
         {introContent && (
           <div className="container mb-16">
@@ -98,7 +100,8 @@ export const PeopleArchive: React.FC<
             <ArchivePagination
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
-              scrollTargetId={`block-${id}`}
+              scrollTargetId={anchorId}
+              pageParamKey={pageParamKey}
             />
           </div>
         )}

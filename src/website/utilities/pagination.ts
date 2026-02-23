@@ -3,13 +3,41 @@
  * @param searchParams - Next.js searchParams object from server components
  * @returns Valid page number (minimum 1)
  */
-export function getPageFromSearchParams(searchParams?: {
-  [key: string]: string | string[] | undefined
-}): number {
-  const rawPage = searchParams?.page
+export function getPageFromSearchParams(
+  searchParams?: {
+    [key: string]: string | string[] | undefined
+  },
+  pageParamKey = 'page',
+): number {
+  const rawPage = searchParams?.[pageParamKey]
   const pageParam = Array.isArray(rawPage) ? rawPage[0] : rawPage
   const requestedPageRaw = Number.parseInt(pageParam || '1', 10)
   return Number.isFinite(requestedPageRaw) && requestedPageRaw > 0 ? requestedPageRaw : 1
+}
+
+const sanitizeParamToken = (value?: string): string | null => {
+  if (!value) return null
+  const cleaned = value.toLowerCase().replace(/[^a-z0-9_-]/g, '')
+  return cleaned.length > 0 ? cleaned : null
+}
+
+export function getPaginationScopeIds(
+  scope: 'archive' | 'people',
+  blockId?: string,
+): { pageParamKey: string; anchorId: string } {
+  const token = sanitizeParamToken(blockId)
+
+  if (!token) {
+    return {
+      pageParamKey: `${scope}Page`,
+      anchorId: scope,
+    }
+  }
+
+  return {
+    pageParamKey: `${scope}Page_${token}`,
+    anchorId: `${scope}-${token}`,
+  }
 }
 
 /**

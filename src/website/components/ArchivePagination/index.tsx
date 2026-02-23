@@ -19,6 +19,7 @@ type ArchivePaginationProps = {
   basePath?: string
   className?: string
   scrollTargetId?: string
+  pageParamKey?: string
 }
 
 export const ArchivePagination: React.FC<ArchivePaginationProps> = ({
@@ -27,6 +28,7 @@ export const ArchivePagination: React.FC<ArchivePaginationProps> = ({
   basePath = '',
   className,
   scrollTargetId,
+  pageParamKey = 'page',
 }) => {
   const router = useRouter()
 
@@ -50,9 +52,9 @@ export const ArchivePagination: React.FC<ArchivePaginationProps> = ({
     const params = new URLSearchParams(window.location.search)
 
     if (page > 1) {
-      params.set('page', String(page))
+      params.set(pageParamKey, String(page))
     } else {
-      params.delete('page')
+      params.delete(pageParamKey)
     }
 
     const qs = params.toString()
