@@ -109,13 +109,13 @@ export default buildConfig({
         {
           slug: 'analytics-events',
           Component: '@/cms/components/widgets/AnalyticsEventsWidget.tsx#default',
-          minWidth: 'medium' as const,
+          minWidth: 'x-small' as const,
           maxWidth: 'full' as const,
         },
         {
           slug: 'analytics-overview',
           Component: '@/cms/components/widgets/EventTrackerGraph.tsx#default',
-          minWidth: 'medium' as const,
+          minWidth: 'x-small' as const,
           maxWidth: 'full' as const,
         },
       ],
