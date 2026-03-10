@@ -4,9 +4,9 @@
 @layer theme, base, components, utilities;
 
 /* Import the Tailwind theme styles */
+@import './admin-makeup.css';
 @import 'tailwindcss/theme.css' layer(theme);
 /* app/(payload)/styles/admin.css or admin.scss */
-@import '@/styles/admin-makeup.css';
 /* Skip the preflight reset to avoid conflicts with Payload's admin styles */
 /* @import 'tailwindcss/preflight.css' layer(base); */
 
