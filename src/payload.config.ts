@@ -18,7 +18,7 @@ import { Users } from './cms/collections/Users'
 import { Footer } from './website/layout/Footer/config'
 import { Header } from './website/layout/Header/config'
 import { plugins } from './cms/plugins'
-import { BrandingGlobal } from './cms/globals/Branding/config'
+import { CustomizationGlobal } from './cms/globals/Customization/config'
 import { defaultLexical } from '@/cms/fields/defaultLexical'
 import { getServerSideURL } from './cms/utilities/getURL'
 import { People } from './cms/collections/People'
@@ -164,7 +164,7 @@ export default buildConfig({
     disablePlaygroundInProduction: true,
     maxComplexity: graphQLMaxComplexity,
   },
-  globals: [Header, Footer, BrandingGlobal, AnalyticsConfig],
+  globals: [Header, Footer, CustomizationGlobal, AnalyticsConfig],
   plugins: [
     ...plugins,
     // storage-adapter-placeholder

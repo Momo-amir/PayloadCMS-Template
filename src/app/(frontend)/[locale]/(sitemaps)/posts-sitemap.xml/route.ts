@@ -6,7 +6,7 @@ import { unstable_cache } from 'next/cache'
 export const dynamic = 'force-dynamic'
 
 const getPostsSitemap = unstable_cache(
-  async (locale: string): Promise<ISitemapField[]> => {
+  async (locale: 'da' | 'en' | 'all' | undefined): Promise<ISitemapField[]> => {
     const payload = await getPayload({ config })
     const SITE_URL =
       process.env.NEXT_PUBLIC_SERVER_URL ||
@@ -56,7 +56,7 @@ const getPostsSitemap = unstable_cache(
 
 export async function GET(_req: Request, { params }: { params: Promise<{ locale?: string }> }) {
   const resolvedParams = await params
-  const locale = resolvedParams?.locale || 'da'
+  const locale = (resolvedParams?.locale as 'da' | 'en' | 'all' | undefined) || 'da'
   const sitemap = await getPostsSitemap(locale)
 
   return getServerSideSitemap(sitemap)

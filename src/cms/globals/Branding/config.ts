@@ -4,15 +4,9 @@ import { revalidateBranding } from './hooks/revalidateBranding'
 export const BrandingGlobal: GlobalConfig = {
   slug: 'branding',
   access: { read: () => true },
-  labels: {
-    singular: {
-      en: 'Branding',
-      da: 'Branding',
-    },
-    plural: {
-      en: 'Branding',
-      da: 'Branding',
-    },
+  label: {
+    en: 'Branding',
+    da: 'Branding',
   },
   fields: [
     {

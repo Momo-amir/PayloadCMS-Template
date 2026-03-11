@@ -717,8 +717,9 @@ html[data-theme='dark'] .nav__link:hover {
   content: '';
 }
 
-.nav-group .nav__link[id*='branding']::before {
-  mask-image: url('https://cdn.jsdelivr.net/npm/lucide-static@0.562.0/icons/palette.svg');
+.nav-group .nav__link[id*='branding']::before,
+.nav-group .nav__link[id*='customization']::before {
+  mask-image: url('https://cdn.jsdelivr.net/npm/lucide-static@0.562.0/icons/sliders-vertical.svg');
   content: '';
 }
 

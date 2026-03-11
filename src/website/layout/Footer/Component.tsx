@@ -16,8 +16,9 @@ import type { Footer } from '@/payload-types'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/website/components/Link'
 import { Logo } from '@/website/components/elements/Logo'
-import { getBranding, toLogoProps } from '@/cms/utilities/branding'
+import { getCustomization, toLogoProps } from '@/cms/utilities/customization'
 import { ConsentLink } from './ConsentLink'
+import type { TypedLocale } from 'payload'
 
 const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   facebook: IconBrandFacebook,
@@ -29,10 +30,10 @@ const socialIcons: Record<string, React.ComponentType<{ className?: string }>> =
   tiktok: IconBrandTiktok,
 }
 
-export async function Footer({ locale }: { locale?: string } = {}) {
+export async function Footer({ locale }: { locale?: TypedLocale } = {}) {
   const footerData = (await getCachedGlobal('footer', 1, locale)()) as Footer
-  const branding = await getBranding()
-  const logoProps = toLogoProps(branding)
+  const customization = await getCustomization()()
+  const logoProps = toLogoProps(customization)
   const navItems = footerData?.navItems || []
   const socialLinks = footerData?.socialLinks || []
   const themeMode = footerData?.themeMode || 'dark'

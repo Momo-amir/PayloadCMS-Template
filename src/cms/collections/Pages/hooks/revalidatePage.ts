@@ -3,32 +3,25 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'paylo
 import { revalidatePath, revalidateTag } from 'next/cache'
 
 import type { Page } from '@/payload-types'
+import { getCustomization, getHomePageID } from '@/cms/utilities/customization'
+import { getLocalizedPathsForPage } from '@/utils/paths'
 
-// Helper to get localized paths for revalidation
-const getLocalizedPaths = (slug: string): string[] => {
-  const paths: string[] = []
-
-  // Handle home page: accessible at root for default locale and /en for English
-  if (slug === 'home') {
-    paths.push('/') // Danish default at root
-    paths.push('/en') // English at /en
-  } else {
-    // For other pages, revalidate both locale paths
-    paths.push(`/${slug}`) // Danish (default locale, no prefix)
-    paths.push(`/en/${slug}`) // English (with prefix)
-  }
-
-  return paths
+const getRevalidationPaths = async (page: Page, locale?: 'da' | 'en') => {
+  const customization = await getCustomization(locale)()
+  return getLocalizedPathsForPage(page, getHomePageID(customization))
 }
 
-export const revalidatePage: CollectionAfterChangeHook<Page> = ({
+const getPageLocale = (page: Page): 'da' | 'en' | undefined =>
+  (page as Page & { locale?: 'da' | 'en' }).locale
+
+export const revalidatePage: CollectionAfterChangeHook<Page> = async ({
   doc,
   previousDoc,
   req: { payload, context },
 }) => {
   if (!context.disableRevalidate) {
     if (doc._status === 'published') {
-      const paths = getLocalizedPaths(doc.slug)
+      const paths = await getRevalidationPaths(doc, getPageLocale(doc))
 
       payload.logger.info(`Revalidating page at paths: ${paths.join(', ')}`)
 
@@ -45,7 +38,10 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
 
     // If the page was previously published, we need to revalidate the old paths
     if (previousDoc?._status === 'published' && doc._status !== 'published') {
-      const oldPaths = getLocalizedPaths(previousDoc.slug)
+      const oldPaths = await getRevalidationPaths(
+        previousDoc,
+        getPageLocale(previousDoc),
+      )
 
       payload.logger.info(`Revalidating old page at paths: ${oldPaths.join(', ')}`)
 
@@ -61,9 +57,12 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
   return doc
 }
 
-export const revalidateDelete: CollectionAfterDeleteHook<Page> = ({ doc, req: { context } }) => {
+export const revalidateDelete: CollectionAfterDeleteHook<Page> = async ({
+  doc,
+  req: { context },
+}) => {
   if (!context.disableRevalidate && doc?.slug) {
-    const paths = getLocalizedPaths(doc.slug)
+    const paths = await getRevalidationPaths(doc, getPageLocale(doc))
 
     // Revalidate all locale-specific paths
     paths.forEach((path) => revalidatePath(path))

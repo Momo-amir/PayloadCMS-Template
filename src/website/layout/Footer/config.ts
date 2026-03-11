@@ -1,7 +1,6 @@
 import type { GlobalConfig } from 'payload'
 import { link } from '@/cms/fields/link'
 import { revalidateFooter } from './hooks/revalidateFooter'
-import { generatePreviewPath } from '@/cms/utilities/generatePreviewPath'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
@@ -9,17 +8,7 @@ export const Footer: GlobalConfig = {
     read: () => true,
   },
 
-  admin: {
-    livePreview: {
-      url: ({ req, locale }) =>
-        generatePreviewPath({
-          slug: 'home',
-          collection: 'pages',
-          req,
-          locale,
-        }),
-    },
-  },
+  admin: {},
   fields: [
     {
       type: 'row',

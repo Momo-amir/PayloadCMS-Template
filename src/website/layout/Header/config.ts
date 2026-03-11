@@ -2,24 +2,13 @@ import type { GlobalConfig } from 'payload'
 
 import { link } from '@/cms/fields/link'
 import { revalidateHeader } from './hooks/revalidateHeader'
-import { generatePreviewPath } from '@/cms/utilities/generatePreviewPath'
 
 export const Header: GlobalConfig = {
   slug: 'header',
   access: {
     read: () => true,
   },
-  admin: {
-    livePreview: {
-      url: ({ req, locale }) =>
-        generatePreviewPath({
-          slug: 'home',
-          collection: 'pages',
-          req,
-          locale,
-        }),
-    },
-  },
+  admin: {},
   fields: [
     {
       name: 'showLanguageSwitcher',

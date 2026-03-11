@@ -21,7 +21,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server'
 
 import './globals.css'
 import { getServerSideURL } from '@/cms/utilities/getURL'
-import { getBranding, toFaviconProps } from '@/cms/utilities/branding'
+import { getCustomization, toFaviconProps } from '@/cms/utilities/customization'
 import { TypedLocale } from 'payload'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
@@ -33,11 +33,11 @@ export default async function RootLayout({
   params,
 }: {
   children: React.ReactNode
-  params: Promise<{ locale: TypedLocale }>
+  params: Promise<{ locale: string }>
 }) {
   const { isEnabled } = await draftMode()
-  const branding = await getBranding()
-  const { lightHref, darkHref, appleTouchIcon } = toFaviconProps(branding)
+  const customization = await getCustomization()()
+  const { lightHref, darkHref, appleTouchIcon } = toFaviconProps(customization)
 
   const { locale } = await params
   const _currentLocale =
@@ -47,14 +47,16 @@ export default async function RootLayout({
     notFound()
   }
 
-  setRequestLocale(locale)
+  const typedLocale = locale as TypedLocale
+
+  setRequestLocale(typedLocale)
   const messages = await getMessages()
 
   return (
     <PrivacyProvider>
       <html
         className={cn(GeistSans.variable, GeistMono.variable)}
-        lang={locale}
+        lang={typedLocale}
         suppressHydrationWarning
       >
         <head>
@@ -88,9 +90,9 @@ export default async function RootLayout({
                 }}
               />
 
-              <Header locale={locale} />
+              <Header locale={typedLocale} />
               {children}
-              <Footer locale={locale} />
+              <Footer locale={typedLocale} />
               <PrivacyBanner iconUrl={darkHref} />
             </Providers>
           </NextIntlClientProvider>

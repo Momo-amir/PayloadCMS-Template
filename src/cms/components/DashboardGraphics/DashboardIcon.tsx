@@ -1,10 +1,10 @@
 import Image from 'next/image'
 import React, { Suspense } from 'react'
-import { getBranding, toFaviconProps } from '@/cms/utilities/branding'
+import { getCustomization, toFaviconProps } from '@/cms/utilities/customization'
 
 async function DashboardIconContent() {
-  const branding = await getBranding()
-  const props = toFaviconProps(branding)
+  const customization = await getCustomization()()
+  const props = toFaviconProps(customization)
 
   const lightSrc = props.lightHref
   const darkSrc = props.darkHref

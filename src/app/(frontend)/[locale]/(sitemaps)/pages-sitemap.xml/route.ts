@@ -2,6 +2,7 @@ import { getServerSideSitemap, ISitemapField } from 'next-sitemap'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { unstable_cache } from 'next/cache'
+import { getCustomization, getHomePageID } from '@/cms/utilities/customization'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,6 +34,8 @@ const getPagesSitemap = unstable_cache(
     })
 
     const dateFallback = new Date().toISOString()
+    const customization = await getCustomization(locale === 'all' ? undefined : locale)()
+    const homePageId = getHomePageID(customization)
 
     const defaultSitemap = [
       {
@@ -50,7 +53,7 @@ const getPagesSitemap = unstable_cache(
           .filter((page) => Boolean(page?.slug))
           .map((page) => {
             const loc =
-              page?.slug === 'home'
+              homePageId !== null && String(page.id) === String(homePageId)
                 ? locale && locale !== 'da'
                   ? `${SITE_URL}/${locale}/`
                   : `${SITE_URL}/`
