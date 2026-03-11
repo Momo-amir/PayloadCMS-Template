@@ -612,7 +612,8 @@ html[data-theme='dark'] .nav__link:hover {
   }
   /* padding-left: 2.5rem !important; */
 }
-.nav__link.active::before {
+.nav__link.active::before,
+.nav__link:has(.nav__link-indicator)::before {
   opacity: 1;
 }
 .nav__link::before {

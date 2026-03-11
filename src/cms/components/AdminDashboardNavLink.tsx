@@ -7,13 +7,20 @@ export default function AdminDashboardNavLink({ i18n, payload, viewType }: Serve
     path: '',
   })
 
-  const className = viewType === 'dashboard' ? 'nav__link active' : 'nav__link'
+  const label = <span className="nav__link-label">{i18n.t('general:dashboard')}</span>
 
   return (
     <div className="nav-group nav-group--dashboard-shortcut">
-      <a className={className} href={href} id="nav-dashboard-home">
-        {i18n.t('general:dashboard')}
-      </a>
+      {viewType === 'dashboard' ? (
+        <div className="nav__link" id="nav-dashboard-home">
+          <div className="nav__link-indicator" />
+          {label}
+        </div>
+      ) : (
+        <a className="nav__link" href={href} id="nav-dashboard-home">
+          {label}
+        </a>
+      )}
     </div>
   )
 }
