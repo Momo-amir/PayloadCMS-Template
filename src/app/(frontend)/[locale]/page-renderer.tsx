@@ -87,7 +87,7 @@ export const queryPageByID = cache(async ({ id, locale }: { id: number; locale: 
       collection: 'pages',
       id,
       locale,
-      depth: 0,
+      depth: 1,
       draft,
       overrideAccess: draft,
     })) as Page
@@ -130,7 +130,7 @@ export const getPageByIDCached = (id: number, locale: TypedLocale) =>
           collection: 'pages',
           id,
           locale,
-          depth: 0,
+          depth: 1,
           draft: false,
           overrideAccess: false,
         })) as Page
