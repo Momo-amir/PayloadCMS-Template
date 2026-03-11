@@ -4,7 +4,6 @@
 @layer theme, base, components, utilities;
 
 /* Import the Tailwind theme styles */
-@import './admin-makeup.css';
 @import 'tailwindcss/theme.css' layer(theme);
 /* app/(payload)/styles/admin.css or admin.scss */
 /* Skip the preflight reset to avoid conflicts with Payload's admin styles */
@@ -12,6 +11,7 @@
 
 /* Import Tailwind utilities */
 @import 'tailwindcss/utilities.css' layer(utilities);
+@import './admin-makeup.css';
 
 @keyframes spin {
   from {
@@ -65,8 +65,6 @@
   color: var(--color-success-500);
 }
 
-.widget {
-  .pill-selector {
-    padding: 0;
-  }
+.widget .pill-selector {
+  padding: 0;
 }

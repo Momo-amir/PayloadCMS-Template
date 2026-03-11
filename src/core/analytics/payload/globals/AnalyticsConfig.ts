@@ -2,7 +2,16 @@ import type { GlobalConfig } from 'payload'
 
 export const AnalyticsConfig: GlobalConfig = {
   slug: 'analytics-config',
-  label: 'Analytics Settings',
+  labels: {
+    singular: {
+      en: 'Analytics Settings',
+      da: 'Analyseindstillinger',
+    },
+    plural: {
+      en: 'Analytics Settings',
+      da: 'Analyseindstillinger',
+    },
+  },
   admin: {
     group: 'Analytics',
   },
