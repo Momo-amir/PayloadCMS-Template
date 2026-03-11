@@ -34,6 +34,9 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = async ({
       revalidateTag(`page:${doc.slug}`, 'max')
       revalidateTag(`page:${doc.slug}:da`, 'max')
       revalidateTag(`page:${doc.slug}:en`, 'max')
+      revalidateTag(`page-id:${doc.id}`, 'max')
+      revalidateTag(`page-id:${doc.id}:da`, 'max')
+      revalidateTag(`page-id:${doc.id}:en`, 'max')
     }
 
     // If the page was previously published, we need to revalidate the old paths
@@ -52,6 +55,9 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = async ({
       revalidateTag(`page:${previousDoc.slug}`, 'max')
       revalidateTag(`page:${previousDoc.slug}:da`, 'max')
       revalidateTag(`page:${previousDoc.slug}:en`, 'max')
+      revalidateTag(`page-id:${previousDoc.id}`, 'max')
+      revalidateTag(`page-id:${previousDoc.id}:da`, 'max')
+      revalidateTag(`page-id:${previousDoc.id}:en`, 'max')
     }
   }
   return doc
@@ -72,6 +78,9 @@ export const revalidateDelete: CollectionAfterDeleteHook<Page> = async ({
     revalidateTag(`page:${doc.slug}`, 'max')
     revalidateTag(`page:${doc.slug}:da`, 'max')
     revalidateTag(`page:${doc.slug}:en`, 'max')
+    revalidateTag(`page-id:${doc.id}`, 'max')
+    revalidateTag(`page-id:${doc.id}:da`, 'max')
+    revalidateTag(`page-id:${doc.id}:en`, 'max')
   }
 
   return doc
