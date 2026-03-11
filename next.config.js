@@ -19,9 +19,6 @@ const nextConfig = {
     qualities: [60, 75, 85, 90, 100],
     localPatterns: [
       {
-        pathname: '/media/**',
-      },
-      {
         pathname: '/api/media/**',
       },
     ],

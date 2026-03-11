@@ -8,7 +8,8 @@ type MediaRef = number | Media | null | undefined
 export const mediaToURL = (m: MediaRef): string | undefined => {
   if (!m) return undefined
   if (typeof m === 'number') return undefined
-  if (m?.filename) return `/media/${m.filename}`
+  if (m.url) return m.url
+  if (m.filename) return `/api/media/${m.filename}`
   return undefined
 }
 
