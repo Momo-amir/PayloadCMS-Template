@@ -99,6 +99,7 @@ export default buildConfig({
       ],
     },
     components: {
+      beforeNavLinks: ['@/cms/components/AdminDashboardNavLink.tsx'],
       graphics: {
         Icon: '@/cms/components/DashboardGraphics/DashboardIcon.tsx',
         Logo: '@/cms/components/DashboardGraphics/DashboardLogo.tsx',

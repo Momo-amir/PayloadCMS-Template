@@ -27,6 +27,7 @@ import { RowLabel as RowLabel_7373a88fa654e3a8434219cb2baf21de } from '@/website
 import { RowLabel as RowLabel_4a97e2b05ef1b763469c9aa243cbe4d9 } from '@/website/layout/Footer/RowLabel'
 import { default as default_f35af700d9bc2f6ea0d0bb55cff83959 } from '@/cms/components/DashboardGraphics/DashboardIcon.tsx'
 import { default as default_9816f1c9af89c198c60ebc88ed9c0d24 } from '@/cms/components/DashboardGraphics/DashboardLogo.tsx'
+import { default as default_da1afef7178ac3dee5a34a4bea2a24b6 } from '@/cms/components/AdminDashboardNavLink.tsx'
 import { default as default_900e0ff6e195488f3a16461d9324da7f } from '@/cms/components/widgets/AnalyticsEventsWidget.tsx'
 import { default as default_4d91a0c8d10db185ab03bba76ce6e85c } from '@/cms/components/widgets/EventTrackerGraph.tsx'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -61,6 +62,7 @@ export const importMap = {
   "@/website/layout/Footer/RowLabel#RowLabel": RowLabel_4a97e2b05ef1b763469c9aa243cbe4d9,
   "@/cms/components/DashboardGraphics/DashboardIcon.tsx#default": default_f35af700d9bc2f6ea0d0bb55cff83959,
   "@/cms/components/DashboardGraphics/DashboardLogo.tsx#default": default_9816f1c9af89c198c60ebc88ed9c0d24,
+  "@/cms/components/AdminDashboardNavLink.tsx#default": default_da1afef7178ac3dee5a34a4bea2a24b6,
   "@/cms/components/widgets/AnalyticsEventsWidget.tsx#default": default_900e0ff6e195488f3a16461d9324da7f,
   "@/cms/components/widgets/EventTrackerGraph.tsx#default": default_4d91a0c8d10db185ab03bba76ce6e85c,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1

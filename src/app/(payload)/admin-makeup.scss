@@ -640,6 +640,11 @@ html[data-theme='dark'] .nav__link:hover {
   content: '';
 }
 
+.nav-group .nav__link[id*='dashboard']::before {
+  mask-image: url('https://cdn.jsdelivr.net/npm/lucide-static@0.562.0/icons/layout-dashboard.svg');
+  content: '';
+}
+
 .nav-group .nav__link[id*='header']::before {
   mask-image: url('https://cdn.jsdelivr.net/npm/lucide-static@0.562.0/icons/panel-top.svg');
   content: '';
