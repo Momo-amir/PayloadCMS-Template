@@ -2,11 +2,12 @@ import { getServerSideSitemap, ISitemapField } from 'next-sitemap'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { unstable_cache } from 'next/cache'
+import { getCustomization, getPostsPagePath } from '@/cms/utilities/customization'
 
 export const dynamic = 'force-dynamic'
 
 const getPostsSitemap = unstable_cache(
-  async (locale: 'da' | 'en' | 'all' | undefined): Promise<ISitemapField[]> => {
+  async (locale: 'da' | 'en' | 'all' | undefined, postsBasePath: string): Promise<ISitemapField[]> => {
     const payload = await getPayload({ config })
     const SITE_URL =
       process.env.NEXT_PUBLIC_SERVER_URL ||
@@ -40,8 +41,8 @@ const getPostsSitemap = unstable_cache(
           .map((post) => ({
             loc:
               locale && locale !== 'da'
-                ? `${SITE_URL}/${locale}/posts/${post?.slug}`
-                : `${SITE_URL}/posts/${post?.slug}`,
+                ? `${SITE_URL}/${locale}${postsBasePath}/${post?.slug}`
+                : `${SITE_URL}${postsBasePath}/${post?.slug}`,
             lastmod: post.updatedAt?.toString() || dateFallback,
           }))
       : []
@@ -50,14 +51,16 @@ const getPostsSitemap = unstable_cache(
   },
   ['posts-sitemap'],
   {
-    tags: ['posts-sitemap'],
+    tags: ['posts-sitemap', 'global_customization'],
   },
 )
 
 export async function GET(_req: Request, { params }: { params: Promise<{ locale?: string }> }) {
   const resolvedParams = await params
   const locale = (resolvedParams?.locale as 'da' | 'en' | 'all' | undefined) || 'da'
-  const sitemap = await getPostsSitemap(locale)
+  const customization = await getCustomization(locale as 'da' | 'en' | undefined)()
+  const postsBasePath = getPostsPagePath(customization)
+  const sitemap = await getPostsSitemap(locale, postsBasePath)
 
   return getServerSideSitemap(sitemap)
 }

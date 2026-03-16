@@ -1,12 +1,10 @@
 import { cn } from '@/cms/utilities/ui'
-import { getCachedRedirects } from '@/cms/utilities/getRedirects'
-import configPromise from '@/payload.config'
-import { getPayload } from 'payload'
 import Link from 'next/link'
 import React from 'react'
 import { getTranslations } from 'next-intl/server'
 
 import type { Page, Post } from '@/payload-types'
+import { getPagePath } from '@/utils/paths'
 
 type BreadcrumbItem = {
   label: string
@@ -31,69 +29,9 @@ type BreadcrumbsProps = {
 export const DEFAULT_POSTS_PARENT_PATH = '/posts'
 export const DEFAULT_POSTS_PARENT_LABEL = 'Posts'
 
-const formatLabelFromUrl = (url: string) => {
-  const cleaned = url.split('?')[0]?.split('#')[0]?.replace(/\/+$/, '')
-  const segment = cleaned?.split('/').filter(Boolean).pop()
-  if (!segment) return null
-  return segment.replace(/[-_]+/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
-}
 
-const resolveReferenceCrumb = async (
-  relationTo: 'pages' | 'posts' | undefined,
-  value: unknown,
-): Promise<BreadcrumbItem | null> => {
-  if (!relationTo || !value) return null
-
-  if (typeof value === 'object' && value) {
-    const doc = value as Page | Post
-    const label = doc?.title || doc?.slug
-    if (!label || !doc?.slug) return null
-    const base = relationTo !== 'pages' ? `/${relationTo}` : ''
-    return { label, url: `${base}/${doc.slug}` }
-  }
-
-  const id = String(value)
-  const payload = await getPayload({ config: configPromise })
-  const result = await payload.find({
-    collection: relationTo,
-    limit: 1,
-    pagination: false,
-    where: {
-      id: {
-        equals: id,
-      },
-    },
-  })
-  const doc = result.docs?.[0] as Page | Post | undefined
-  if (!doc?.slug) return null
-  const base = relationTo !== 'pages' ? `/${relationTo}` : ''
-  return { label: doc?.title || doc?.slug, url: `${base}/${doc.slug}` }
-}
-
-export const getPostsParentCrumb = async (
-  path: string,
-  fallbackLabel: string,
-): Promise<BreadcrumbItem> => {
-  const redirects = await getCachedRedirects()()
-  const redirectItem = redirects.find((redirect) => redirect.from === path)
-
-  if (!redirectItem) {
-    return { label: fallbackLabel, url: path }
-  }
-
-  if (redirectItem.to?.url) {
-    return {
-      label: formatLabelFromUrl(redirectItem.to.url) || fallbackLabel,
-      url: redirectItem.to.url,
-    }
-  }
-
-  const referenceCrumb = await resolveReferenceCrumb(
-    redirectItem.to?.reference?.relationTo,
-    redirectItem.to?.reference?.value,
-  )
-
-  return referenceCrumb || { label: fallbackLabel, url: path }
+export const getPostsParentCrumb = (path: string, label: string): BreadcrumbItem => {
+  return { label, url: path }
 }
 
 const normalizeItems = (items: BreadcrumbItem[]): NormalizedBreadcrumbItem[] => {
@@ -145,7 +83,7 @@ const buildPageItems = (page: Page) => {
   return []
 }
 
-const buildPostItems = async (
+const buildPostItems = (
   post: Post,
   options: {
     postsParentPath: string
@@ -160,8 +98,7 @@ const buildPostItems = async (
     items.push({ label: options.homeLabel, url: '/' })
   }
 
-  const parentCrumb = await getPostsParentCrumb(options.postsParentPath, options.postsParentLabel)
-  items.push(parentCrumb)
+  items.push(getPostsParentCrumb(options.postsParentPath, options.postsParentLabel))
 
   if (post?.title || post?.slug) {
     items.push({ label: post.title || post.slug })
@@ -191,7 +128,7 @@ export async function Breadcrumbs(props: BreadcrumbsProps) {
   } else if (page) {
     items = buildPageItems(page)
   } else if (post) {
-    items = await buildPostItems(post, {
+    items = buildPostItems(post, {
       postsParentPath,
       postsParentLabel,
       includeHome: includeHome ?? true,

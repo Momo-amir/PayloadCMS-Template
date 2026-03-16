@@ -17,6 +17,8 @@ import {
 import { trackPostCardClick } from '@/cms/utilities/analytics-server'
 import { usePrivacy } from '@/providers/Privacy'
 import { useTranslations } from 'next-intl'
+import { useCollectionPaths } from '@/providers/CollectionPaths'
+import { getPostPath } from '@/utils/paths'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
 
@@ -32,6 +34,7 @@ export const PostCard: React.FC<{
 }> = (props) => {
   const { card, link } = useClickableCard({})
   const { cookieConsent } = usePrivacy()
+  const { postsBasePath } = useCollectionPaths()
   const {
     className,
     doc,
@@ -48,7 +51,7 @@ export const PostCard: React.FC<{
   const hasCategories = categories && Array.isArray(categories) && categories.length > 0
   const titleToUse = titleFromProps || title
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
-  const href = `/${relationTo}/${slug}`
+  const href = getPostPath(slug || '', postsBasePath)
 
   const t = useTranslations()
 

@@ -6,6 +6,10 @@ export const getPagePath = (page: Page): string => {
   return lastUrl || '/' + page.slug
 }
 
+export const getPostPath = (slug: string, postsBasePath?: string | null): string => {
+  return `${postsBasePath || '/posts'}/${slug}`
+}
+
 export const getLocalizedPathsForPage = (
   page: Page,
   homePageId: number | string | null,
