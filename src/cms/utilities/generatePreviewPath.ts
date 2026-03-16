@@ -1,5 +1,6 @@
 import { PayloadRequest, CollectionSlug } from 'payload'
 import localization from '@/i18n/localization'
+import { getPostsPagePath } from '@/cms/utilities/customization'
 
 const collectionPrefixMap: Partial<Record<CollectionSlug, string>> = {
   posts: '/posts',
@@ -19,16 +20,28 @@ const getRequestLocale = (req: PayloadRequest): string | undefined => {
   return anyReq?.locale || anyReq?.i18n?.language
 }
 
-export const generatePreviewPath = ({ collection, slug, path: pathOverride, req, locale }: Props) => {
+export const generatePreviewPath = async ({ collection, slug, path: pathOverride, req, locale }: Props) => {
   const resolvedLocale =
     (typeof locale === 'string' ? locale : locale?.code) ||
     getRequestLocale(req) ||
     localization.defaultLocale
   const resolvedSlug = typeof slug === 'string' ? slug : ''
 
-  const pathWithoutLocale = pathOverride
-    ? pathOverride
-    : `${collectionPrefixMap[collection]}/${resolvedSlug}`
+  let prefix = collectionPrefixMap[collection] ?? ''
+
+  if (collection === 'posts' && !pathOverride) {
+    try {
+      const customizationData = await req.payload.findGlobal({
+        slug: 'customization' as never,
+        depth: 1,
+      })
+      prefix = getPostsPagePath(customizationData as never)
+    } catch {
+      // fall back to default
+    }
+  }
+
+  const pathWithoutLocale = pathOverride ? pathOverride : `${prefix}/${resolvedSlug}`
 
   const path = pathWithoutLocale ? `/${resolvedLocale}${pathWithoutLocale}` : `/${resolvedLocale}`
 
@@ -39,7 +52,5 @@ export const generatePreviewPath = ({ collection, slug, path: pathOverride, req,
     previewSecret: process.env.PREVIEW_SECRET || '',
   })
 
-  const url = `/${resolvedLocale}/next/preview?${encodedParams.toString()}`
-
-  return url
+  return `/${resolvedLocale}/next/preview?${encodedParams.toString()}`
 }

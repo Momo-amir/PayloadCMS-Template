@@ -65,12 +65,12 @@ export const Posts: CollectionConfig<'posts'> = {
         }),
     },
     preview: (data, { req, locale }) =>
-      generatePreviewPath({
-        slug: data?.slug as string,
-        collection: 'posts',
-        req,
-        locale,
-      }),
+        generatePreviewPath({
+          slug: data?.slug as string,
+          collection: 'posts',
+          req,
+          locale,
+        }),
     useAsTitle: 'title',
   },
   fields: [

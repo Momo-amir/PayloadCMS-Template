@@ -6,7 +6,8 @@ import React from 'react'
 import { trackButtonClick } from '@/cms/utilities/analytics-server'
 
 import type { Page, Post } from '@/payload-types'
-import { getPagePath } from '@/utils/paths'
+import { getPagePath, getPostPath } from '@/utils/paths'
+import { useCollectionPaths } from '@/providers/CollectionPaths'
 
 export type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
@@ -49,11 +50,13 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     enableTracking = true,
   } = props
 
+  const { postsBasePath } = useCollectionPaths()
+
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
       ? reference?.relationTo === 'pages'
         ? getPagePath(reference.value as Page)
-        : `/${reference?.relationTo}/${reference.value.slug}`
+        : getPostPath(reference.value.slug, postsBasePath)
       : url
 
   if (!href) return null

@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { trackPageView, trackPostView } from '@/cms/utilities/analytics-server'
 import type { Post } from '@/payload-types'
 
-const PageClient: React.FC<{ post: Post }> = ({ post }) => {
+const PostPageClient: React.FC<{ post: Post }> = ({ post }) => {
   /* Force the header to be dark mode while we have an image behind it */
   useHeaderThemeOverride('dark')
 
@@ -32,4 +32,4 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
   return <React.Fragment />
 }
 
-export default PageClient
+export default PostPageClient

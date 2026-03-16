@@ -8,19 +8,20 @@ import { IconArrowLeft } from '@tabler/icons-react'
 import type { Post } from '@/payload-types'
 
 import { PostCard } from '@/website/components/Card/PostCard'
-import { DEFAULT_POSTS_PARENT_PATH, getPostsParentCrumb } from '@/website/components/Breadcrumbs'
 import { STAGGER_GRID_CLASS, getStaggerItemProps } from '@/website/utilities/stagger'
 
 export type RelatedPostsProps = {
   className?: string
   docs?: Post[]
   introContent?: unknown
+  postsBasePath?: string
+  postsParentLabel?: string
 }
 
 export const RelatedPosts = async (props: RelatedPostsProps) => {
-  const { className, docs } = props
+  const { className, docs, postsBasePath = '/posts', postsParentLabel } = props
   const t = await getTranslations()
-  const parentCrumb = await getPostsParentCrumb(DEFAULT_POSTS_PARENT_PATH, t('posts'))
+  const backLabel = postsParentLabel || t('posts')
 
   return (
     <TrackImpression
@@ -30,15 +31,13 @@ export const RelatedPosts = async (props: RelatedPostsProps) => {
     >
       <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-baseline max-sm:grid-cols-1  max-sm:gap-2">
         <div className="justify-self-start max-sm:order-2">
-          {parentCrumb.url ? (
-            <Link
-              className="text-sm text-primary hover:underline inline-flex items-center transition-all transform duration-150 ease gap-2 group"
-              href={parentCrumb.url}
-            >
-              <IconArrowLeft size={16} className="group-hover:-translate-x-1 duration-150 ease" />
-              {t('back-to', { label: parentCrumb.label })}
-            </Link>
-          ) : null}
+          <Link
+            className="text-sm text-primary hover:underline inline-flex items-center transition-all transform duration-150 ease gap-2 group"
+            href={postsBasePath}
+          >
+            <IconArrowLeft size={16} className="group-hover:-translate-x-1 duration-150 ease" />
+            {t('back-to', { label: backLabel })}
+          </Link>
         </div>
 
         <div className="justify-self-center">

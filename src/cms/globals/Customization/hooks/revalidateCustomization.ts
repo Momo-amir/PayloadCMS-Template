@@ -10,6 +10,7 @@ export const revalidateCustomization: GlobalAfterChangeHook = ({ req: { payload,
 
   revalidateTag('global_customization', 'max')
   revalidateTag('pages-sitemap', 'max')
+  revalidateTag('posts-sitemap', 'max')
   revalidatePath('/')
   revalidatePath('/en')
 }
