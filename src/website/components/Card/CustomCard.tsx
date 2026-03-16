@@ -15,6 +15,7 @@ import { IconArrowRight } from '@tabler/icons-react'
 import { Media as MediaComponent } from '../Media'
 import Link from 'next/link'
 import { trackCardClick } from '@/cms/utilities/analytics-server'
+import { getPagePath } from '@/utils/paths'
 import { usePrivacy } from '@/providers/Privacy'
 
 type CardItem = NonNullable<CardBlockType['cards']>[number]
@@ -37,9 +38,11 @@ export const Card: React.FC<CardProps> = ({ card, className, variant = 'default'
   const getHref = (): string => {
     if (!link) return ''
     if (link.type === 'reference' && typeof link.reference?.value === 'object') {
-      const slug = link.reference.value.slug
       const relationTo = link.reference.relationTo
-      return relationTo !== 'pages' ? `/${relationTo}/${slug}` : `/${slug}`
+      if (relationTo === 'pages') {
+        return getPagePath(link.reference.value as import('@/payload-types').Page)
+      }
+      return `/${relationTo}/${link.reference.value.slug}`
     }
     return link.url || ''
   }

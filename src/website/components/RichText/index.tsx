@@ -23,6 +23,8 @@ import type {
 import { BannerBlock } from '@/website/blocks/Banner/Component'
 import { CallToActionBlock } from '@/website/blocks/CallToAction/Component'
 import { cn } from '@/cms/utilities/ui'
+import { getPagePath } from '@/utils/paths'
+import type { Page } from '@/payload-types'
 
 type NodeTypes =
   | DefaultNodeTypes
@@ -35,8 +37,8 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   if (typeof value !== 'object') {
     throw new Error('Expected value to be an object')
   }
-  const slug = value.slug
-  return relationTo === 'posts' ? `/posts/${slug}` : `/${slug}`
+  if (relationTo === 'posts') return `/posts/${value.slug}`
+  return getPagePath(value as Page)
 }
 
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
