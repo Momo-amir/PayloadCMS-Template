@@ -35,6 +35,33 @@ export const CustomizationGlobal: GlobalConfig = {
             },
           ],
         },
+        {
+          type: 'group',
+          label: {
+            en: 'Choose Post page',
+            da: 'Vælg Indlægs side',
+          },
+          admin: {
+            width: '50%',
+          },
+          fields: [
+            {
+              name: 'postsPage',
+              type: 'relationship',
+              relationTo: 'pages',
+              label: {
+                en: 'Posts parent page',
+                da: 'Overordnet side for indlæg',
+              },
+              admin: {
+                description: {
+                  en: 'e.g. your "Content Hub" page. Posts will be at {page-path}/{post-slug}.',
+                  da: 'f.eks. din "Content Hub"-side. Indlæg vil ligge på {side-sti}/{indlæg-slug}.',
+                },
+              },
+            },
+          ],
+        },
       ],
     },
     {

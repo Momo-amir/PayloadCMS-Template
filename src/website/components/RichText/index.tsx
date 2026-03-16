@@ -2,7 +2,6 @@ import { MediaBlock } from '@/website/blocks/MediaBlock/Component'
 import {
   DefaultNodeTypes,
   SerializedBlockNode,
-  SerializedLinkNode,
 } from '@payloadcms/richtext-lexical'
 import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import {
@@ -32,47 +31,50 @@ type NodeTypes =
       CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps | ColumnsBlockProps
     >
 
-const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
-  const { value, relationTo } = linkNode.fields.doc!
-  if (typeof value !== 'object') {
-    throw new Error('Expected value to be an object')
-  }
-  if (relationTo === 'posts') return `/posts/${value.slug}`
-  return getPagePath(value as Page)
-}
-
-const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
-  ...defaultConverters,
-  ...LinkJSXConverter({ internalDocToHref }),
-  blocks: {
-    banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
-    mediaBlock: ({ node }) => (
-      <MediaBlock
-        className="col-start-1 col-span-3"
-        imgClassName="m-0"
-        {...node.fields}
-        captionClassName="mx-auto max-w-[48rem]"
-        enableGutter={false}
-        disableInnerContainer={true}
-      />
-    ),
-    code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
-    cta: ({ node }) => <CallToActionBlock {...node.fields} />,
-    columns: ({ node }) => <ColumnsBlock className="col-start-1 col-span-3" {...node.fields} />,
-  },
-})
+const buildConverters = (postsBasePath: string): JSXConvertersFunction<NodeTypes> =>
+  ({ defaultConverters }) => ({
+    ...defaultConverters,
+    ...LinkJSXConverter({
+      internalDocToHref: ({ linkNode }) => {
+        const { value, relationTo } = linkNode.fields.doc!
+        if (typeof value !== 'object') {
+          throw new Error('Expected value to be an object')
+        }
+        if (relationTo === 'posts') return `${postsBasePath}/${value.slug}`
+        return getPagePath(value as Page)
+      },
+    }),
+    blocks: {
+      banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
+      mediaBlock: ({ node }) => (
+        <MediaBlock
+          className="col-start-1 col-span-3"
+          imgClassName="m-0"
+          {...node.fields}
+          captionClassName="mx-auto max-w-[48rem]"
+          enableGutter={false}
+          disableInnerContainer={true}
+        />
+      ),
+      code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
+      cta: ({ node }) => <CallToActionBlock {...node.fields} />,
+      columns: ({ node }) => <ColumnsBlock className="col-start-1 col-span-3" {...node.fields} />,
+    },
+  })
 
 type Props = {
   data: SerializedEditorState
   enableGutter?: boolean
   enable?: boolean
+  postsBasePath?: string
 } & React.HTMLAttributes<HTMLDivElement>
 
 export default function RichText(props: Props) {
-  const { className, enable = true, enableGutter = true, ...rest } = props
+  const { className, enable = true, enableGutter = true, postsBasePath = '/posts', ...rest } = props
+
   return (
     <RichTextWithoutBlocks
-      converters={jsxConverters}
+      converters={buildConverters(postsBasePath)}
       className={cn(
         {
           'container ': enableGutter,

@@ -13,33 +13,26 @@ import type { Post } from '@/payload-types'
 
 import { PostHero } from '@/website/layout/heros/PostHero'
 import { generateMeta } from '@/cms/utilities/generateMeta'
-import PageClient from './page.client'
+import PostPageClient from './post-page-client'
 import { LivePreviewListener } from '@/cms/components/LivePreviewListener'
 import { Breadcrumbs } from '@/website/components/Breadcrumbs'
-export const dynamic = 'force-dynamic'
-export const dynamicParams = true // Allow any slug to be rendered dynamically
 
-type Args = {
-  params: Promise<{
-    slug?: string
-    locale?: TypedLocale
-  }>
-}
-
-export default async function Post({ params: paramsPromise }: Args) {
-  const { isEnabled: draft } = await draftMode()
-  const { slug = '', locale = 'da' } = await paramsPromise
-  const url = '/posts/' + slug
-  // Use cached data when not in draft/preview; bypass cache in preview to ensure freshness
-  const post = draft
-    ? await queryPostBySlug({ slug, locale })
-    : await getPostBySlugCached(slug, locale)()
-
-  if (!post) return <PayloadRedirects url={url} />
-
+export function renderPostContent({
+  post,
+  url,
+  postsBasePath,
+  postsParentLabel,
+  draft,
+}: {
+  post: Post
+  url: string
+  postsBasePath: string
+  postsParentLabel: string
+  draft: boolean
+}) {
   return (
     <main className="pt-16 pb-16">
-      <PageClient post={post} />
+      <PostPageClient post={post} />
 
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
@@ -50,14 +43,26 @@ export default async function Post({ params: paramsPromise }: Args) {
 
       <div className="flex flex-col items-center gap-4 pt-8">
         <div className="container max-w-208 mb-8 relative z-20 mr-auto w-full">
-          <Breadcrumbs post={post} includeHome={false} />
+          <Breadcrumbs
+            post={post}
+            includeHome={false}
+            postsParentPath={postsBasePath}
+            postsParentLabel={postsParentLabel}
+          />
         </div>
         <div className="container">
-          <RichText className="max-w-3xl mx-auto" data={post.content} enableGutter={false} />
+          <RichText
+            className="max-w-3xl mx-auto"
+            data={post.content}
+            enableGutter={false}
+            postsBasePath={postsBasePath}
+          />
           {post.relatedPosts && post.relatedPosts.length > 0 && (
             <RelatedPosts
               className="mt-24 max-w-208 lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
               docs={post.relatedPosts.filter((post) => typeof post === 'object')}
+              postsBasePath={postsBasePath}
+              postsParentLabel={postsParentLabel}
             />
           )}
         </div>
@@ -66,19 +71,12 @@ export default async function Post({ params: paramsPromise }: Args) {
   )
 }
 
-export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { isEnabled: draft } = await draftMode()
-  const { slug = '', locale = 'da' } = await paramsPromise
-  const post = draft
-    ? await queryPostBySlug({ slug, locale })
-    : await getPostBySlugCached(slug, locale)()
-
+export async function generatePostMeta(post: Post | null): Promise<Metadata> {
   return generateMeta({ doc: post })
 }
 
-const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: TypedLocale }) => {
+export const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: TypedLocale }) => {
   const { isEnabled: draft } = await draftMode()
-
   const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
@@ -89,34 +87,24 @@ const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: T
     limit: 1,
     overrideAccess: draft,
     pagination: false,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
+    where: { slug: { equals: slug } },
   })
 
   return result.docs?.[0] || null
 })
 
-// Cached getter for non-preview usage; tag per post slug so hooks can revalidate precisely
-const getPostBySlugCached = (slug: string, locale?: TypedLocale) =>
+export const getPostBySlugCached = (slug: string, locale?: TypedLocale) =>
   unstable_cache(
     async () => {
       const payload = await getPayload({ config: configPromise })
       const result = await payload.find({
         collection: 'posts',
         draft: false,
-        // Include locale only when provided
         ...(locale ? { locale, fallbackLocale: 'da' } : {}),
         limit: 1,
         overrideAccess: false,
         pagination: false,
-        where: {
-          slug: {
-            equals: slug,
-          },
-        },
+        where: { slug: { equals: slug } },
       })
       return result.docs?.[0] || null
     },

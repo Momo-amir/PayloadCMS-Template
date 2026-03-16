@@ -21,7 +21,8 @@ import { getMessages, setRequestLocale } from 'next-intl/server'
 
 import './globals.css'
 import { getServerSideURL } from '@/cms/utilities/getURL'
-import { getCustomization, toFaviconProps } from '@/cms/utilities/customization'
+import { getCustomization, getPostsPagePath, toFaviconProps } from '@/cms/utilities/customization'
+import { CollectionPathsProvider } from '@/providers/CollectionPaths'
 import { TypedLocale } from 'payload'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
@@ -38,6 +39,7 @@ export default async function RootLayout({
   const { isEnabled } = await draftMode()
   const customization = await getCustomization()()
   const { lightHref, darkHref, appleTouchIcon } = toFaviconProps(customization)
+  const postsBasePath = getPostsPagePath(customization)
 
   const { locale } = await params
   const _currentLocale =
@@ -83,6 +85,7 @@ export default async function RootLayout({
         <body>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <Providers>
+              <CollectionPathsProvider postsBasePath={postsBasePath}>
               <ScrollDepthTracker />
               <AdminBar
                 adminBarProps={{
@@ -94,6 +97,7 @@ export default async function RootLayout({
               {children}
               <Footer locale={typedLocale} />
               <PrivacyBanner iconUrl={darkHref} />
+              </CollectionPathsProvider>
             </Providers>
           </NextIntlClientProvider>
         </body>

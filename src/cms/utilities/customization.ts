@@ -10,6 +10,7 @@ export type CustomizationData = {
   faviconDark?: MediaRef
   faviconLight?: MediaRef
   homePage?: HomePageRef
+  postsPage?: HomePageRef
   logoDark?: MediaRef
   logoLight?: MediaRef
 }
@@ -44,6 +45,22 @@ export const getCustomization = (locale?: TypedLocale) =>
     ['customization', locale ?? 'default'],
     { tags: ['global_customization', `global_customization:${locale ?? 'default'}`] },
   )
+
+export const getPostsPagePath = (customization: CustomizationData | null): string => {
+  const relation = customization?.postsPage
+  if (!relation || typeof relation !== 'object') return '/posts'
+  const page = relation as Page
+  const breadcrumbs = page.breadcrumbs
+  const lastUrl = breadcrumbs?.[breadcrumbs.length - 1]?.url
+  return lastUrl || `/${page.slug}` || '/posts'
+}
+
+export const getPostsPageLabel = (customization: CustomizationData | null): string => {
+  const relation = customization?.postsPage
+  if (!relation || typeof relation !== 'object') return 'Posts'
+  const page = relation as Page
+  return page.title || 'Posts'
+}
 
 export const getHomePageID = (customization: CustomizationData | null): number | null => {
   const relation = customization?.homePage
