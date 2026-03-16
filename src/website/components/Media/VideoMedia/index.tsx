@@ -16,11 +16,15 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
     onClick,
     resource,
     videoClassName,
-    autoplay = true,
-    loop = true,
-    muted = true,
-    controls = false,
+    autoplay: _autoplay,
+    loop: _loop,
+    muted: _muted,
+    controls: _controls,
   } = props
+  const autoplay = _autoplay ?? true
+  const loop = _loop ?? true
+  const muted = _muted ?? true
+  const controls = _controls ?? false
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isPlaying, setIsPlaying] = useState(autoplay)

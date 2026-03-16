@@ -19,10 +19,10 @@ type Props = MediaBlockProps & {
   staticImage?: StaticImageData
   disableInnerContainer?: boolean
   // Video-specific props
-  autoplay?: boolean
-  loop?: boolean
-  muted?: boolean
-  controls?: boolean
+  autoplay?: boolean | null
+  loop?: boolean | null
+  muted?: boolean | null
+  controls?: boolean | null
 }
 
 export const MediaBlock: React.FC<Props> = (props) => {
