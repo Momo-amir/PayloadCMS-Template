@@ -29,6 +29,7 @@ const getPagesSitemap = unstable_cache(
       },
       select: {
         slug: true,
+        breadcrumbs: true,
         updatedAt: true,
       },
     })
@@ -52,14 +53,18 @@ const getPagesSitemap = unstable_cache(
       ? results.docs
           .filter((page) => Boolean(page?.slug))
           .map((page) => {
+            const breadcrumbs = page.breadcrumbs
+            const pagePath =
+              breadcrumbs?.[breadcrumbs.length - 1]?.url || `/${page.slug}`
+
             const loc =
               homePageId !== null && String(page.id) === String(homePageId)
                 ? locale && locale !== 'da'
                   ? `${SITE_URL}/${locale}/`
                   : `${SITE_URL}/`
                 : locale && locale !== 'da'
-                  ? `${SITE_URL}/${locale}/${page?.slug}`
-                  : `${SITE_URL}/${page?.slug}`
+                  ? `${SITE_URL}/${locale}${pagePath}`
+                  : `${SITE_URL}${pagePath}`
             return {
               loc,
               lastmod: page.updatedAt?.toString() || dateFallback,

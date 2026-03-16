@@ -44,25 +44,34 @@ export const Pages: CollectionConfig<'pages'> = {
   defaultPopulate: {
     title: true,
     slug: true,
+    breadcrumbs: true,
   },
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt', 'status'],
     livePreview: {
-      url: ({ data, req, locale }) =>
-        generatePreviewPath({
+      url: ({ data, req, locale }) => {
+        const breadcrumbs = data?.breadcrumbs as Array<{ url?: string }> | undefined
+        const pagePath = breadcrumbs?.[breadcrumbs.length - 1]?.url || undefined
+        return generatePreviewPath({
           slug: data?.slug,
+          path: pagePath,
           collection: 'pages',
           req,
           locale,
-        }),
+        })
+      },
     },
-    preview: (data, { req, locale }) =>
-      generatePreviewPath({
+    preview: (data, { req, locale }) => {
+      const breadcrumbs = data?.breadcrumbs as Array<{ url?: string }> | undefined
+      const pagePath = breadcrumbs?.[breadcrumbs.length - 1]?.url || undefined
+      return generatePreviewPath({
         slug: data?.slug as string,
+        path: pagePath,
         collection: 'pages',
         req,
         locale,
-      }),
+      })
+    },
     useAsTitle: 'title',
   },
   fields: [

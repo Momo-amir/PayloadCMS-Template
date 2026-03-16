@@ -9,6 +9,7 @@ const collectionPrefixMap: Partial<Record<CollectionSlug, string>> = {
 type Props = {
   collection: keyof typeof collectionPrefixMap
   slug?: string | null
+  path?: string | null
   req: PayloadRequest
   locale?: string | { code: string } | null
 }
@@ -18,17 +19,16 @@ const getRequestLocale = (req: PayloadRequest): string | undefined => {
   return anyReq?.locale || anyReq?.i18n?.language
 }
 
-export const generatePreviewPath = ({ collection, slug, req, locale }: Props) => {
+export const generatePreviewPath = ({ collection, slug, path: pathOverride, req, locale }: Props) => {
   const resolvedLocale =
     (typeof locale === 'string' ? locale : locale?.code) ||
     getRequestLocale(req) ||
     localization.defaultLocale
   const resolvedSlug = typeof slug === 'string' ? slug : ''
 
-  const pathWithoutLocale =
-    collection === 'pages' && resolvedSlug === 'home'
-      ? ''
-      : `${collectionPrefixMap[collection]}/${resolvedSlug}`
+  const pathWithoutLocale = pathOverride
+    ? pathOverride
+    : `${collectionPrefixMap[collection]}/${resolvedSlug}`
 
   const path = pathWithoutLocale ? `/${resolvedLocale}${pathWithoutLocale}` : `/${resolvedLocale}`
 

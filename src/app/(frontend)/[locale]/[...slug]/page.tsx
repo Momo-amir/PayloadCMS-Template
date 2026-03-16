@@ -6,8 +6,8 @@ import type { TypedLocale } from 'payload'
 
 import {
   generatePageMetadata,
-  getPageBySlugCached,
-  queryPageBySlug,
+  getPageByPathCached,
+  queryPageByPath,
   renderPage,
 } from '../page-renderer'
 
@@ -16,7 +16,7 @@ export const dynamicParams = true
 
 type Args = {
   params: Promise<{
-    slug?: string
+    slug?: string[]
     locale?: TypedLocale
   }>
   searchParams?: Promise<{
@@ -28,35 +28,37 @@ export default async function Page({ params: paramsPromise, searchParams: search
   const { isEnabled: draft } = await draftMode()
   const { locale = 'da', slug } = await paramsPromise
 
-  if (!slug) {
+  if (!slug?.length) {
     return <PayloadRedirects url="/" />
   }
 
-  const url = '/' + slug
+  const path = '/' + slug.join('/')
   const searchParams = await searchParamsPromise
 
   const page = draft
-    ? await queryPageBySlug({ slug, locale })
-    : await getPageBySlugCached(slug, locale)()
+    ? await queryPageByPath({ path, locale })
+    : await getPageByPathCached(path, locale)()
 
   if (!page) {
-    return <PayloadRedirects url={url} />
+    return <PayloadRedirects url={path} />
   }
 
-  return renderPage({ page, locale, searchParams, url })
+  return renderPage({ page, locale, searchParams, url: path })
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { isEnabled: draft } = await draftMode()
   const { locale = 'da', slug } = await paramsPromise
 
-  if (!slug) {
+  if (!slug?.length) {
     return generatePageMetadata(null)
   }
 
+  const path = '/' + slug.join('/')
+
   const page = draft
-    ? await queryPageBySlug({ slug, locale })
-    : await getPageBySlugCached(slug, locale)()
+    ? await queryPageByPath({ path, locale })
+    : await getPageByPathCached(path, locale)()
 
   return generatePageMetadata(page)
 }

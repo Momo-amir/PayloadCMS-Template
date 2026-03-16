@@ -14,7 +14,7 @@ import { Breadcrumbs } from '@/website/components/Breadcrumbs'
 import { RenderBlocks } from '@/website/blocks/RenderBlocks'
 import { RenderHero } from '@/website/layout/heros/RenderHero'
 
-import PageClient from './[slug]/page.client'
+import PageClient from './[...slug]/page.client'
 
 type RenderArgs = {
   locale: TypedLocale
@@ -57,25 +57,30 @@ export async function generatePageMetadata(page: Page | null): Promise<Metadata>
   return generateMeta({ doc: page })
 }
 
-export const queryPageBySlug = cache(async ({ slug, locale }: { locale: TypedLocale; slug: string }) => {
+export const queryPageByPath = cache(async ({ path, locale }: { locale: TypedLocale; path: string }) => {
   const { isEnabled: draft } = await draftMode()
   const payload = await getPayload({ config: configPromise })
+
+  const slug = path.split('/').filter(Boolean).pop() || ''
 
   const result = await payload.find({
     collection: 'pages',
     locale,
     draft,
-    limit: 1,
+    limit: 50,
     pagination: false,
     overrideAccess: draft,
     where: {
-      slug: {
-        equals: slug,
-      },
+      slug: { equals: slug },
     },
   })
 
-  return result.docs?.[0] || null
+  return (
+    result.docs.find((doc) => {
+      const breadcrumbs = doc.breadcrumbs
+      return breadcrumbs?.[breadcrumbs.length - 1]?.url === path
+    }) || null
+  )
 })
 
 export const queryPageByID = cache(async ({ id, locale }: { id: number; locale: TypedLocale }) => {
@@ -96,28 +101,34 @@ export const queryPageByID = cache(async ({ id, locale }: { id: number; locale: 
   }
 })
 
-export const getPageBySlugCached = (slug: string, locale: TypedLocale) =>
+export const getPageByPathCached = (path: string, locale: TypedLocale) =>
   unstable_cache(
     async () => {
       const payload = await getPayload({ config: configPromise })
+
+      const slug = path.split('/').filter(Boolean).pop() || ''
+
       const result = await payload.find({
         collection: 'pages',
         locale,
         draft: false,
-        limit: 1,
+        limit: 50,
         pagination: false,
         overrideAccess: false,
         where: {
-          slug: {
-            equals: slug,
-          },
+          slug: { equals: slug },
         },
       })
 
-      return result.docs?.[0] || null
+      return (
+        result.docs.find((doc) => {
+          const breadcrumbs = doc.breadcrumbs
+          return breadcrumbs?.[breadcrumbs.length - 1]?.url === path
+        }) || null
+      )
     },
-    ['page-by-slug', slug, locale],
-    { tags: [`page:${slug}`, `page:${slug}:${locale}`] },
+    ['page-by-path', path, locale],
+    { tags: [`page-path:${path}`, `page-path:${path}:${locale}`] },
   )
 
 export const getPageByIDCached = (id: number, locale: TypedLocale) =>
