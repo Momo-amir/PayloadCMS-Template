@@ -1,64 +1,54 @@
 'use client'
 
-import React, { useMemo, useRef, useState } from 'react'
-import type { Category, Post } from '@/payload-types'
+import React, { useState, useTransition } from 'react'
+import type { Post } from '@/payload-types'
 import { CollectionArchive } from '@/website/components/CollectionArchive'
 import { Button } from '@/website/components/elements/button'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export const ArchiveCategoryFilter: React.FC<{ posts: Post[]; animationKey?: string | number }> = ({
-  posts,
-  animationKey,
-}) => {
-  const [activeCategoryIds, setActiveCategoryIds] = useState<Set<string>>(() => new Set())
+type FilterCategory = { id: string; title: string; slug: string }
+
+export const ArchiveCategoryFilter: React.FC<{
+  posts: Post[]
+  categories: FilterCategory[]
+  activeCatSlugs: string[]
+  catParamKey: string
+  pageParamKey: string
+  animationKey?: string | number
+}> = ({ posts, categories, activeCatSlugs, catParamKey, pageParamKey, animationKey }) => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [isVisible, setIsVisible] = useState(true)
-  const fadeTimeoutRef = useRef<number | null>(null)
+  const [, startTransition] = useTransition()
 
-  const categories = useMemo(() => {
-    const map = new Map<string, string>()
-
-    posts.forEach((post) => {
-      post.categories?.forEach((category) => {
-        if (typeof category === 'object' && category) {
-          const cat = category as Category
-          if (cat?.id) {
-            map.set(String(cat.id), cat.title || 'Untitled')
-          }
-        }
-      })
-    })
-
-    return Array.from(map.entries()).map(([id, title]) => ({ id, title }))
-  }, [posts])
-
-  const filteredPosts = useMemo(() => {
-    if (activeCategoryIds.size === 0) return posts
-    return posts.filter((post) => {
-      return post.categories?.some((category) => {
-        if (typeof category === 'object' && category) {
-          return activeCategoryIds.has(String((category as Category).id))
-        }
-        return activeCategoryIds.has(String(category))
-      })
-    })
-  }, [posts, activeCategoryIds])
-
-  const applyFilter = (nextCategoryId: string) => {
-    if (fadeTimeoutRef.current) {
-      window.clearTimeout(fadeTimeoutRef.current)
+  const toggleCategory = (slug: string) => {
+    const next = new Set(activeCatSlugs)
+    if (next.has(slug)) {
+      next.delete(slug)
+    } else {
+      next.add(slug)
     }
+
+    const params = new URLSearchParams(searchParams.toString())
+
+    if (next.size > 0) {
+      params.set(catParamKey, Array.from(next).join(','))
+    } else {
+      params.delete(catParamKey)
+    }
+
+    // Reset to page 1 when filter changes
+    params.delete(pageParamKey)
+
+    const qs = params.toString()
+    const url = qs ? `?${qs}` : window.location.pathname
+
     setIsVisible(false)
-    fadeTimeoutRef.current = window.setTimeout(() => {
-      setActiveCategoryIds((current) => {
-        const next = new Set(current)
-        if (next.has(nextCategoryId)) {
-          next.delete(nextCategoryId)
-        } else {
-          next.add(nextCategoryId)
-        }
-        return next
-      })
-      setIsVisible(true)
-    }, 150)
+    startTransition(() => {
+      router.push(url, { scroll: false })
+    })
+    // Fade back in after navigation settles
+    setTimeout(() => setIsVisible(true), 150)
   }
 
   return (
@@ -70,9 +60,9 @@ export const ArchiveCategoryFilter: React.FC<{ posts: Post[]; animationKey?: str
               <Button
                 key={category.id}
                 type="button"
-                variant={activeCategoryIds.has(category.id) ? 'pillActive' : 'pill'}
+                variant={activeCatSlugs.includes(category.slug) ? 'pillActive' : 'pill'}
                 size="clear"
-                onClick={() => applyFilter(category.id)}
+                onClick={() => toggleCategory(category.slug)}
               >
                 {category.title}
               </Button>
@@ -81,7 +71,7 @@ export const ArchiveCategoryFilter: React.FC<{ posts: Post[]; animationKey?: str
         </div>
       )}
       <div className={`transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-        <CollectionArchive posts={filteredPosts} animateOnLoad animationKey={animationKey} />
+        <CollectionArchive posts={posts} animateOnLoad animationKey={animationKey} />
       </div>
     </div>
   )

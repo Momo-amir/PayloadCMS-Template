@@ -61,14 +61,18 @@ export const ArchivePagination: React.FC<ArchivePaginationProps> = ({
     const path = qs
       ? `${basePath || window.location.pathname}?${qs}`
       : basePath || window.location.pathname
-    const url = scrollTargetId ? `${path}#${scrollTargetId}` : path
+
+    router.push(path, { scroll: false })
 
     if (scrollTargetId) {
-      router.push(url)
-      return
+      const target = document.getElementById(scrollTargetId)
+      if (target) {
+        // Defer until after Next.js re-renders the new page content
+        requestAnimationFrame(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      }
     }
-
-    router.push(url, { scroll: false })
   }
 
   if (totalPages <= 1) return null

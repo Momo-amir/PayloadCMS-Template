@@ -36,7 +36,7 @@ const toShortStableToken = (value: string): string => {
 export function getPaginationScopeIds(
   scope: 'archive' | 'people',
   blockId?: string,
-): { pageParamKey: string; anchorId: string } {
+): { pageParamKey: string; anchorId: string; catParamKey: string } {
   const token = sanitizeParamToken(blockId)
   const scopePrefix = scope === 'archive' ? 'a' : 'p'
 
@@ -44,6 +44,7 @@ export function getPaginationScopeIds(
     return {
       pageParamKey: scopePrefix,
       anchorId: scopePrefix,
+      catParamKey: 'cat',
     }
   }
 
@@ -52,7 +53,21 @@ export function getPaginationScopeIds(
   return {
     pageParamKey: `${scopePrefix}_${shortToken}`,
     anchorId: `${scopePrefix}-${shortToken}`,
+    catParamKey: `cat_${shortToken}`,
   }
+}
+
+export function getCatsFromSearchParams(
+  searchParams?: { [key: string]: string | string[] | undefined },
+  catParamKey = 'cat',
+): string[] {
+  const raw = searchParams?.[catParamKey]
+  const value = Array.isArray(raw) ? raw[0] : raw
+  if (!value) return []
+  return value
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
 }
 
 /**
