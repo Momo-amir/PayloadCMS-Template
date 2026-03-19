@@ -12,7 +12,14 @@ export default function middleware(request: NextRequest) {
   )
 
   if (pathnameHasLocale) {
-    return handleI18nRouting(request)
+    const response = handleI18nRouting(request)
+    const detectedLocale = routing.locales.find(
+      (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`,
+    )
+    if (detectedLocale === routing.defaultLocale) {
+      response.cookies.delete('NEXT_LOCALE')
+    }
+    return response
   }
 
   // For unprefixed paths, check for locale cookie
