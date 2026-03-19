@@ -18,6 +18,8 @@ export default function middleware(request: NextRequest) {
     )
     if (detectedLocale === routing.defaultLocale) {
       response.cookies.delete('NEXT_LOCALE')
+    } else {
+      downgradeToSessionCookie(response)
     }
     return response
   }
@@ -36,7 +38,26 @@ export default function middleware(request: NextRequest) {
   }
 
   // No valid cookie, use default locale (no redirect needed with 'as-needed' mode)
-  return handleI18nRouting(request)
+  const response = handleI18nRouting(request)
+  downgradeToSessionCookie(response)
+  return response
+}
+
+/**
+ * Always strip Max-Age from NEXT_LOCALE so it is session-only server-side.
+ * Persistence is handled client-side by persistLocaleCookieAfterConsent()
+ * once the user grants personalization consent.
+ */
+function downgradeToSessionCookie(response: NextResponse) {
+  const localeCookieValue = response.cookies.get('NEXT_LOCALE')?.value
+  if (localeCookieValue) {
+    response.cookies.set('NEXT_LOCALE', localeCookieValue, {
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      // no maxAge = session cookie
+    })
+  }
 }
 
 export const config = {

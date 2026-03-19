@@ -45,7 +45,7 @@
   "cookie-consent:essential-cookies": "Strictly necessary",
   "cookie-consent:essential-description": "Strictly necessary cookies help make the website usable by enabling basic functions such as page navigation and access to secure areas.",
   "cookie-consent:details-label": "What does this include?",
-  "cookie-consent:essential-details": "Without these cookies, the website cannot function properly. They also store your cookie choices and language preference.",
+  "cookie-consent:essential-details": "Without these cookies, the website cannot function properly.",
   "cookie-consent:always-active": "Always active",
   "cookie-consent:analytics": "Statistical",
   "cookie-consent:analytics-details": "Statistical cookies help us understand how visitors interact with the website by collecting and reporting information.",
@@ -54,6 +54,6 @@
   "cookie-consent:analytics-third-party-details": "Allows sharing statistical analytics data with external analytics providers.",
   "cookie-consent:marketing": "Marketing",
   "cookie-consent:marketing-details": "Marketing cookies are used to track visitors across websites so ads can be relevant and valuable for publishers and third-party advertisers.",
-  "cookie-consent:personalization": "Ad personalization",
-  "cookie-consent:personalization-details": "Personalization cookies tailor ad and content experiences based on your interactions and preferences."
+  "cookie-consent:personalization": "Personalization",
+  "cookie-consent:personalization-details": "Personalization cookies remember your settings, like language or currency, so the site works the way you prefer."
 }

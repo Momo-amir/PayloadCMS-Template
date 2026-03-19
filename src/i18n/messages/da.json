@@ -54,6 +54,6 @@
   "cookie-consent:analytics-third-party-details": "Tillader deling af statistiske analysedata med eksterne analysetjenester.",
   "cookie-consent:marketing": "Markedsføring",
   "cookie-consent:marketing-details": "Marketingcookies bruges til at spore besøgende på tværs af websites, så annoncer kan blive mere relevante og værdifulde for udgivere og tredjepartsannoncører.",
-  "cookie-consent:personalization": "Annoncepersonalisering",
-  "cookie-consent:personalization-details": "Personaliseringscookies tilpasser annonce- og indholdsoplevelser baseret på dine interaktioner og præferencer."
+  "cookie-consent:personalization": "Personalisering",
+  "cookie-consent:personalization-details": "Personalisering-cookies husker dine indstillinger, som fx sprog og valuta, så websitet fungerer, som du foretrækker."
 }

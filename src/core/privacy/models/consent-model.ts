@@ -1,4 +1,4 @@
-export const CONSENT_POLICY_VERSION = 2
+export const CONSENT_POLICY_VERSION = 3
 
 export type ConsentPreferences = {
   essential: boolean
@@ -46,8 +46,7 @@ function sanitizePreferences(
   if (!preferences) return base
 
   const analytics = preferences.analytics === true
-  const analyticsLocalStorage =
-    analytics && (preferences.analyticsLocalStorage ?? true) === true
+  const analyticsLocalStorage = analytics && (preferences.analyticsLocalStorage ?? true) === true
   const analyticsThirdPartySharing =
     analytics && (preferences.analyticsThirdPartySharing ?? false) === true
 

@@ -3,7 +3,7 @@
 import React, { createContext, use, useCallback, useEffect, useState } from 'react'
 import { updateAnalyticsConsent } from '@/core/analytics/client/analytics-client'
 import { updateConsent as updateGoogleConsentMode } from '@/core/analytics/client/consent-mode'
-import { clearConsentCookie, setConsentCookie } from '@/core/privacy/client/consent-cookie'
+import { clearConsentCookie, persistLocaleCookieAfterConsent, setConsentCookie } from '@/core/privacy/client/consent-cookie'
 import {
   CONSENT_POLICY_VERSION,
   defaultConsentPreferences,
@@ -56,6 +56,8 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
         // 2. Set first-party cookie (readable by track() function)
         setConsentCookie(preferences)
+        // Upgrade NEXT_LOCALE to persistent only if personalization consent is given
+        if (preferences.personalization) persistLocaleCookieAfterConsent()
 
         // 3. Update in-memory state (React context)
         setConsentPreferences(preferences)
@@ -119,6 +121,7 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
 
         setConsentCookie(preferences)
+        if (preferences.personalization) persistLocaleCookieAfterConsent()
         setConsentPreferences(preferences)
         setCookieConsent(preferences.analytics)
         updateAnalyticsConsent(preferences.analytics)

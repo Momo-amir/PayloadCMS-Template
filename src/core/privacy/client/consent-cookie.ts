@@ -11,7 +11,7 @@ import {
   type StoredConsentState,
 } from '../models/consent-model'
 
-export const CONSENT_COOKIE_NAME = 'analytics_consent'
+export const CONSENT_COOKIE_NAME = 'cookie_consent'
 export const CONSENT_TOKEN_COOKIE_NAME = 'consent_token'
 // GDPR: 12 months balances user convenience with periodic re-consent requirement
 const COOKIE_MAX_AGE = 365 * 24 * 60 * 60 // 12 months in seconds
@@ -70,6 +70,25 @@ export function setConsentCookie(preferences: boolean | Partial<ConsentPreferenc
   const isProduction = process.env.NODE_ENV === 'production'
   const isSecure = isProduction || window.location.protocol === 'https:'
   document.cookie = `${CONSENT_COOKIE_NAME}=${value}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax${isSecure ? '; Secure' : ''}`
+}
+
+/**
+ * Upgrade NEXT_LOCALE from session-only to persistent after essential consent is given.
+ * The middleware sets it as session-only before consent; call this once consent is accepted.
+ */
+export function persistLocaleCookieAfterConsent(): void {
+  if (typeof document === 'undefined') return
+
+  const cookies = document.cookie.split(';')
+  const localeCookie = cookies.find((c) => c.trim().startsWith('NEXT_LOCALE='))
+  if (!localeCookie) return
+
+  const value = localeCookie.split('=')[1]?.trim()
+  if (!value) return
+
+  const isProduction = process.env.NODE_ENV === 'production'
+  const isSecure = isProduction || window.location.protocol === 'https:'
+  document.cookie = `NEXT_LOCALE=${value}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax${isSecure ? '; Secure' : ''}`
 }
 
 /**
