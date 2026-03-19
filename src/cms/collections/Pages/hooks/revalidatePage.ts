@@ -36,6 +36,10 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = async ({
       revalidateTag(`page-id:${doc.id}`, 'max')
       revalidateTag(`page-id:${doc.id}:da`, 'max')
       revalidateTag(`page-id:${doc.id}:en`, 'max')
+
+      // Header and footer may contain populated references to this page (breadcrumbs-based URLs)
+      revalidateTag('global_header', 'max')
+      revalidateTag('global_footer', 'max')
     }
 
     if (previousDoc?._status === 'published' && doc._status !== 'published') {
@@ -53,6 +57,10 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = async ({
       revalidateTag(`page-id:${previousDoc.id}`, 'max')
       revalidateTag(`page-id:${previousDoc.id}:da`, 'max')
       revalidateTag(`page-id:${previousDoc.id}:en`, 'max')
+
+      // Header and footer may contain populated references to this page
+      revalidateTag('global_header', 'max')
+      revalidateTag('global_footer', 'max')
     }
   }
   return doc
@@ -75,6 +83,10 @@ export const revalidateDelete: CollectionAfterDeleteHook<Page> = async ({
     revalidateTag(`page-id:${doc.id}`, 'max')
     revalidateTag(`page-id:${doc.id}:da`, 'max')
     revalidateTag(`page-id:${doc.id}:en`, 'max')
+
+    // Header and footer may contain populated references to this page
+    revalidateTag('global_header', 'max')
+    revalidateTag('global_footer', 'max')
   }
 
   return doc

@@ -111,12 +111,25 @@ export const plugins: Plugin[] = [
             {
               name: 'action',
               type: 'select',
-              label: 'Submission Action',
+              label: { en: 'Submission Action', da: 'Indsendelseshandling' },
               options: formActionOptions,
               defaultValue: 'none',
               admin: {
                 position: 'sidebar',
-                description: 'Used to trigger server-side callbacks when a submission is created.',
+                description: {
+                  en: 'Used to trigger server-side callbacks when a submission is created.',
+                  da: 'Bruges til server-side callbacks, når en indsendelse oprettes.',
+                },
+              },
+            },
+            {
+              name: 'formPreview',
+              type: 'ui',
+              admin: {
+                position: 'sidebar',
+                components: {
+                  Field: '@/cms/components/FormPreview/index#FormPreview',
+                },
               },
             },
           ])
