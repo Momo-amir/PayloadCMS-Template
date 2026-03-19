@@ -256,7 +256,7 @@ export function FormPreview() {
           background: 'var(--theme-elevation-50)',
           border: '1px solid var(--theme-elevation-100)',
           display: 'flex',
-          flexWrap: 'wrap',
+          flexDirection: 'column',
           gap: '1rem',
         }}
       >
@@ -266,7 +266,6 @@ export function FormPreview() {
         <button
           disabled
           style={{
-            flexBasis: '100%',
             alignSelf: 'flex-start',
             padding: '0.5rem 1.25rem',
             borderRadius: '0.375rem',
