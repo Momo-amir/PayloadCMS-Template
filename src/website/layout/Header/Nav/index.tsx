@@ -1,22 +1,79 @@
 'use client'
 
-import React, { useState } from 'react'
-import { IconMenu2, IconX } from '@tabler/icons-react'
+import React, { useState, useRef, useEffect } from 'react'
+import { IconMenu2, IconX, IconChevronDown } from '@tabler/icons-react'
 
 import type { Header as HeaderType } from '@/payload-types'
 
 import { CMSLink } from '@/website/components/Link'
+import { Button } from '@/website/components/elements/button'
+
+type NavItem = NonNullable<HeaderType['navItems']>[number]
+
+const DropdownItem: React.FC<{ item: NavItem }> = ({ item }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  return (
+    <div ref={ref} className="relative">
+      <Button
+        onClick={() => setIsOpen((o) => !o)}
+        variant="link"
+        size="clear"
+        className={`uppercase gap-1 ${isOpen ? 'after:w-full' : ''}`}
+      >
+        {item.dropdownLabel}
+        <IconChevronDown
+          strokeWidth={2.5}
+          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </Button>
+
+      <div
+        className={`absolute top-full left-0 mt-2 min-w-40 bg-base rounded-xl px-2 py-2 flex flex-col gap-1 shadow-md transition-all duration-200 origin-top ${
+          isOpen
+            ? 'opacity-100 scale-y-100 pointer-events-auto'
+            : 'opacity-0 scale-y-0 pointer-events-none'
+        }`}
+      >
+        {item.children?.map(({ link }, i) => (
+          <div key={i} onClick={() => setIsOpen(false)} className="px-2 py-1">
+            <CMSLink {...link} appearance="link" className="uppercase" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const navItems = data?.navItems || []
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [openMobileDropdown, setOpenMobileDropdown] = useState<number | null>(null)
+
+  const toggleMobileDropdown = (i: number) => {
+    setOpenMobileDropdown((current) => (current === i ? null : i))
+  }
 
   return (
     <>
       {/* Desktop Navigation */}
       <nav className="hidden md:flex md:gap-6 items-center">
-        {navItems.map(({ link }, i) => {
-          return <CMSLink key={i} {...link} appearance="link" className="uppercase" />
+        {navItems.map((item, i) => {
+          if (item.type === 'dropdown') {
+            return <DropdownItem key={i} item={item} />
+          }
+          return <CMSLink key={i} {...item.link} appearance="link" className="uppercase" />
         })}
       </nav>
 
@@ -47,10 +104,39 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
         }`}
       >
         <nav className="flex flex-col p-4 gap-3">
-          {navItems.map(({ link }, i) => {
+          {navItems.map((item, i) => {
+            if (item.type === 'dropdown') {
+              const isExpanded = openMobileDropdown === i
+              return (
+                <div key={i}>
+                  <Button
+                    onClick={() => toggleMobileDropdown(i)}
+                    variant="link"
+                    size="clear"
+                    className="uppercase gap-1"
+                  >
+                    {item.dropdownLabel}
+                    <IconChevronDown
+                      className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                    />
+                  </Button>
+                  <div
+                    className={`flex flex-col gap-2 pl-4 overflow-hidden transition-all duration-200 ${
+                      isExpanded ? 'mt-2 max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+                  >
+                    {item.children?.map(({ link }, j) => (
+                      <div key={j} onClick={() => setIsMobileMenuOpen(false)}>
+                        <CMSLink {...link} appearance="link" className="uppercase" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            }
             return (
-              <div key={i} onClick={() => setIsMobileMenuOpen(false)} className="">
-                <CMSLink {...link} appearance="link" className="uppercase " />
+              <div key={i} onClick={() => setIsMobileMenuOpen(false)}>
+                <CMSLink {...item.link} appearance="link" className="uppercase" />
               </div>
             )
           })}
