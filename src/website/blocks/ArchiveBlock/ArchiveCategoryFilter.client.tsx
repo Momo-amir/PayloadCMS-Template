@@ -45,7 +45,7 @@ export const ArchiveCategoryFilter: React.FC<{
 
     setIsVisible(false)
     startTransition(() => {
-      router.push(url, { scroll: false })
+      router.replace(url, { scroll: false })
     })
     // Fade back in after navigation settles
     setTimeout(() => setIsVisible(true), 150)

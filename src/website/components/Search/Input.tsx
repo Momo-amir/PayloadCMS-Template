@@ -30,7 +30,7 @@ export const SearchInput: React.FC<{
       return
     }
 
-    router.push(`${searchPath}${debouncedValue ? `?q=${debouncedValue}` : ''}`, {
+    router.replace(`${searchPath}${debouncedValue ? `?q=${debouncedValue}` : ''}`, {
       scroll: false,
     })
 
