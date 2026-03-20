@@ -60,6 +60,23 @@ export const PeopleArchive: React.FC<
     })
 
     people = result.docs
+  } else if (populateBy === 'selection' && selectedDocs?.length) {
+    const resolved = selectedDocs.map((doc) => doc.value)
+    const alreadyResolved = resolved.filter((v): v is Person => typeof v === 'object')
+    const unresolvedIds = resolved.filter((v): v is number => typeof v === 'number')
+
+    if (unresolvedIds.length > 0) {
+      const payload = await getPayload({ config: configPromise })
+      const fetched = await payload.find({
+        collection: 'people',
+        depth: 1,
+        limit: unresolvedIds.length,
+        where: { id: { in: unresolvedIds } },
+      })
+      people = [...alreadyResolved, ...fetched.docs]
+    } else {
+      people = alreadyResolved
+    }
   }
 
   const pagination = getPaginationData(result, enablePagination, populateBy)
