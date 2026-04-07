@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import React from 'react'
 import { draftMode } from 'next/headers'
-import { getPayloadHMR } from '@payloadcms/next/utilities'
+import { getPayload } from 'payload'
 
 import configPromise from '@/payload.config'
 import { getCustomization, getHomePageID } from '@/cms/utilities/customization'
@@ -27,7 +27,7 @@ export default async function HomePage({
   const { locale = 'da' } = await paramsPromise
   const searchParams = await searchParamsPromise
 
-  const payload = await getPayloadHMR({ config: configPromise })
+  const payload = await getPayload({ config: configPromise })
   const customization = await getCustomization(locale)()
   const homePageID = getHomePageID(customization)
 

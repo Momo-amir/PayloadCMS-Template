@@ -4,7 +4,6 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-    "baseUrl": ".",
     "esModuleInterop": true,
     "target": "ES2022",
     "lib": [
@@ -31,7 +30,7 @@
     ],
     "paths": {
       "@payload-config": [
-        "src/payload.config.ts"
+        "./src/payload.config.ts"
       ],
       "react": [
         "./node_modules/@types/react"
