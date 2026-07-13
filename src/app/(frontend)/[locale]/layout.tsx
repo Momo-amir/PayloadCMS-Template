@@ -15,14 +15,12 @@ import { mergeOpenGraph } from '@/cms/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 import { PrivacyBanner } from '@/cms/components/PrivacyBanner'
 import { ScrollDepthTracker } from '@/cms/components/Analytics/AutoTracker'
-import { NextIntlClientProvider } from 'next-intl'
 import localization from '@/i18n/localization'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 
 import './globals.css'
 import { getServerSideURL } from '@/cms/utilities/getURL'
 import { getCustomization, getPostsPagePath, toFaviconProps } from '@/cms/utilities/customization'
-import { CollectionPathsProvider } from '@/providers/CollectionPaths'
 import { TypedLocale } from 'payload'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
@@ -83,23 +81,19 @@ export default async function RootLayout({
           <link href={appleTouchIcon} rel="apple-touch-icon" sizes="180x180" />
         </head>
         <body>
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            <Providers>
-              <CollectionPathsProvider postsBasePath={postsBasePath}>
-              <ScrollDepthTracker />
-              <AdminBar
-                adminBarProps={{
-                  preview: isEnabled,
-                }}
-              />
+          <Providers locale={locale} messages={messages} postsBasePath={postsBasePath}>
+            <ScrollDepthTracker />
+            <AdminBar
+              adminBarProps={{
+                preview: isEnabled,
+              }}
+            />
 
-              <Header locale={typedLocale} />
-              {children}
-              <Footer locale={typedLocale} />
-              <PrivacyBanner iconUrl={darkHref} />
-              </CollectionPathsProvider>
-            </Providers>
-          </NextIntlClientProvider>
+            <Header locale={typedLocale} />
+            {children}
+            <Footer locale={typedLocale} />
+            <PrivacyBanner iconUrl={darkHref} />
+          </Providers>
         </body>
       </html>
     </PrivacyProvider>

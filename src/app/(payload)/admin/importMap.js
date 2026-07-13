@@ -33,6 +33,7 @@ import { default as default_900e0ff6e195488f3a16461d9324da7f } from '@/cms/compo
 import { default as default_4d91a0c8d10db185ab03bba76ce6e85c } from '@/cms/components/widgets/EventTrackerGraph.tsx'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
+/** @type import('payload').ImportMap */
 export const importMap = {
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,

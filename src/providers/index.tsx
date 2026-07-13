@@ -1,14 +1,26 @@
 import React from 'react'
+import { NextIntlClientProvider } from 'next-intl'
+import type { AbstractIntlMessages } from 'next-intl'
 
 import { ThemeProvider } from './Theme'
 import { LocalThemeProvider } from './Theme/LocalTheme/LocalTheme'
+import { CollectionPathsProvider } from './CollectionPaths'
 
 export const Providers: React.FC<{
   children: React.ReactNode
-}> = ({ children }) => {
+  locale: string
+  messages: AbstractIntlMessages
+  postsBasePath: string
+}> = ({ children, locale, messages, postsBasePath }) => {
   return (
-    <ThemeProvider>
-      <LocalThemeProvider>{children}</LocalThemeProvider>
-    </ThemeProvider>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <ThemeProvider>
+        <LocalThemeProvider>
+          <CollectionPathsProvider postsBasePath={postsBasePath}>
+            {children}
+          </CollectionPathsProvider>
+        </LocalThemeProvider>
+      </ThemeProvider>
+    </NextIntlClientProvider>
   )
 }
