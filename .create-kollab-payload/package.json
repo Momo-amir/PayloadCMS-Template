@@ -1,6 +1,6 @@
 {
   "name": "create-kollab-payload",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Generate a Kollab Payload CMS + Next.js client site from the kollab-payload-template (internal Kollab tool).",
   "type": "module",
   "license": "MIT",
