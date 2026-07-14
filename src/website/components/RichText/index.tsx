@@ -1,8 +1,5 @@
-import { MediaBlock } from '@/website/blocks/MediaBlock/Component'
-import {
-  DefaultNodeTypes,
-  SerializedBlockNode,
-} from '@payloadcms/richtext-lexical'
+import { MediaBlock } from '@/website/blocks/Media/Component'
+import { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
 import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import {
   JSXConvertersFunction,
@@ -31,7 +28,8 @@ type NodeTypes =
       CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps | ColumnsBlockProps
     >
 
-const buildConverters = (postsBasePath: string): JSXConvertersFunction<NodeTypes> =>
+const buildConverters =
+  (postsBasePath: string): JSXConvertersFunction<NodeTypes> =>
   ({ defaultConverters }) => ({
     ...defaultConverters,
     ...LinkJSXConverter({

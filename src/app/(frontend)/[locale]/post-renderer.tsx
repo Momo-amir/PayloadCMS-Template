@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { RelatedPosts } from '@/website/blocks/RelatedPosts/Component'
+import { RelatedPosts } from '@/website/components/RelatedPosts/Component'
 import { PayloadRedirects } from '@/cms/components/PayloadRedirects'
 import configPromise from '@/payload.config'
 import { getPayload, TypedLocale } from 'payload'
@@ -75,23 +75,25 @@ export async function generatePostMeta(post: Post | null): Promise<Metadata> {
   return generateMeta({ doc: post })
 }
 
-export const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: TypedLocale }) => {
-  const { isEnabled: draft } = await draftMode()
-  const payload = await getPayload({ config: configPromise })
+export const queryPostBySlug = cache(
+  async ({ slug, locale }: { slug: string; locale: TypedLocale }) => {
+    const { isEnabled: draft } = await draftMode()
+    const payload = await getPayload({ config: configPromise })
 
-  const result = await payload.find({
-    collection: 'posts',
-    draft,
-    locale,
-    fallbackLocale: 'da',
-    limit: 1,
-    overrideAccess: draft,
-    pagination: false,
-    where: { slug: { equals: slug } },
-  })
+    const result = await payload.find({
+      collection: 'posts',
+      draft,
+      locale,
+      fallbackLocale: 'da',
+      limit: 1,
+      overrideAccess: draft,
+      pagination: false,
+      where: { slug: { equals: slug } },
+    })
 
-  return result.docs?.[0] || null
-})
+    return result.docs?.[0] || null
+  },
+)
 
 export const getPostBySlugCached = (slug: string, locale?: TypedLocale) =>
   unstable_cache(

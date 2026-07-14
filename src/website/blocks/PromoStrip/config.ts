@@ -2,12 +2,16 @@ import { ComponentBlock } from '@/website/types/ComponentBlock'
 import { PromoStripComponent } from './Component'
 
 export const PromoStripBlock: ComponentBlock = {
-  slug: 'PromoStrip',
+  slug: 'promoStripBlock',
   component: PromoStripComponent,
   interfaceName: 'PromoStripBlock',
   imageURL: '/assets/block-icons/promo-strip.svg',
 
   showOnPage: true,
+  labels: {
+    singular: { en: 'Promo Strip', da: 'Promobjaelke' },
+    plural: { en: 'Promo Strips', da: 'Promobjaelkeer' },
+  },
   fields: [
     {
       name: 'usps', // unique selling points

@@ -1,36 +1,36 @@
 import { AccordionBlock } from './Accordion/config'
 import { PromoStripBlock } from './PromoStrip/config'
-import { RichTextBlockBlock } from './RichTextBlock/config'
+import { RichTextBlock } from './RichText/config'
 import { PeopleArchiveBlock } from './PeopleArchive/config'
 /* eslint-disable import/no-anonymous-default-export */
 import { UserLoginBlock } from './UserLogin/config'
 import { ComponentBlock } from '../types/ComponentBlock'
-import { Content } from './Content/config'
-import { TwoBlockBlock } from './TwoBlock/config'
-import { MediaBlock } from './MediaBlock/config'
+import { ContentBlock } from './Content/config'
+import { TwoColumnBlock } from './TwoColumn/config'
+import { MediaBlock } from './Media/config'
 import { FormBlock } from './Form/config'
 import { CardCarouselBlock } from './CardCarousel/config'
-import { CardBlock } from './CardBlock/config'
-import { CallToAction } from './CallToAction/config'
-import { Archive } from './ArchiveBlock/config'
-import { Columns } from './Columns/config'
+import { CardBlock } from './Card/config'
+import { CallToActionBlock } from './CallToAction/config'
+import { ArchiveBlock } from './Archive/config'
+import { ColumnsBlock } from './Columns/config'
 
 export default {
   // Yes, both the types should be here for ideal intellisense
   blocks: <ComponentBlock[]>(
     ([
-      Archive,
-      Content,
-      TwoBlockBlock,
+      ArchiveBlock,
+      ContentBlock,
+      TwoColumnBlock,
       MediaBlock,
       FormBlock,
       CardCarouselBlock,
       CardBlock,
-      CallToAction,
+      CallToActionBlock,
       UserLoginBlock,
       PeopleArchiveBlock,
-      RichTextBlockBlock,
-      Columns,
+      RichTextBlock,
+      ColumnsBlock,
       PromoStripBlock,
       AccordionBlock,
     ] satisfies ComponentBlock[])

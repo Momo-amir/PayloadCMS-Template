@@ -8,7 +8,7 @@ import {
 import { link } from '@/cms/fields/link'
 import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
-import { ContentBlock } from './Component'
+import { ContentBlock as ContentBlockComponent } from './Component'
 
 const columnFields: Field[] = [
   {
@@ -66,11 +66,15 @@ const columnFields: Field[] = [
   }),
 ]
 
-export const Content: ComponentBlock = {
-  slug: 'content',
-  component: ContentBlock,
+export const ContentBlock: ComponentBlock = {
+  slug: 'contentBlock',
+  component: ContentBlockComponent,
   imageURL: '/assets/block-icons/Content.svg',
   interfaceName: 'ContentBlock',
+  labels: {
+    singular: { en: 'Content', da: 'Indhold' },
+    plural: { en: 'Contents', da: 'Indholder' },
+  },
   fields: [
     {
       name: 'section',

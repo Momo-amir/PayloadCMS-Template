@@ -9,7 +9,8 @@ import {
 import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 
 export const PeopleArchiveBlock: ComponentBlock = {
-  slug: 'PeopleArchive',
+  slug: 'peopleArchiveBlock',
+  dbName: 'peopleArchive',
   component: PeopleArchive,
   imageURL: '/assets/block-icons/users.svg',
   interfaceName: 'PeopleArchiveBlock',

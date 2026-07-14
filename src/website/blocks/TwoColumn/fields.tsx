@@ -1,16 +1,16 @@
 import React from 'react'
-import { ArchiveBlock } from '../ArchiveBlock/Component'
+import { ArchiveBlock } from '../Archive/Component'
 import { CallToActionBlock } from '../CallToAction/Component'
 import { ContentBlock } from '../Content/Component' // Temporarily kept for backward compatibility
 import { FormBlock } from '../Form/Component'
-import { MediaBlock } from '../MediaBlock/Component'
-import { RichTextBlock } from '../RichTextBlock/Component'
+import { MediaBlock } from '../Media/Component'
+import { RichTextBlock } from '../RichText/Component'
 
 // 1) slug → React component map for TWO-BLOCK children
 export const childComponents = {
-  archive: ArchiveBlock,
-  cta: CallToActionBlock,
-  content: ContentBlock, // Temporarily kept for backward compatibility
+  archiveBlock: ArchiveBlock,
+  callToActionBlock: CallToActionBlock,
+  contentBlock: ContentBlock, // Temporarily kept for backward compatibility
   formBlock: FormBlock,
   mediaBlock: MediaBlock,
   richTextBlock: RichTextBlock,
@@ -31,9 +31,9 @@ export function renderChildField(
 ) {
   const sharedProps = enableGutter ? { enableGutter: false } : {}
   switch (field.blockType) {
-    case 'archive':
+    case 'archiveBlock':
       return <ArchiveBlock key={key} {...field} {...sharedProps} />
-    case 'cta':
+    case 'callToActionBlock':
       return (
         <CallToActionBlock
           key={key}
@@ -44,12 +44,7 @@ export function renderChildField(
       )
     case 'richTextBlock':
       return (
-        <RichTextBlock
-          key={key}
-          {...field}
-          {...sharedProps}
-          textClassName={contentTextClassName}
-        />
+        <RichTextBlock key={key} {...field} {...sharedProps} textClassName={contentTextClassName} />
       )
     case 'formBlock':
       return (

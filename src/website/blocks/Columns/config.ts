@@ -5,12 +5,12 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
-import { ColumnsBlock } from './Component'
+import { ColumnsBlock as ColumnsBlockComponent } from './Component'
 import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 
-export const Columns: ComponentBlock = {
-  slug: 'columns',
-  component: ColumnsBlock,
+export const ColumnsBlock: ComponentBlock = {
+  slug: 'columnsBlock',
+  component: ColumnsBlockComponent,
   imageURL: '/assets/block-icons/layout-columns.svg',
   interfaceName: 'ColumnsBlock',
   showOnPage: false,

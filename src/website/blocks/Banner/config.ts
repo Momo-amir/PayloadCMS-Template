@@ -4,12 +4,16 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
-import { BannerBlock } from './Component'
+import { BannerBlock as BannerBlockComponent } from './Component'
 
-export const Banner: ComponentBlock = {
-  slug: 'banner',
-  component: BannerBlock,
+export const BannerBlock: ComponentBlock = {
+  slug: 'bannerBlock',
+  component: BannerBlockComponent,
   showOnPage: false,
+  labels: {
+    singular: { en: 'Banner', da: 'Banner' },
+    plural: { en: 'Banners', da: 'Bannerer' },
+  },
   fields: [
     {
       name: 'style',

@@ -5,6 +5,7 @@ export const MediaBlock: ComponentBlock = {
   slug: 'mediaBlock',
   component: MediaBlockComponent,
   interfaceName: 'MediaBlock',
+  labels: { singular: { en: 'Media', da: 'Medie' }, plural: { en: 'Medias', da: 'Medieer' } },
   imageURL: '/assets/block-icons/polaroid.svg',
   fields: [
     {

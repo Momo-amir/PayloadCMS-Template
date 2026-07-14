@@ -1,10 +1,11 @@
 import { ComponentBlock } from '@/website/types/ComponentBlock'
-import { CodeBlock } from './Component'
+import { CodeBlock as CodeBlockComponent } from './Component'
 
-export const Code: ComponentBlock = {
-  slug: 'code',
-  component: CodeBlock,
+export const CodeBlock: ComponentBlock = {
+  slug: 'codeBlock',
+  component: CodeBlockComponent,
   interfaceName: 'CodeBlock',
+  labels: { singular: { en: 'Code', da: 'Kode' }, plural: { en: 'Codes', da: 'Kodeer' } },
   fields: [
     {
       name: 'language',

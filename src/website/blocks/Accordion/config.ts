@@ -9,11 +9,15 @@ import {
 import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 
 export const AccordionBlock: ComponentBlock = {
-  slug: 'Accordion',
+  slug: 'accordionBlock',
   component: AccordionBlockComponent,
   interfaceName: 'AccordionBlock',
   showOnPage: true,
   imageURL: '/assets/block-icons/accordion.svg',
+  labels: {
+    singular: { en: 'Accordion', da: 'Harmonika' },
+    plural: { en: 'Accordions', da: 'Harmonikaer' },
+  },
   fields: [
     {
       name: 'introContent',

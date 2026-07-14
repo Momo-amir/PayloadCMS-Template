@@ -1,32 +1,33 @@
-import { Archive } from '../ArchiveBlock/config'
-import { CallToAction } from '../CallToAction/config'
+import { ArchiveBlock } from '../Archive/config'
+import { CallToActionBlock } from '../CallToAction/config'
 import { FormBlock } from '../Form/config'
-import { MediaBlock } from '../MediaBlock/config'
-import { RichTextBlockBlock } from '../RichTextBlock/config'
+import { MediaBlock } from '../Media/config'
+import { RichTextBlock } from '../RichText/config'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
-import { TwoBlock } from './Component'
+import { TwoBlock as TwoColumnBlockComponent } from './Component'
 
-export const TwoBlockBlock: ComponentBlock = {
-  slug: 'twoBlock',
-  component: TwoBlock,
+export const TwoColumnBlock: ComponentBlock = {
+  slug: 'twoColumnBlock',
+  dbName: 'twoColumn',
+  component: TwoColumnBlockComponent,
   imageURL: '/assets/block-icons/mediaContent.svg',
   interfaceName: 'TwoColumnBlock',
   labels: {
-    singular: 'Two-Column Layout',
-    plural: 'Two-Column Layouts',
+    singular: { en: 'Two-Column Layout', da: 'To-kolonne layout' },
+    plural: { en: 'Two-Column Layouts', da: 'To-kolonne layouts' },
   },
   fields: [
     {
       name: 'left',
       type: 'blocks',
-      blocks: [Archive, CallToAction, FormBlock, MediaBlock, RichTextBlockBlock],
+      blocks: [ArchiveBlock, CallToActionBlock, FormBlock, MediaBlock, RichTextBlock],
       label: 'Left Column',
       maxRows: 1,
     },
     {
       name: 'right',
       type: 'blocks',
-      blocks: [Archive, CallToAction, FormBlock, MediaBlock, RichTextBlockBlock],
+      blocks: [ArchiveBlock, CallToActionBlock, FormBlock, MediaBlock, RichTextBlock],
       label: 'Right Column',
       maxRows: 1,
     },

@@ -1,5 +1,5 @@
 import { ComponentBlock } from '@/website/types/ComponentBlock'
-import { RichTextBlock } from './Component'
+import { RichTextBlock as RichTextBlockComponent } from './Component'
 import {
   FixedToolbarFeature,
   HeadingFeature,
@@ -9,16 +9,16 @@ import {
 import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 import { linkGroup } from '@/cms/fields/linkGroup'
 
-export const RichTextBlockBlock: ComponentBlock = {
+export const RichTextBlock: ComponentBlock = {
   slug: 'richTextBlock',
-  component: RichTextBlock,
-  interfaceName: 'RichTextBlockBlock',
+  component: RichTextBlockComponent,
+  interfaceName: 'RichTextBlock',
   imageURL: '/assets/block-icons/Content.svg',
 
-  showOnPage: false, // Only available in TwoBlock
+  showOnPage: false, // Only available in TwoColumnBlock
   labels: {
-    singular: 'Content Section',
-    plural: 'Content Sections',
+    singular: { en: 'Content Section', da: 'Indholdssektion' },
+    plural: { en: 'Content Sections', da: 'Indholdssektioner' },
   },
   fields: [
     {

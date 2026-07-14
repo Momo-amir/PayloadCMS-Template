@@ -8,11 +8,13 @@ import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 
 import { linkGroup } from '@/cms/fields/linkGroup'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
-import { CallToActionBlock } from './Component'
+import { CallToActionBlock as CallToActionBlockComponent } from './Component'
 
-export const CallToAction: ComponentBlock = {
-  slug: 'cta',
-  component: CallToActionBlock,
+export const CallToActionBlock: ComponentBlock = {
+  slug: 'callToActionBlock',
+  dbName: 'cta',
+
+  component: CallToActionBlockComponent,
   imageURL: '/assets/block-icons/call-to-action.svg',
   interfaceName: 'CallToActionBlock',
   fields: [

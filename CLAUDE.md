@@ -108,7 +108,9 @@ For work inside `core/`, prefer the **`core-maintainer`** subagent.
 - **Hooks** are typed with Payload's specific hook types; revalidation hooks are **locale-aware**
   (revalidate both `/path` and `/en/path`, tag `x:slug:da` / `x:slug:en`) and guard on
   `context.disableRevalidate`.
-- **Doc comments** explain *why* (GDPR, retention, live-preview intervals), not *what*.
+- **Comments: prefer none; no multi-line blocks.** Default to no comment when the code is
+  self-explanatory. A single descriptive one-liner is fine for a non-obvious *why*; avoid multi-line
+  `//` / `/* */` blocks and never narrate *what* the code does.
 
 **Reference files:** collection `src/cms/collections/Posts/index.ts` · access
 `src/cms/access/authenticatedOrPublished.ts` · field factory `src/cms/fields/link.ts` · block

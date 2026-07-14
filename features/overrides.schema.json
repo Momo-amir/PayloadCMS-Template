@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "create-kollab-app feature overrides",
+  "description": "Maintainer-authored metadata that auto-discovery cannot derive from code. Keyed by block slug.",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "_note": { "type": "string" },
+    "blocks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "description": "Category shown in the scaffolder selection UI (e.g. Content, Layout, Forms)."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display title override (only if the block config has no usable label)."
+          },
+          "description": {
+            "type": "string",
+            "description": "Short description for the selection UI."
+          },
+          "requiresCollections": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Collection slugs this block relates to via bare relationTo strings (no import edge). The scaffolder must keep these collections if this block is kept."
+          },
+          "requiresPlugins": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "npm plugin packages that inject collections/fields this block depends on."
+          },
+          "onlyInside": {
+            "type": "string",
+            "description": "Slug of the parent block this is a sub-block of (showOnPage:false)."
+          },
+          "inlineOnly": {
+            "type": "boolean",
+            "description": "Block is registered via a collection's BlocksFeature (rich text) rather than exports.ts."
+          },
+          "modes": {
+            "type": "object",
+            "description": "Reserved for feature modes (e.g. localization none/opt-in/full). Not yet implemented."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

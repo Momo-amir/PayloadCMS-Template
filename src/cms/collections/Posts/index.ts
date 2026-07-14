@@ -11,10 +11,10 @@ import {
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
-import { Banner } from '../../../website/blocks/Banner/config'
-import { Code } from '../../../website/blocks/Code/config'
-import { MediaBlock } from '../../../website/blocks/MediaBlock/config'
-import { Columns } from '../../../website/blocks/Columns/config'
+import { BannerBlock } from '../../../website/blocks/Banner/config'
+import { CodeBlock } from '../../../website/blocks/Code/config'
+import { MediaBlock } from '../../../website/blocks/Media/config'
+import { ColumnsBlock } from '../../../website/blocks/Columns/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
@@ -65,12 +65,12 @@ export const Posts: CollectionConfig<'posts'> = {
         }),
     },
     preview: (data, { req, locale }) =>
-        generatePreviewPath({
-          slug: data?.slug as string,
-          collection: 'posts',
-          req,
-          locale,
-        }),
+      generatePreviewPath({
+        slug: data?.slug as string,
+        collection: 'posts',
+        req,
+        locale,
+      }),
     useAsTitle: 'title',
   },
   fields: [
@@ -101,7 +101,7 @@ export const Posts: CollectionConfig<'posts'> = {
                     ...rootFeatures,
                     HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
                     BlocksFeature({
-                      blocks: [Banner, Code, MediaBlock, Columns],
+                      blocks: [BannerBlock, CodeBlock, MediaBlock, ColumnsBlock],
                     }),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),

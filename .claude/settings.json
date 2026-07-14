@@ -20,7 +20,12 @@
       "Bash(git branch *)",
       "Bash(git show *)",
       "Bash(python3 -m json.tool .claude/settings.json)",
-      "Bash(yarn cli *)"
+      "Bash(yarn cli *)",
+      "Bash(node --input-type=module -e \"import\\('@typescript-eslint/typescript-estree'\\).then\\(\\(\\)=>console.log\\('ok'\\)\\).catch\\(\\(\\)=>console.log\\('no-parser'\\)\\)\")",
+      "Bash(node -e \"const s=require\\('fs'\\).readFileSync\\('src/website/blocks/Content/config.ts','utf8'\\); let d=0,mn=0; for\\(const c of s\\){if\\(c==='{'\\)d++;else if\\(c==='}'\\){d--;if\\(d<mn\\)mn=d;}} console.log\\('final-depth',d,'min-depth',mn\\);\")",
+      "Bash(python3 -c ' *)",
+      "Bash(git mv *)",
+      "Edit(/.claude/skills/author-feature/**)"
     ],
     "deny": [
       "Bash(rm -rf *)",

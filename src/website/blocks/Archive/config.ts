@@ -4,13 +4,13 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-import { ArchiveBlock } from './Component'
+import { ArchiveBlock as ArchiveBlockComponent } from './Component'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
 import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
 
-export const Archive: ComponentBlock = {
-  slug: 'archive',
-  component: ArchiveBlock,
+export const ArchiveBlock: ComponentBlock = {
+  slug: 'archiveBlock',
+  component: ArchiveBlockComponent,
   imageURL: '/assets/block-icons/archive.svg',
   interfaceName: 'ArchiveBlock',
   fields: [
