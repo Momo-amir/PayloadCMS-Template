@@ -58,15 +58,49 @@ Set `NO_COLOR=1` to disable colored output.
 
 ## Releasing
 
-The initializer's `version` maps to a template git tag `vX.Y.Z`. On a template release, tag the
-template and push the tag to the **public GitHub repo** (the default fetch source), then publish a
-matching initializer version:
+A version lives in **three** places that must move together:
+
+| Place | What it is | Updated by |
+|---|---|---|
+| `package.json` `version` | the npm package version | `npm version` |
+| **git tag `vX.Y.Z`** | the template snapshot the initializer clones | `git tag` + `git push` |
+| **npm registry** | what `npx` downloads | `npm publish` |
+
+The initializer resolves its default template ref as `v<its own version>` — so
+`create-kollab-payload@X.Y.Z` runs `git clone --branch vX.Y.Z`. If that tag is missing on the public
+GitHub repo, every run fails. **Bumping the version therefore requires creating the matching tag.**
+
+### Steps (run from the template repo root)
 
 ```bash
-# in the template repo
+# 1. Bump the package version (no auto git tag — we manage the template tag ourselves)
+cd .create-kollab-payload
+npm version X.Y.Z --no-git-tag-version
+cd ..
+
+# 2. Commit the bump
+git add .create-kollab-payload/package.json .create-kollab-payload/package-lock.json
+git commit -m "create-kollab-payload X.Y.Z"
+
+# 3. Tag THAT commit — this is the snapshot the initializer clones, so it must include
+#    every change you want shipped (tag HEAD, after the bump commit)
 git tag -a vX.Y.Z -m "vX.Y.Z"
-git push ghub vX.Y.Z          # ghub = https://github.com/Momo-amir/PayloadCMS-Template
-git push origin vX.Y.Z        # also tag private Bitbucket origin
-# in this package
-npm version X.Y.Z && npm publish --access public
+
+# 4. Push branch + tag to BOTH remotes (ghub = public GitHub, the default fetch source)
+git push ghub  <branch> && git push origin <branch>
+git push ghub  vX.Y.Z   && git push origin vX.Y.Z
+
+# 5. Move main forward too (npx clones the tag, but keep main current)
+git fetch . <branch>:main
+git push ghub main && git push origin main
+
+# 6. Publish to npm (needs `npm login`; prepublishOnly rebuilds dist/)
+cd .create-kollab-payload
+npm publish --access public
 ```
+
+Verify the tag is live before publishing:
+`git ls-remote --tags https://github.com/Momo-amir/PayloadCMS-Template.git vX.Y.Z`
+
+> Pushing the branch alone is **not** a release — the tag is what the tool consumes, and `npm publish`
+> is what puts the new initializer on the registry. Until you publish, `npx` still serves the old version.
