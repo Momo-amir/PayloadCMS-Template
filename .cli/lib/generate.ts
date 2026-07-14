@@ -10,6 +10,7 @@ import {
   applyValueRemovals,
   applyFieldRelationRemovals,
   applyObjectPropertyRemovals,
+  removeCallExpressionMember,
 } from './codemod'
 
 export interface GenerateOptions {
@@ -18,6 +19,7 @@ export interface GenerateOptions {
   keepBlockSlugs: string[] // slugs the user chose to KEEP
   keepCollectionSlugs?: string[] // optional-collection slugs to KEEP; undefined = keep all
   keepHeroSlugs?: string[] // presentational hero slugs to KEEP; undefined = keep all
+  keepPluginSlugs?: string[] // selectable plugin slugs to KEEP; undefined = keep all
   dryRun: boolean
 }
 
@@ -25,6 +27,16 @@ export interface HeroPrune {
   slug: string
   folder: string // repo-relative folder to remove
   symbol: string // RenderHero import/map symbol
+}
+
+export interface PluginPrune {
+  slug: string
+  callee: string // plugin fn to remove from the plugins array (+ import)
+  pkg: string // package.json dep to drop
+  helperImports: string[] // config-only imports to drop
+  injectsCollections: string[] // collection slugs that vanish with the plugin
+  ownedFiles: string[] // repo-relative plugin-config files to delete
+  relatedBlocks: string[] // blocks that become meaningless (warned)
 }
 
 export interface ContainerChildEdit {
@@ -58,6 +70,7 @@ export interface GeneratePlan {
   prunedCollections: CollectionPrune[]
   relationTrimEdits: RelationTrimEdit[]
   prunedHeros: HeroPrune[]
+  prunedPlugins: PluginPrune[]
   warnings: string[]
 }
 
@@ -71,9 +84,33 @@ function planPrune(
   keepSlugs: Set<string>,
   keepCollectionSlugs?: string[],
   keepHeroSlugs?: string[],
+  keepPluginSlugs?: string[],
 ): GeneratePlan {
   const d = discover(root)
   const warnings: string[] = []
+
+  // Plugins: prune any selectable plugin not in the keep list (undefined = keep all). A pruned
+  // plugin also removes its injected collections and its related blocks (via forcePrune below).
+  const prunedPlugins: PluginPrune[] = []
+  const pluginForcePruneBlocks = new Set<string>()
+  const pluginPrunedCollSlugs = new Set<string>()
+  if (keepPluginSlugs) {
+    const keep = new Set(keepPluginSlugs)
+    for (const p of d.plugins) {
+      if (keep.has(p.slug)) continue
+      prunedPlugins.push({
+        slug: p.slug,
+        callee: p.callee,
+        pkg: p.pkg,
+        helperImports: p.helperImports,
+        injectsCollections: p.injectsCollections,
+        ownedFiles: p.ownedFiles,
+        relatedBlocks: p.relatedBlocks,
+      })
+      p.relatedBlocks.forEach((b) => pluginForcePruneBlocks.add(b))
+      p.injectsCollections.forEach((c) => pluginPrunedCollSlugs.add(c))
+    }
+  }
 
   // Heros: prune any presentational hero not in the keep list (undefined = keep all).
   const prunedHeros: HeroPrune[] = []
@@ -107,13 +144,18 @@ function planPrune(
     }
   }
 
+  // A collection is pruned if the caller deselected it OR the plugin that injects it was pruned.
+  const allPrunedCollSlugs = new Set([...willPruneCollSlugs, ...pluginPrunedCollSlugs])
+
   // A block whose ENTIRE requiresCollections set is being pruned is meaningless on its own (e.g.
   // peopleArchiveBlock without the people collection) — prune it too. A block that still has at
   // least one required collection surviving is kept and its dangling relationTo is trimmed below.
-  const forcePrune = new Set<string>()
+  // Blocks tied to a pruned plugin (e.g. formBlock ↔ form-builder) are force-pruned regardless.
+  const forcePrune = new Set<string>(pluginForcePruneBlocks)
+  for (const slug of pluginForcePruneBlocks) keepSlugs.delete(slug)
   for (const b of d.blocks) {
     const reqs = b.override.requiresCollections ?? []
-    if (reqs.length > 0 && reqs.every((s) => willPruneCollSlugs.has(s))) {
+    if (reqs.length > 0 && reqs.every((s) => allPrunedCollSlugs.has(s))) {
       keepSlugs.delete(b.slug)
       forcePrune.add(b.slug)
     }
@@ -235,6 +277,20 @@ function planPrune(
     }
   }
 
+  // Plugin prune warnings: the search hero is not auto-removed with the search plugin (it is part of
+  // the hero dimension), so flag it if search was pruned while a search hero could still be selected.
+  for (const p of prunedPlugins) {
+    if (p.slug === 'search') {
+      warnings.push(
+        `Plugin "search" pruned — the "Search Hero" option and website search UI (SearchHero, ` +
+          `components/Search) still reference it. Remove those manually if unused.`,
+      )
+    }
+    if (p.relatedBlocks.length) {
+      warnings.push(`Plugin "${p.slug}" pruned — related block(s) removed: ${p.relatedBlocks.join(', ')}.`)
+    }
+  }
+
   // relationTo trims: for each KEPT block that requires a PRUNED collection, trim that collection
   // from the block's config-driven list so it still compiles (block stays, collection gone).
   const prunedCollSlugs = new Set(prunedCollections.map((c) => c.slug))
@@ -256,6 +312,7 @@ function planPrune(
     prunedCollections,
     relationTrimEdits,
     prunedHeros,
+    prunedPlugins,
     warnings,
   }
 }
@@ -294,7 +351,13 @@ function copyTree(root: string, outDir: string) {
 
 export function generate(opts: GenerateOptions): GeneratePlan {
   const keepSlugs = new Set(opts.keepBlockSlugs)
-  const plan = planPrune(opts.root, keepSlugs, opts.keepCollectionSlugs, opts.keepHeroSlugs)
+  const plan = planPrune(
+    opts.root,
+    keepSlugs,
+    opts.keepCollectionSlugs,
+    opts.keepHeroSlugs,
+    opts.keepPluginSlugs,
+  )
 
   if (opts.dryRun) return plan
 
@@ -419,5 +482,44 @@ export function generate(opts: GenerateOptions): GeneratePlan {
     ])
   }
 
+  // 8. Prune deselected plugins: delete plugin-config owned files, remove the plugin call + its
+  //    imports from plugins/index.ts, drop the package.json deps. Injected collections vanish with
+  //    the plugin (they are not in payload.config), and related blocks were force-pruned in the plan.
+  if (plan.prunedPlugins.length) {
+    for (const p of plan.prunedPlugins) {
+      for (const owned of p.ownedFiles) {
+        fs.rmSync(Path.resolve(opts.outDir, owned), { recursive: true, force: true })
+      }
+    }
+    const pluginsFile = Path.resolve(opts.outDir, 'src/cms/plugins/index.ts')
+    const sf = outProject.addSourceFileAtPathIfExists(pluginsFile)
+    if (sf) {
+      for (const p of plan.prunedPlugins) {
+        removeCallExpressionMember(sf, p.callee, p.helperImports)
+      }
+      sf.saveSync()
+    }
+    removePackageJsonDeps(
+      Path.resolve(opts.outDir, 'package.json'),
+      plan.prunedPlugins.map((p) => p.pkg),
+    )
+  }
+
   return plan
+}
+
+function removePackageJsonDeps(pkgPath: string, deps: string[]) {
+  if (!fs.existsSync(pkgPath)) return
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+  let changed = false
+  for (const section of ['dependencies', 'devDependencies'] as const) {
+    if (!pkg[section]) continue
+    for (const dep of deps) {
+      if (dep in pkg[section]) {
+        delete pkg[section][dep]
+        changed = true
+      }
+    }
+  }
+  if (changed) fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`)
 }

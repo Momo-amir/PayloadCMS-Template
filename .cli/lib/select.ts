@@ -5,6 +5,7 @@ export interface Selection {
   keepBlockSlugs: string[]
   keepCollectionSlugs: string[]
   keepHeroSlugs: string[]
+  keepPluginSlugs: string[]
 }
 
 /**
@@ -111,5 +112,24 @@ export async function selectFeatures(root: string): Promise<Selection | null> {
     keepHeroSlugs = heroRes.keep as string[]
   }
 
-  return { keepBlockSlugs, keepCollectionSlugs, keepHeroSlugs }
+  // Plugin selection — pruning form-builder/search also removes their injected collections and
+  // related blocks (the engine cascades this); redirects is standalone.
+  let keepPluginSlugs = d.plugins.map((p) => p.slug)
+  if (d.plugins.length) {
+    const pluginRes = await prompts({
+      type: 'multiselect',
+      name: 'keep',
+      message: 'Select the Payload PLUGINS to keep (space to toggle)',
+      choices: d.plugins.map((p) => ({
+        title: p.relatedBlocks.length ? `${p.slug} (also removes: ${p.relatedBlocks.join(', ')})` : p.slug,
+        value: p.slug,
+        selected: true,
+      })),
+      instructions: false,
+    })
+    if (!pluginRes.keep) return null
+    keepPluginSlugs = pluginRes.keep as string[]
+  }
+
+  return { keepBlockSlugs, keepCollectionSlugs, keepHeroSlugs, keepPluginSlugs }
 }

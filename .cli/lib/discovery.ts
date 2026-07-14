@@ -70,12 +70,73 @@ export interface DiscoveredHero {
   symbol: string // export/import name in RenderHero.tsx (e.g. 'HighImpactHero')
 }
 
+export interface DiscoveredPlugin {
+  slug: string // short id used in --plugins / selection (e.g. 'search')
+  callee: string // the plugin function name in the plugins array (e.g. 'searchPlugin')
+  pkg: string // npm package to drop from package.json
+  helperImports: string[] // symbols imported only to configure this plugin
+  injectsCollections: string[] // collection slugs this plugin injects (vanish with it)
+  ownedFiles: string[] // repo-relative files that exist solely to configure this plugin
+  relatedBlocks: string[] // block slugs that become meaningless without this plugin
+}
+
 export interface Discovery {
   blocks: DiscoveredBlock[]
   collections: DiscoveredCollection[]
   heros: DiscoveredHero[]
+  plugins: DiscoveredPlugin[]
   pluginCollections: string[]
   overrides: Overrides
+}
+
+// Plugins the scaffolder offers for pruning. seoPlugin + nestedDocsPlugin are intentionally NOT here
+// (removing them breaks meta rendering / breadcrumb nav on kept pages). Each entry lists what becomes
+// orphaned so the pruner can clean imports, package.json, injected collections, and related blocks.
+const SELECTABLE_PLUGINS: DiscoveredPlugin[] = [
+  {
+    slug: 'redirects',
+    callee: 'redirectsPlugin',
+    pkg: '@payloadcms/plugin-redirects',
+    helperImports: ['revalidateRedirects'],
+    injectsCollections: ['redirects'],
+    ownedFiles: ['src/cms/hooks/revalidateRedirects.ts'],
+    relatedBlocks: [],
+  },
+  {
+    slug: 'form-builder',
+    callee: 'formBuilderPlugin',
+    pkg: '@payloadcms/plugin-form-builder',
+    helperImports: [
+      'phoneField',
+      'privacyPolicyField',
+      'formActionOptions',
+      'copyFormActionToSubmission',
+      'runFormAction',
+    ],
+    injectsCollections: ['forms', 'form-submissions'],
+    ownedFiles: [
+      'src/cms/fields/formBuilder.ts',
+      'src/cms/forms',
+      'src/cms/components/FormPreview',
+    ],
+    relatedBlocks: ['formBlock'],
+  },
+  {
+    slug: 'search',
+    callee: 'searchPlugin',
+    pkg: '@payloadcms/plugin-search',
+    helperImports: ['searchFields', 'beforeSyncWithSearch'],
+    injectsCollections: ['search'],
+    ownedFiles: ['src/cms/search'],
+    relatedBlocks: [],
+  },
+]
+
+function discoverPlugins(root: string): DiscoveredPlugin[] {
+  const pluginsFile = Path.resolve(root, 'src/cms/plugins/index.ts')
+  if (!fs.existsSync(pluginsFile)) return []
+  const src = fs.readFileSync(pluginsFile, 'utf8')
+  return SELECTABLE_PLUGINS.filter((p) => src.includes(p.callee))
 }
 
 // Presentational heros the scaffolder offers for pruning. `none` is always kept; `search` follows the
@@ -304,6 +365,7 @@ export function discover(root: string): Discovery {
     blocks,
     collections,
     heros: discoverHeros(root),
+    plugins: discoverPlugins(root),
     pluginCollections: discoverPluginCollections(root),
     overrides,
   }

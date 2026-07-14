@@ -23,19 +23,23 @@ feature has hidden prerequisites.
 
 ## Next (deeper config prompts)
 
-- [ ] Scaffold-time prompts wired into the generated project: site/brand name, which **locales** to keep
+- [x] **Site/brand name** — prompt (defaults to title-cased project name; `--brand=`), replaces the
+      `Kollab Website Template` literal across og/meta/seo/seed in the generated project.
+- [x] **Selectable heros** — HighImpact/MediumImpact/LowImpact prunable (`--heros=`), cleaning the hero
+      config select options + RenderHero map/imports. `none`/`search`/PostHero excluded.
+- [x] **Selectable plugins** — redirects/form-builder/search prunable (`--plugins=`): removes the plugin
+      call + orphaned imports + package.json deps + config-owned files; cascades (form-builder→formBlock,
+      injected collections vanish); warns on search-hero coupling. seo + nested-docs intentionally always-on.
+- [ ] Scaffold-time prompts still to wire: which **locales** to keep
 
-  (currently da+en fixed — needs localization.ts + next-intl + messages pruning),**payload plugins** and which to keep same as collections and blocks, but just for all the plugins, **analytics** on/off
-  (Matomo / GA4 env + core wiring), auth/roles, package manager choice.
-
-- [ ] `.env` templating — prefill values from prompt answers instead of a blank copy.
+  (currently da+en fixed — needs localization.ts + next-intl + messages pruning),**payload plugins** and which to keep same as collections and blocks, but just for all the plugins
 
 ## Later (distribution & DX)
 
+- [ ] Avoid the double `yarn install` (engine clone + output) — reuse or share the install. Also add loading state for the engine clone step.
 - [ ] `npm publish` flow finalized; CI (Bitbucket Pipelines) to auto-tag template + publish initializer
       on release so the version→tag contract can't drift.
 - [ ] `--template-ref` / version picker; `--dry-run` in the initializer to preview the prune plan.
-- [ ] Avoid the double `yarn install` (engine clone + output) — reuse or share the install.
 - [ ] Offline / cached clone; faster shallow fetch.
 - [ ] Engine tests (Vitest) covering discovery + prune plan for representative selections.
 

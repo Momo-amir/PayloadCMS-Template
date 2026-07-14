@@ -8,6 +8,7 @@ export function removeArrayMember(sf: SourceFile, symbol: string): boolean {
   let changed = false
 
   for (const arr of sf.getDescendantsOfKind(SyntaxKind.ArrayLiteralExpression)) {
+    if (arr.wasForgotten()) continue
     const idx = arr.getElements().findIndex((e) => e.getText() === symbol)
     if (idx !== -1) {
       arr.removeElement(idx)
@@ -41,6 +42,7 @@ export function removeArrayMember(sf: SourceFile, symbol: string): boolean {
 export function removeStringArrayMember(sf: SourceFile, value: string): boolean {
   let changed = false
   for (const arr of sf.getDescendantsOfKind(SyntaxKind.ArrayLiteralExpression)) {
+    if (arr.wasForgotten()) continue
     const idx = arr
       .getElements()
       .findIndex(
@@ -61,6 +63,7 @@ export function removeStringArrayMember(sf: SourceFile, value: string): boolean 
 export function removeObjectArrayMemberByValue(sf: SourceFile, value: string): boolean {
   let changed = false
   for (const arr of sf.getDescendantsOfKind(SyntaxKind.ArrayLiteralExpression)) {
+    if (arr.wasForgotten()) continue
     const els = arr.getElements()
     for (let i = els.length - 1; i >= 0; i--) {
       const obj = els[i].asKind(SyntaxKind.ObjectLiteralExpression)
@@ -88,6 +91,7 @@ export function removeObjectArrayMemberByValue(sf: SourceFile, value: string): b
 export function removeFieldByRelationTo(sf: SourceFile, slug: string): boolean {
   let changed = false
   for (const arr of sf.getDescendantsOfKind(SyntaxKind.ArrayLiteralExpression)) {
+    if (arr.wasForgotten()) continue
     const els = arr.getElements()
     for (let i = els.length - 1; i >= 0; i--) {
       const obj = els[i].asKind(SyntaxKind.ObjectLiteralExpression)
@@ -115,6 +119,7 @@ export function removeObjectPropertyByName(sf: SourceFile, name: string): boolea
   let changed = false
   const removedInitializers: string[] = []
   for (const obj of sf.getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression)) {
+    if (obj.wasForgotten()) continue
     const prop = obj.getProperty(name)?.asKind(SyntaxKind.PropertyAssignment)
     if (prop) {
       const init = prop.getInitializer()?.getText()
@@ -138,6 +143,50 @@ export function removeObjectPropertyByName(sf: SourceFile, name: string): boolea
       }
     }
   }
+  return changed
+}
+
+/**
+ * Remove array elements that are a call to `callee` (e.g. `redirectsPlugin({...})` in a plugins
+ * array), then drop the now-unused import of `callee` and any of `alsoRemoveImports` that are no
+ * longer referenced. Returns true if an array element was removed.
+ */
+export function removeCallExpressionMember(
+  sf: SourceFile,
+  callee: string,
+  alsoRemoveImports: string[] = [],
+): boolean {
+  let changed = false
+  // Removing an outer array element forgets its descendant nodes (e.g. nested `features: [...]`
+  // arrays inside a plugin config), so skip any array literal that a prior removal invalidated.
+  for (const arr of sf.getDescendantsOfKind(SyntaxKind.ArrayLiteralExpression)) {
+    if (arr.wasForgotten()) continue
+    const els = arr.getElements()
+    for (let i = els.length - 1; i >= 0; i--) {
+      const call = els[i].asKind(SyntaxKind.CallExpression)
+      if (call && call.getExpression().getText() === callee) {
+        arr.removeElement(i)
+        changed = true
+      }
+    }
+  }
+  if (!changed) return false
+  const dropImportIfUnused = (symbol: string) => {
+    const stillUsed = sf
+      .getDescendantsOfKind(SyntaxKind.Identifier)
+      .some((id) => id.getText() === symbol && id.getParent()?.getKind() !== SyntaxKind.ImportSpecifier)
+    if (stillUsed) return
+    for (const imp of sf.getImportDeclarations()) {
+      const named = imp.getNamedImports().find((n) => n.getName() === symbol)
+      if (named) {
+        named.remove()
+        if (imp.getNamedImports().length === 0 && !imp.getDefaultImport() && !imp.getNamespaceImport()) {
+          imp.remove()
+        }
+      }
+    }
+  }
+  for (const s of [callee, ...alsoRemoveImports]) dropImportIfUnused(s)
   return changed
 }
 
