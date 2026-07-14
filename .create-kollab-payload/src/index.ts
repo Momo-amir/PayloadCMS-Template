@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { spawnSync } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -25,12 +25,28 @@ function step(msg: string) {
   console.log(`\n${teal('▸')} ${msg}`)
 }
 
+// The Kollab "K" mark (from the brand favicon) rendered in block characters, shown top-left of the
+// intro next to the tool name + version. Mark rows are padded to a fixed visible width BEFORE
+// coloring so ANSI codes don't throw off alignment.
+const KOLLAB_MARK = ['█  ╱', '█ ╱ ', '██  ', '█ ╲ ', '█  ╲']
+
+function printBanner() {
+  const right = ['', bold('create-kollab-payload'), dim(`v${SELF_VERSION}`), '', '']
+  console.log('')
+  for (let i = 0; i < KOLLAB_MARK.length; i++) {
+    console.log(`  ${teal(KOLLAB_MARK[i])}   ${right[i] ?? ''}`)
+  }
+  console.log('')
+}
+
 interface Args {
   target?: string
   templateRef: string
   templateRepo: string
   blocks?: string
   collections?: string
+  heros?: string
+  plugins?: string
   brand?: string
   skipInstall: boolean
   skipGit: boolean
@@ -63,6 +79,8 @@ function parseArgs(argv: string[]): Args {
       args.templateRepo = raw.slice('--template-repo='.length)
     else if (raw.startsWith('--blocks=')) args.blocks = raw.slice('--blocks='.length)
     else if (raw.startsWith('--collections=')) args.collections = raw.slice('--collections='.length)
+    else if (raw.startsWith('--heros=')) args.heros = raw.slice('--heros='.length)
+    else if (raw.startsWith('--plugins=')) args.plugins = raw.slice('--plugins='.length)
     else if (raw.startsWith('--brand=')) args.brand = raw.slice('--brand='.length)
     else if (raw === '--skip-install') args.skipInstall = true
     else if (raw === '--skip-git') args.skipGit = true
@@ -84,6 +102,51 @@ function run(cmd: string, cmdArgs: string[], cwd?: string, inheritStdio = true) 
   return res
 }
 
+const SPINNER = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+
+// Run a command with an animated spinner + elapsed timer for long, output-less steps (clone/install).
+// Captures output so the spinner line stays clean; prints captured stderr/stdout on failure.
+async function runSpinner(
+  label: string,
+  cmd: string,
+  cmdArgs: string[],
+  cwd?: string,
+): Promise<void> {
+  const tty = process.stdout.isTTY && !process.env.NO_COLOR
+  if (!tty) {
+    step(`${label} …`)
+    run(cmd, cmdArgs, cwd, false)
+    return
+  }
+  const start = process.hrtime.bigint()
+  let frame = 0
+  const render = () => {
+    const secs = Number((process.hrtime.bigint() - start) / 1_000_000_000n)
+    process.stdout.write(`\r${teal(SPINNER[frame % SPINNER.length])} ${label} ${dim(`${secs}s`)}  `)
+    frame++
+  }
+  render()
+  const timer = setInterval(render, 80)
+  let out = ''
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(cmd, cmdArgs, { cwd })
+    child.stdout?.on('data', (d) => (out += d))
+    child.stderr?.on('data', (d) => (out += d))
+    child.on('error', reject)
+    child.on('close', (code) => {
+      clearInterval(timer)
+      const secs = Number((process.hrtime.bigint() - start) / 1_000_000_000n)
+      if (code === 0) {
+        process.stdout.write(`\r${green('✔')} ${label} ${dim(`${secs}s`)}      \n`)
+        resolve()
+      } else {
+        process.stdout.write(`\r${teal('✖')} ${label}\n`)
+        fail(`\`${cmd} ${cmdArgs.join(' ')}\` failed (exit ${code}).\n${out}`)
+      }
+    })
+  })
+}
+
 function has(cmd: string): boolean {
   const probe = process.platform === 'win32' ? 'where' : 'which'
   return spawnSync(probe, [cmd], { stdio: 'ignore' }).status === 0
@@ -101,7 +164,7 @@ function rm(target: string) {
 async function main() {
   const args = parseArgs(process.argv.slice(2))
 
-  console.log(`\n${teal('create-kollab-payload')} ${dim(`v${SELF_VERSION}`)}`)
+  printBanner()
 
   // 1. Project name first (create-next-app style) — before any cloning.
   let target = args.target
@@ -144,25 +207,23 @@ async function main() {
   const tmpClone = fs.mkdtempSync(path.join(os.tmpdir(), 'kollab-template-'))
 
   try {
-    // 2. Fetch the template quietly (feature menu is derived from its source, so we clone first).
-    step(`Fetching template ${dim(args.templateRef)} …`)
-    run(
-      'git',
-      [
-        'clone',
-        '--quiet',
-        '--depth',
-        '1',
-        '--branch',
-        args.templateRef,
-        args.templateRepo,
-        tmpClone,
-      ],
-      undefined,
-      false,
+    // 2. Fetch the template (feature menu is derived from its source, so we clone first).
+    await runSpinner(`Fetching template ${args.templateRef}`, 'git', [
+      'clone',
+      '--quiet',
+      '--depth',
+      '1',
+      '--branch',
+      args.templateRef,
+      args.templateRepo,
+      tmpClone,
+    ])
+    await runSpinner(
+      'Preparing the feature catalog',
+      yarnCmd,
+      yarnArgs(['install', '--silent']),
+      tmpClone,
     )
-    step('Preparing the feature catalog …')
-    run(yarnCmd, yarnArgs(['install', '--silent']), tmpClone, false)
 
     // 3. Selection screen — clearly framed so the choices stand out.
     if (interactive) {
@@ -173,20 +234,29 @@ async function main() {
     const genArgs = ['cli', 'generate', `--out=${targetDir}`, `--root=${tmpClone}`]
     if (args.blocks) genArgs.push(`--blocks=${args.blocks}`)
     if (args.collections) genArgs.push(`--collections=${args.collections}`)
+    if (args.heros) genArgs.push(`--heros=${args.heros}`)
+    if (args.plugins) genArgs.push(`--plugins=${args.plugins}`)
     run(yarnCmd, yarnArgs(genArgs), tmpClone)
     if (interactive) console.log(dim('─'.repeat(48)))
 
     step('Finalizing project files …')
     cleanOutput(targetDir, projectName, brand)
     setupEnv(targetDir)
+
+    // Reuse the clone's node_modules for the generated project: the output's deps are a subset of
+    // the template's, and yarn.lock ships with the copy, so a follow-up install just reconciles
+    // (prunes the few removed packages) instead of re-downloading the whole Payload+Next tree.
+    if (!args.skipInstall) {
+      reuseNodeModules(path.join(tmpClone, 'node_modules'), path.join(targetDir, 'node_modules'))
+    }
   } finally {
     rm(tmpClone)
   }
 
-  // 4. Install dependencies in the generated project (unless opted out).
+  // 4. Install dependencies in the generated project (unless opted out). With node_modules reused
+  //    above, this reconciles against the pruned package.json rather than doing a cold install.
   if (!args.skipInstall) {
-    step('Installing dependencies …')
-    run(yarnCmd, yarnArgs(['install']), targetDir)
+    await runSpinner('Installing dependencies', yarnCmd, yarnArgs(['install']), targetDir)
   }
 
   // 5. Initialize git with a single initial commit (so it isn't a pile of untracked files).
@@ -198,6 +268,24 @@ async function main() {
   }
 
   printDone(projectName, target, args)
+}
+
+// Move the clone's node_modules into the generated project (rename is instant on the same volume;
+// fall back to a recursive copy across devices). Best-effort: on any failure the follow-up
+// `yarn install` still produces a correct tree, just slower.
+function reuseNodeModules(from: string, to: string) {
+  if (!fs.existsSync(from) || fs.existsSync(to)) return
+  try {
+    fs.renameSync(from, to)
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === 'EXDEV') {
+      try {
+        fs.cpSync(from, to, { recursive: true })
+      } catch {
+        rm(to)
+      }
+    }
+  }
 }
 
 function setupEnv(dir: string) {
