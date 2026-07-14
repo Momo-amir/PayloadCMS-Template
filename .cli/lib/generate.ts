@@ -11,7 +11,20 @@ import {
   applyFieldRelationRemovals,
   applyObjectPropertyRemovals,
   removeCallExpressionMember,
+  removeImportByModuleContains,
+  removeObjectPropertyByName,
 } from './codemod'
+
+// Inline blocks the RichText hub (src/website/components/RichText/index.tsx) hardcodes a component
+// import + converter-map entry for. When one is pruned, both must be cleaned or the build fails on a
+// dangling import of the deleted folder. Keyed by block slug → { folder, converter-map key }.
+const RICHTEXT_INLINE_BLOCKS: Record<string, { folder: string; converterKey: string }> = {
+  mediaBlock: { folder: 'Media', converterKey: 'mediaBlock' },
+  codeBlock: { folder: 'Code', converterKey: 'code' },
+  columnsBlock: { folder: 'Columns', converterKey: 'columns' },
+  bannerBlock: { folder: 'Banner', converterKey: 'banner' },
+  callToActionBlock: { folder: 'CallToAction', converterKey: 'cta' },
+}
 
 export interface GenerateOptions {
   root: string
@@ -381,6 +394,22 @@ export function generate(opts: GenerateOptions): GeneratePlan {
       symbols: e.symbols,
     })),
   )
+
+  // 3b. Clean the RichText hub for pruned inline blocks. RichText/index.tsx hardcodes component
+  //     imports + a converter map for banner/media/code/cta/columns; a pruned one leaves a dangling
+  //     import of a deleted folder (build break). Remove that block's component import + map entry.
+  const richTextFile = Path.resolve(opts.outDir, 'src/website/components/RichText/index.tsx')
+  const rtSf = fs.existsSync(richTextFile) ? outProject.addSourceFileAtPathIfExists(richTextFile) : null
+  if (rtSf) {
+    let rtChanged = false
+    for (const slug of plan.prunedBlocks) {
+      const rt = RICHTEXT_INLINE_BLOCKS[slug]
+      if (!rt) continue
+      if (removeImportByModuleContains(rtSf, `blocks/${rt.folder}/Component`)) rtChanged = true
+      if (removeObjectPropertyByName(rtSf, rt.converterKey)) rtChanged = true
+    }
+    if (rtChanged) rtSf.saveSync()
+  }
 
   // 4. Remove deselected children from KEPT container configs (renderer is data-driven, so it follows).
   applyRemovals(

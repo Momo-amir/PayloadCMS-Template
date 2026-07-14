@@ -190,6 +190,22 @@ export function removeCallExpressionMember(
   return changed
 }
 
+/**
+ * Remove import declarations whose module specifier contains `needle` (e.g. a deleted block folder
+ * path like `blocks/CallToAction/Component`). Returns true if anything was removed. Used to clean the
+ * RichText hub's hardcoded imports of pruned inline-block components.
+ */
+export function removeImportByModuleContains(sf: SourceFile, needle: string): boolean {
+  let changed = false
+  for (const imp of sf.getImportDeclarations()) {
+    if (imp.getModuleSpecifierValue().includes(needle)) {
+      imp.remove()
+      changed = true
+    }
+  }
+  return changed
+}
+
 export interface PruneReport {
   file: string
   removedSymbols: string[]
