@@ -239,6 +239,7 @@ function cleanOutput(dir: string, projectName: string) {
     '.claude/skills/author-feature',
     '.claude/agents/feature-manifest-author.md',
     'create-kollab-payload',
+    '.create-kollab-payload',
   ]
   for (const rel of remove) rm(path.resolve(dir, rel))
 
