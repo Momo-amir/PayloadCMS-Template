@@ -3,8 +3,8 @@
 Generate a Kollab Payload CMS + Next.js client site from the
 [`kollab-payload-template`](https://github.com/Momo-amir/PayloadCMS-Template).
 
-> Clones the template over public HTTPS from the GitHub mirror — no SSH or credentials needed. `git`
-> and `yarn`/`corepack` must be on your PATH. To fetch from the private Bitbucket origin instead, pass
+> Clones the public template repo over HTTPS — no SSH or credentials needed. `git` and
+> `yarn`/`corepack` must be on your PATH. To fetch from the private Bitbucket origin instead, pass
 > `--template-repo=git@bitbucket.org:it-kartellet/kollab-payload-template.git`.
 
 ## Usage
@@ -13,7 +13,8 @@ Generate a Kollab Payload CMS + Next.js client site from the
 npx create-kollab-payload my-site
 ```
 
-Interactive block/collection selection runs automatically. To skip the prompts, pass the slugs:
+You'll be asked for a project name (if omitted), then presented with a feature catalog — everything
+is selected by default; deselect what you don't need. To skip the prompts entirely, pass the slugs:
 
 ```bash
 npx create-kollab-payload my-site --blocks=mediaBlock,cardBlock --collections=posts,categories
@@ -21,20 +22,22 @@ npx create-kollab-payload my-site --blocks=mediaBlock,cardBlock --collections=po
 
 ### What it does
 
-1. `git clone --depth 1 --branch v<version>` the template (the initializer version maps to a template
-   git tag).
-2. `yarn install` inside the clone (needed to run the copy-then-prune engine).
-3. Runs the template's own `.cli` engine (`yarn cli generate`) to copy the template and prune
-   everything you didn't select.
-4. Cleans generator-only artifacts from your project (keeps `yarn cli create:block`).
-5. `git init` a fresh repository.
+1. Asks for the project name.
+2. Fetches the template at `v<version>` (the initializer version maps to a template git tag) and
+   prepares the feature catalog.
+3. Presents the feature selection screen (skipped when `--blocks` is passed).
+4. Copies the template and prunes everything you didn't select, then cleans generator-only artifacts
+   (keeps `yarn cli create:block`).
+5. Copies `.env.example` → `.env`.
+6. Runs `yarn install` in your project (unless `--skip-install`).
+7. Creates the git repo with an initial commit (unless `--skip-git`).
 
 Then:
 
 ```bash
 cd my-site
-yarn install
-yarn generate:types
+yarn generate:types   # regenerate Payload types (needs the DB up)
+yarn docker-dev       # start Payload + Postgres on :8890
 ```
 
 ## Flags
@@ -42,14 +45,18 @@ yarn generate:types
 | Flag | Default | Purpose |
 |---|---|---|
 | `--template-ref=<ref>` | `v<initializer version>` | Git tag/branch of the template to clone. |
-| `--template-repo=<url>` | GitHub mirror (HTTPS) | Template repo URL. Accepts the private Bitbucket SSH URL or a local `file://` clone for testing. |
-| `--blocks=<slug,…>` | interactive | Block slugs to keep (skips the block prompt). |
+| `--template-repo=<url>` | Public GitHub template repo (HTTPS) | Template repo URL. Accepts the private Bitbucket SSH URL or a local `file://` clone for testing. |
+| `--blocks=<slug,…>` | interactive | Block slugs to keep (skips the selection screen). |
 | `--collections=<slug,…>` | interactive | Optional-collection slugs to keep. |
+| `--skip-install` | off | Don't run `yarn install` in the generated project. |
+| `--skip-git` | off | Don't `git init` / create the initial commit. |
+
+Set `NO_COLOR=1` to disable colored output.
 
 ## Releasing
 
 The initializer's `version` maps to a template git tag `vX.Y.Z`. On a template release, tag the
-template and push the tag to the **public GitHub mirror** (the default fetch source), then publish a
+template and push the tag to the **public GitHub repo** (the default fetch source), then publish a
 matching initializer version:
 
 ```bash

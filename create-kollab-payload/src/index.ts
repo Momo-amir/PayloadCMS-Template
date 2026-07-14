@@ -10,12 +10,29 @@ const DEFAULT_TEMPLATE_REPO = 'https://github.com/Momo-amir/PayloadCMS-Template.
 
 const SELF_VERSION = readSelfVersion()
 
+const useColor = process.stdout.isTTY && !process.env.NO_COLOR
+const paint = (code: string) => (s: string) => (useColor ? `\x1b[${code}m${s}\x1b[0m` : s)
+const teal = paint('36;1')
+const green = paint('32;1')
+const dim = paint('2')
+const bold = paint('1')
+
+function banner(msg: string) {
+  console.log(`\n${teal('◆')} ${bold(msg)}`)
+}
+
+function step(msg: string) {
+  console.log(`\n${teal('▸')} ${msg}`)
+}
+
 interface Args {
   target?: string
   templateRef: string
   templateRepo: string
   blocks?: string
   collections?: string
+  skipInstall: boolean
+  skipGit: boolean
 }
 
 function readSelfVersion(): string {
@@ -28,6 +45,8 @@ function parseArgs(argv: string[]): Args {
   const args: Args = {
     templateRef: `v${SELF_VERSION}`,
     templateRepo: DEFAULT_TEMPLATE_REPO,
+    skipInstall: false,
+    skipGit: false,
   }
   for (const raw of argv) {
     if (raw.startsWith('--template-ref=')) args.templateRef = raw.slice('--template-ref='.length)
@@ -35,6 +54,8 @@ function parseArgs(argv: string[]): Args {
       args.templateRepo = raw.slice('--template-repo='.length)
     else if (raw.startsWith('--blocks=')) args.blocks = raw.slice('--blocks='.length)
     else if (raw.startsWith('--collections=')) args.collections = raw.slice('--collections='.length)
+    else if (raw === '--skip-install') args.skipInstall = true
+    else if (raw === '--skip-git') args.skipGit = true
     else if (!raw.startsWith('--') && !args.target) args.target = raw
   }
   return args
@@ -70,17 +91,20 @@ function rm(target: string) {
 async function main() {
   const args = parseArgs(process.argv.slice(2))
 
+  console.log(`\n${teal('create-kollab-payload')} ${dim(`v${SELF_VERSION}`)}`)
+
+  // 1. Project name first (create-next-app style) — before any cloning.
   let target = args.target
   if (!target) {
     const res = await prompts({
       type: 'text',
       name: 'target',
-      message: 'Project directory',
+      message: 'What is your project named?',
       initial: 'my-kollab-site',
     })
     target = res.target
   }
-  if (!target) fail('No target directory provided.')
+  if (!target) fail('No project name provided.')
 
   const targetDir = path.resolve(process.cwd(), target)
   const projectName = path.basename(targetDir)
@@ -92,38 +116,113 @@ async function main() {
   const yarnCmd = has('yarn') ? 'yarn' : has('corepack') ? 'corepack' : null
   if (!yarnCmd) fail('yarn (or corepack) is required but was not found on PATH.')
   const yarnArgs = (rest: string[]) => (yarnCmd === 'corepack' ? ['yarn', ...rest] : rest)
+  const interactive = !args.blocks
 
   const tmpClone = fs.mkdtempSync(path.join(os.tmpdir(), 'kollab-template-'))
 
   try {
-    console.log(`\n▸ Cloning template ${args.templateRef} from ${args.templateRepo} …`)
-    run('git', ['clone', '--depth', '1', '--branch', args.templateRef, args.templateRepo, tmpClone])
+    // 2. Fetch the template quietly (feature menu is derived from its source, so we clone first).
+    step(`Fetching template ${dim(args.templateRef)} …`)
+    run(
+      'git',
+      [
+        'clone',
+        '--quiet',
+        '--depth',
+        '1',
+        '--branch',
+        args.templateRef,
+        args.templateRepo,
+        tmpClone,
+      ],
+      undefined,
+      false,
+    )
+    step('Preparing the feature catalog …')
+    run(yarnCmd, yarnArgs(['install', '--silent']), tmpClone, false)
 
-    console.log(`\n▸ Installing template engine dependencies …`)
-    run(yarnCmd, yarnArgs(['install']), tmpClone)
-
-    console.log(`\n▸ Generating site …`)
+    // 3. Selection screen — clearly framed so the choices stand out.
+    if (interactive) {
+      console.log(`\n${dim('─'.repeat(48))}`)
+      banner('Choose the features to include')
+      console.log(dim('  Everything is selected by default — deselect what you don’t need.\n'))
+    }
     const genArgs = ['cli', 'generate', `--out=${targetDir}`, `--root=${tmpClone}`]
     if (args.blocks) genArgs.push(`--blocks=${args.blocks}`)
     if (args.collections) genArgs.push(`--collections=${args.collections}`)
     run(yarnCmd, yarnArgs(genArgs), tmpClone)
+    if (interactive) console.log(dim('─'.repeat(48)))
 
-    console.log(`\n▸ Cleaning generated project …`)
+    step('Finalizing project files …')
     cleanOutput(targetDir, projectName)
-
-    console.log(`\n▸ Initializing git repository …`)
-    run('git', ['init', '-q'], targetDir)
+    setupEnv(targetDir)
   } finally {
     rm(tmpClone)
   }
 
-  console.log(
-    `\n✔ Created ${projectName} at ${targetDir}\n\n` +
-      `Next steps:\n` +
-      `  cd ${target}\n` +
-      `  yarn install\n` +
-      `  yarn generate:types\n`,
+  // 4. Install dependencies in the generated project (unless opted out).
+  if (!args.skipInstall) {
+    step('Installing dependencies …')
+    run(yarnCmd, yarnArgs(['install']), targetDir)
+  }
+
+  // 5. Initialize git with a single initial commit (so it isn't a pile of untracked files).
+  if (!args.skipGit) {
+    step('Initializing git repository …')
+    run('git', ['init', '-q'], targetDir)
+    run('git', ['add', '-A'], targetDir, false)
+    commitInitial(targetDir)
+  }
+
+  printDone(projectName, target, args)
+}
+
+function setupEnv(dir: string) {
+  const example = path.resolve(dir, '.env.example')
+  const env = path.resolve(dir, '.env')
+  if (fs.existsSync(example) && !fs.existsSync(env)) {
+    fs.copyFileSync(example, env)
+    console.log(dim(`  Copied .env.example → .env — fill in your values before running.`))
+  }
+}
+
+function commitInitial(dir: string) {
+  const res = spawnSync(
+    'git',
+    [
+      '-c',
+      'user.name=create-kollab-payload',
+      '-c',
+      'user.email=noreply@kollab.dk',
+      'commit',
+      '-q',
+      '-m',
+      'Initial commit from create-kollab-payload',
+    ],
+    { cwd: dir, stdio: 'pipe', encoding: 'utf8' },
   )
+  if (res.status !== 0) {
+    console.log(dim('  Skipped initial commit (configure git user and commit manually).'))
+  }
+}
+
+function printDone(projectName: string, target: string, args: Args) {
+  const lines = [
+    ``,
+    `${green('✔')} ${bold(`Created ${projectName}`)}`,
+    ``,
+    `${bold('Next steps:')}`,
+    `  ${teal(`cd ${target}`)}`,
+  ]
+  if (args.skipInstall) lines.push(`  ${teal('yarn install')}`)
+  lines.push(
+    `  ${teal('yarn generate:types')}   ${dim('# regenerate Payload types (needs the DB up)')}`,
+  )
+  lines.push(`  ${teal('yarn docker-dev')}        ${dim('# start Payload + Postgres on :8890')}`)
+  lines.push(``)
+  lines.push(dim(`  Remember to fill in .env before starting.`))
+  lines.push(``)
+  console.log(lines.join('\n'))
 }
 
 function cleanOutput(dir: string, projectName: string) {
