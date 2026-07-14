@@ -1,63 +1,49 @@
 import React from 'react'
-import { ArchiveBlock } from '../Archive/Component'
-import { CallToActionBlock } from '../CallToAction/Component'
-import { ContentBlock } from '../Content/Component' // Temporarily kept for backward compatibility
-import { FormBlock } from '../Form/Component'
-import { MediaBlock } from '../Media/Component'
-import { RichTextBlock } from '../RichText/Component'
+import type { ComponentBlock } from '@/website/types/ComponentBlock'
+import { TwoColumnBlock } from './config'
 
-// 1) slug → React component map for TWO-BLOCK children
-export const childComponents = {
-  archiveBlock: ArchiveBlock,
-  callToActionBlock: CallToActionBlock,
-  contentBlock: ContentBlock, // Temporarily kept for backward compatibility
-  formBlock: FormBlock,
-  mediaBlock: MediaBlock,
-  richTextBlock: RichTextBlock,
-} as const
+// Data-driven: the child slug → React component map is derived from the container config's
+// `type: 'blocks'` fields, so pruning a child from the config automatically prunes rendering.
+function collectChildBlocks(block: ComponentBlock): ComponentBlock[] {
+  const out = new Map<string, ComponentBlock>()
+  for (const field of block.fields ?? []) {
+    if ('type' in field && field.type === 'blocks' && 'blocks' in field) {
+      for (const child of (field.blocks as ComponentBlock[]) ?? []) out.set(child.slug, child)
+    }
+  }
+  return [...out.values()]
+}
 
-// 2) Discriminated‐union of “child” props for TwoBlock
-type ComponentMap = typeof childComponents
-export type TwoBlockField = {
-  [K in keyof ComponentMap]: { blockType: K } & React.ComponentProps<ComponentMap[K]>
-}[keyof ComponentMap]
+// Computed lazily (not at module load) to avoid a circular-import init cycle with ./config.
+let _childComponents: Record<string, ComponentBlock['component']> | null = null
+function getChildComponents(): Record<string, ComponentBlock['component']> {
+  if (!_childComponents) {
+    _childComponents = Object.fromEntries(
+      collectChildBlocks(TwoColumnBlock).map((b) => [b.slug, b.component]),
+    )
+  }
+  return _childComponents
+}
 
-// 3) type-safe renderer for a single child
+export type TwoBlockField = { blockType: string } & Record<string, unknown>
+
+// Per-child props that some children accept for in-column styling.
+const CONTENT_TEXT_PROP: Record<string, string> = {
+  callToActionBlock: 'textClassName',
+  richTextBlock: 'textClassName',
+  formBlock: 'introTextClassName',
+}
+
 export function renderChildField(
   field: TwoBlockField,
   key: React.Key,
   enableGutter = true,
   contentTextClassName?: string,
 ) {
+  const Component = getChildComponents()[field.blockType]
+  if (!Component) return null
   const sharedProps = enableGutter ? { enableGutter: false } : {}
-  switch (field.blockType) {
-    case 'archiveBlock':
-      return <ArchiveBlock key={key} {...field} {...sharedProps} />
-    case 'callToActionBlock':
-      return (
-        <CallToActionBlock
-          key={key}
-          {...field}
-          {...sharedProps}
-          textClassName={contentTextClassName}
-        />
-      )
-    case 'richTextBlock':
-      return (
-        <RichTextBlock key={key} {...field} {...sharedProps} textClassName={contentTextClassName} />
-      )
-    case 'formBlock':
-      return (
-        <FormBlock
-          key={key}
-          {...field}
-          {...sharedProps}
-          introTextClassName={contentTextClassName}
-        />
-      )
-    case 'mediaBlock':
-      return <MediaBlock key={key} {...field} {...sharedProps} />
-    default:
-      return null
-  }
+  const textProp = CONTENT_TEXT_PROP[field.blockType]
+  const extra = textProp && contentTextClassName ? { [textProp]: contentTextClassName } : {}
+  return <Component key={key} {...(field as Record<string, unknown>)} {...sharedProps} {...extra} />
 }

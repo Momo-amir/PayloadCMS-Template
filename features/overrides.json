@@ -1,6 +1,25 @@
 {
   "$schema": "./overrides.schema.json",
-  "_note": "Maintainer-owned. Auto-discovery derives most feature metadata from block/collection configs and static imports. Add an entry here ONLY for facts code cannot express: plugin/collection prerequisites (bare relationTo strings), grouping, and sub-block markers. A slug absent from this file is fine.",
+  "_note": "Maintainer-owned. Auto-discovery derives most feature metadata from block/collection configs and static imports. Add an entry here ONLY for facts code cannot express: plugin/collection prerequisites (bare relationTo strings), grouping, sub-block markers, and collection-owned app files/routes.",
+  "collections": {
+    "posts": {
+      "ownedFiles": [
+        "src/app/(frontend)/[locale]/[postsSlug]",
+        "src/app/(frontend)/[locale]/(sitemaps)/posts-sitemap.xml",
+        "src/app/(frontend)/[locale]/post-page-client.tsx",
+        "src/app/(frontend)/[locale]/post-renderer.tsx",
+        "src/website/layout/heros/PostHero",
+        "src/website/components/RelatedPosts"
+      ],
+      "patches": [
+        {
+          "file": "src/app/(frontend)/[locale]/[...slug]/page.tsx",
+          "find": "    return await import('../post-renderer')",
+          "replace": "    return null // posts pruned"
+        }
+      ]
+    }
+  },
   "blocks": {
     "archiveBlock": {
       "group": "Content",

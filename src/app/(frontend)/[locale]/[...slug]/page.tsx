@@ -10,12 +10,21 @@ import {
   queryPageByPath,
   renderPage,
 } from '../page-renderer'
-import { getCustomization, getPostsPageLabel, getPostsPagePath } from '@/cms/utilities/customization'
 import {
-  getPostBySlugCached,
-  queryPostBySlug,
-  renderPostContent,
-} from '../post-renderer'
+  getCustomization,
+  getPostsPageLabel,
+  getPostsPagePath,
+} from '@/cms/utilities/customization'
+
+// Posts are optional: the post-renderer module is removed when the Posts collection is pruned.
+// Loaded dynamically and guarded so the page/route still compiles and runs without it.
+async function loadPostRenderer(): Promise<Record<string, any> | null> {
+  try {
+    return await import('../post-renderer')
+  } catch {
+    return null
+  }
+}
 
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
@@ -30,7 +39,10 @@ type Args = {
   }>
 }
 
-export default async function Page({ params: paramsPromise, searchParams: searchParamsPromise }: Args) {
+export default async function Page({
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
+}: Args) {
   const { isEnabled: draft } = await draftMode()
   const { locale = 'da', slug } = await paramsPromise
 
@@ -49,8 +61,9 @@ export default async function Page({ params: paramsPromise, searchParams: search
     return renderPage({ page, locale, searchParams, url: path })
   }
 
-  // Check if this path matches {postsBasePath}/{postSlug}
-  if (slug.length >= 2) {
+  // Check if this path matches {postsBasePath}/{postSlug} — only when the Posts feature is present.
+  const posts = await loadPostRenderer()
+  if (posts && slug.length >= 2) {
     const customization = await getCustomization(locale)()
     const postsBasePath = getPostsPagePath(customization)
     const postsParentLabel = getPostsPageLabel(customization)
@@ -59,11 +72,11 @@ export default async function Page({ params: paramsPromise, searchParams: search
 
     if (parentPath === postsBasePath) {
       const post = draft
-        ? await queryPostBySlug({ slug: postSlug, locale })
-        : await getPostBySlugCached(postSlug, locale)()
+        ? await posts.queryPostBySlug({ slug: postSlug, locale })
+        : await posts.getPostBySlugCached(postSlug, locale)()
 
       if (post) {
-        return renderPostContent({ post, url: path, postsBasePath, postsParentLabel, draft })
+        return posts.renderPostContent({ post, url: path, postsBasePath, postsParentLabel, draft })
       }
     }
   }
@@ -87,19 +100,19 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
   if (page) return generatePageMetadata(page)
 
-  if (slug.length >= 2) {
+  const posts = await loadPostRenderer()
+  if (posts && slug.length >= 2) {
     const customization = await getCustomization(locale)()
     const postsBasePath = getPostsPagePath(customization)
     const parentPath = '/' + slug.slice(0, -1).join('/')
     const postSlug = slug[slug.length - 1]!
 
     if (parentPath === postsBasePath) {
-      const { generatePostMeta } = await import('../post-renderer')
       const post = draft
-        ? await queryPostBySlug({ slug: postSlug, locale })
-        : await getPostBySlugCached(postSlug, locale)()
+        ? await posts.queryPostBySlug({ slug: postSlug, locale })
+        : await posts.getPostBySlugCached(postSlug, locale)()
 
-      if (post) return generatePostMeta(post)
+      if (post) return posts.generatePostMeta(post)
     }
   }
 

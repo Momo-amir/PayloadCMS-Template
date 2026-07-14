@@ -53,6 +53,44 @@ strings), grouping, sub-block markers. Schema: [`features/overrides.schema.json`
 - **prerequisites gate** — deselecting `posts` while `archiveBlock` is kept warns/auto-keeps.
 - **modes** (design-toward, not built) — localization `none` / `opt-in` / `full` (per-language slugs).
 
+## Container blocks (nested blocks)
+
+A **container block** nests other blocks via a `type: 'blocks'` field (e.g. `twoColumnBlock`). Its
+children are auto-detected from the config — no manifest entry needed.
+
+Rules:
+- Children are **prunable**: deselecting a child removes it from the container's `blocks: [...]`
+  arrays and its import. The container itself is kept.
+- Keeping a container does **not** force its children to survive — a child survives only if selected
+  or reachable through a non-container import edge.
+- A container is kept even if **all** children are pruned (empty `blocks` arrays) — useful for building
+  project-specific children from scratch. The generator warns when this happens.
+- **Renderer must be data-driven.** A container's renderer builds its slug→component map from the
+  config's `blocks` arrays (see `TwoColumn/fields.tsx`), not a hardcoded map/switch — so pruning the
+  config automatically prunes rendering with no renderer codemod. New container blocks must follow this.
+
+## Collection pruning
+
+Optional collections (non-core) can be pruned. Core collections (Pages, Media, Users, ConsentTokens,
+AnalyticsAggregates) are locked. Pruning a collection performs, in order:
+
+1. **Delete owned files/routes** — declared per-collection as `ownedFiles` in `features/overrides.json`
+   (e.g. posts owns `[postsSlug]/`, `post-renderer.tsx`, `PostHero`, the posts sitemap). Only list files
+   that exist *solely* for that collection — never shared files.
+2. **Remove from `payload.config.ts`** — the collection symbol + import (ts-morph).
+3. **Remove from plugin/search string lists** — `collections: ['posts', ...]` entries + now-unused imports.
+4. **Trim from kept blocks' relationTo** — a kept block that lists the collection in a config-driven
+   array (e.g. `ARCHIVE_COLLECTIONS`) has that entry removed. Blocks must keep such lists in a single
+   editable const so this works, and must compile with an **empty** list (kept as a shell to rewire).
+5. **Apply shared-file patches** — declared per-collection as `patches` (find/replace) for the few shared
+   files that reference the collection and can't be auto-edited (e.g. neutralizing a dynamic import of a
+   deleted module in `[...slug]/page.tsx`).
+
+Conflicts (a kept block requires a pruned collection) are allowed with a warning + confirm — you keep the
+block as a shell and rewire it. Blocks that read an optional collection must be **collection-agnostic**:
+guard optional imports (dynamic + try/catch, like the posts branch in `[...slug]/page.tsx`) and drive
+`relationTo` from an editable const.
+
 ## Naming conventions (normalized)
 
 - Folder = PascalCase noun (no redundant `Block`): `Media`, `Card`, `TwoColumn`.

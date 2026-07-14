@@ -17,6 +17,9 @@ See `docs/DISTRIBUTION.md` for the model.
   generated identifiers at 63 chars.
 - Sub-block (only usable inside another block) → `showOnPage: false`.
 - Inline-only (rich-text) block → register in a collection's `BlocksFeature`, not `exports.ts`.
+- **Container block** (nests other blocks via a `type: 'blocks'` field): its renderer MUST build the
+  child slug→component map from the config's `blocks` arrays (data-driven, like `TwoColumn/fields.tsx`),
+  never a hardcoded map/switch — this lets the scaffolder prune unwanted children automatically.
 
 ## Steps for a new block
 1. `yarn cli create:block <Name>` (see `/scaffold-block`) or copy an existing block folder.

@@ -6,6 +6,35 @@
   "properties": {
     "$schema": { "type": "string" },
     "_note": { "type": "string" },
+    "collections": {
+      "type": "object",
+      "description": "Per-collection metadata. Keyed by collection slug.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "ownedFiles": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Repo-relative files/dirs that exist solely to serve this collection (routes, sitemap, heros). Deleted when the collection is pruned. Do NOT list shared files."
+          },
+          "patches": {
+            "type": "array",
+            "description": "Find/replace edits applied to SHARED files when this collection is pruned (e.g. neutralize a dynamic import of a deleted module).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": { "type": "string" },
+                "find": { "type": "string" },
+                "replace": { "type": "string" }
+              },
+              "required": ["file", "find", "replace"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
     "blocks": {
       "type": "object",
       "additionalProperties": {

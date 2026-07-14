@@ -25,7 +25,9 @@
       "Bash(node -e \"const s=require\\('fs'\\).readFileSync\\('src/website/blocks/Content/config.ts','utf8'\\); let d=0,mn=0; for\\(const c of s\\){if\\(c==='{'\\)d++;else if\\(c==='}'\\){d--;if\\(d<mn\\)mn=d;}} console.log\\('final-depth',d,'min-depth',mn\\);\")",
       "Bash(python3 -c ' *)",
       "Bash(git mv *)",
-      "Edit(/.claude/skills/author-feature/**)"
+      "Edit(/.claude/skills/author-feature/**)",
+      "Bash(test -f \"src/app/\\(frontend\\)/[locale]/post-renderer.tsx\")",
+      "Bash(awk '{print $1}')"
     ],
     "deny": [
       "Bash(rm -rf *)",

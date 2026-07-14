@@ -7,6 +7,13 @@ import {
 import { ArchiveBlock as ArchiveBlockComponent } from './Component'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
 import { EMPTY_LEXICAL_CONTENT } from '@/cms/fields/defaultLexical'
+import type { CollectionSlug } from 'payload'
+
+// Collections this archive can list. The scaffolder trims entries when a collection is pruned,
+// keeping the block collection-agnostic (safe to keep the block without any given collection).
+const ARCHIVE_COLLECTIONS: { label: string; value: CollectionSlug }[] = [
+  { label: 'Posts', value: 'posts' },
+]
 
 export const ArchiveBlock: ComponentBlock = {
   slug: 'archiveBlock',
@@ -46,52 +53,53 @@ export const ArchiveBlock: ComponentBlock = {
         },
       ],
     },
-    {
-      name: 'relationTo',
-      type: 'select',
-      admin: {
-        condition: (_, siblingData) => siblingData.populateBy === 'collection',
-      },
-      defaultValue: 'posts',
-      label: 'Collections To Show',
-      options: [
-        {
-          label: 'Posts',
-          value: 'posts',
-        },
-      ],
-    },
-    {
-      name: 'categories',
-      localized: true,
-      type: 'relationship',
-      admin: {
-        condition: (_, siblingData) => siblingData.populateBy === 'collection',
-      },
-      hasMany: true,
-      label: 'Categories To Show',
-      relationTo: 'categories',
-    },
-    {
-      name: 'limit',
-      type: 'number',
-      admin: {
-        condition: (_, siblingData) => siblingData.populateBy === 'collection',
-        step: 1,
-      },
-      defaultValue: 10,
-      label: 'Limit',
-    },
-    {
-      name: 'selectedDocs',
-      type: 'relationship',
-      admin: {
-        condition: (_, siblingData) => siblingData.populateBy === 'selection',
-      },
-      hasMany: true,
-      label: 'Selection',
-      relationTo: ['posts'],
-    },
+    // Collection-source fields are present only when at least one collection is available.
+    // If the scaffolder trims ARCHIVE_COLLECTIONS to empty, the block stays as a shell to rewire.
+    ...(ARCHIVE_COLLECTIONS.length
+      ? ([
+          {
+            name: 'relationTo',
+            type: 'select',
+            admin: {
+              condition: (_, siblingData) => siblingData.populateBy === 'collection',
+            },
+            defaultValue: ARCHIVE_COLLECTIONS[0]?.value,
+            label: 'Collections To Show',
+            options: ARCHIVE_COLLECTIONS,
+          },
+          {
+            name: 'categories',
+            localized: true,
+            type: 'relationship',
+            admin: {
+              condition: (_, siblingData) => siblingData.populateBy === 'collection',
+            },
+            hasMany: true,
+            label: 'Categories To Show',
+            relationTo: 'categories',
+          },
+          {
+            name: 'limit',
+            type: 'number',
+            admin: {
+              condition: (_, siblingData) => siblingData.populateBy === 'collection',
+              step: 1,
+            },
+            defaultValue: 10,
+            label: 'Limit',
+          },
+          {
+            name: 'selectedDocs',
+            type: 'relationship',
+            admin: {
+              condition: (_, siblingData) => siblingData.populateBy === 'selection',
+            },
+            hasMany: true,
+            label: 'Selection',
+            relationTo: ARCHIVE_COLLECTIONS.map((c) => c.value),
+          },
+        ] as ComponentBlock['fields'])
+      : []),
     {
       name: 'enableCategoryFilter',
       type: 'checkbox',
