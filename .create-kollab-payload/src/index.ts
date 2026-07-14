@@ -25,17 +25,29 @@ function step(msg: string) {
   console.log(`\n${teal('▸')} ${msg}`)
 }
 
-// The Kollab "K" mark (from the brand favicon) rendered in block characters, shown top-left of the
-// intro next to the tool name + version. Mark rows are padded to a fixed visible width BEFORE
-// coloring so ANSI codes don't throw off alignment.
-const KOLLAB_MARK = ['█  ╱', '█ ╱ ', '██  ', '█ ╲ ', '█  ╲']
+// The Kollab wordmark (public/assets/ascii.txt), inlined so it ships in the published package.
+const KOLLAB_ART = [
+  '↑↑↑       ↑↑↑↑    ↑↑↑↑↑↑↑↑↑↑↑      ↑↑↑↑          ↑↑↑↑                ↑↑↑↑↑        ↑↑↑↑↑↑↑↑↑↑↑↑↑',
+  '↑↑↑     ↑↑↑↑↑   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑    ↑↑↑↑          ↑↑↑↑                ↑↑↑↑↑↑       ↑↑↑↑↑↑↑↑↑↑↑↑↑↑',
+  '↑↑↑   ↑↑↑↑↑    ↑↑↑↑↑       ↑↑↑↑↑   ↑↑↑↑          ↑↑↑↑               ↑↑↑↑↑↑↑↑      ↑↑↑↑       ↑↑↑↑',
+  '↑↑↑ ↑↑↑↑↑      ↑↑↑↑          ↑↑↑↑  ↑↑↑↑          ↑↑↑↑              ↑↑↑↑  ↑↑↑↑     ↑↑↑↑↑↑↑↑↑↑↑↑↑↑',
+  '               ↑↑↑↑          ↑↑↑↑  ↑↑↑↑          ↑↑↑↑             ↑↑↑↑   ↑↑↑↑     ↑↑↑↑↑↑↑↑↑↑↑↑↑↑',
+  '↑↑↑↑↑↑↑↑↑↑↑    ↑↑↑↑          ↑↑↑↑  ↑↑↑↑          ↑↑↑↑            ↑↑↑↑↑↑↑↑↑↑↑↑↑    ↑↑↑↑      ↑↑↑↑↑',
+  '↑↑↑↑   ↑↑↑↑↑   ↑↑↑↑↑       ↑↑↑↑↑   ↑↑↑↑          ↑↑↑↑           ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑   ↑↑↑↑       ↑↑↑↑',
+  '↑↑↑     ↑↑↑↑↑↑  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑    ↑↑↑↑↑↑↑↑↑↑↑↑↑ ↑↑↑↑↑↑↑↑↑↑↑↑↑  ↑↑↑↑        ↑↑↑↑  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑',
+  '↑↑↑       ↑↑↑↑↑   ↑↑↑↑↑↑↑↑↑↑↑      ↑↑↑↑↑↑↑↑↑↑↑↑↑ ↑↑↑↑↑↑↑↑↑↑↑↑↑ ↑↑↑↑         ↑↑↑↑↑ ↑↑↑↑↑↑↑↑↑↑↑↑↑↑',
+]
 
 function printBanner() {
-  const right = ['', bold('create-kollab-payload'), dim(`v${SELF_VERSION}`), '', '']
+  const cols = process.stdout.columns || 80
   console.log('')
-  for (let i = 0; i < KOLLAB_MARK.length; i++) {
-    console.log(`  ${teal(KOLLAB_MARK[i])}   ${right[i] ?? ''}`)
+  if (cols >= 96) {
+    for (const line of KOLLAB_ART) console.log(teal(line))
+  } else {
+    // Terminal too narrow for the wordmark — fall back to a simple title line.
+    console.log(teal('KOLLAB'))
   }
+  console.log(`\n${bold('create-kollab-payload')} ${dim(`v${SELF_VERSION}`)}`)
   console.log('')
 }
 
