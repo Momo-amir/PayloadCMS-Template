@@ -63,6 +63,28 @@ function planPrune(root: string, keepSlugs: Set<string>, keepCollectionSlugs?: s
 
   const bySlug = new Map(d.blocks.map((b) => [b.slug, b]))
 
+  // Collections the caller chose to prune (undefined keepCollectionSlugs = keep all). Computed up
+  // front so a block whose required collections are ALL pruned can itself be pruned below.
+  const willPruneCollSlugs = new Set<string>()
+  if (keepCollectionSlugs) {
+    const keepColl = new Set(keepCollectionSlugs)
+    for (const coll of d.collections) {
+      if (!coll.core && !keepColl.has(coll.slug)) willPruneCollSlugs.add(coll.slug)
+    }
+  }
+
+  // A block whose ENTIRE requiresCollections set is being pruned is meaningless on its own (e.g.
+  // peopleArchiveBlock without the people collection) — prune it too. A block that still has at
+  // least one required collection surviving is kept and its dangling relationTo is trimmed below.
+  const forcePrune = new Set<string>()
+  for (const b of d.blocks) {
+    const reqs = b.override.requiresCollections ?? []
+    if (reqs.length > 0 && reqs.every((s) => willPruneCollSlugs.has(s))) {
+      keepSlugs.delete(b.slug)
+      forcePrune.add(b.slug)
+    }
+  }
+
   // Survival graph: a block survives if selected OR pulled in by a surviving block through a
   // NON-container dependency. Container→child edges are prunable (deselecting a child removes it
   // from the container), so they do NOT force survival.
@@ -85,6 +107,8 @@ function planPrune(root: string, keepSlugs: Set<string>, keepCollectionSlugs?: s
       const blk = d.blocks.find((b) => b.folder === folder)
       // A block reached purely as a container child (and not selected) must NOT auto-survive.
       if (blk && !survives.has(blk.slug) && containerChildSlugs.has(blk.slug)) continue
+      // A block force-pruned because all its required collections are gone must not be revived.
+      if (blk && forcePrune.has(blk.slug)) continue
       if (blk) survives.add(blk.slug)
     }
   }

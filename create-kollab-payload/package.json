@@ -1,0 +1,30 @@
+{
+  "name": "create-kollab-payload",
+  "version": "1.0.0",
+  "description": "Generate a Kollab Payload CMS + Next.js client site from the kollab-payload-template (internal Kollab tool).",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "create-kollab-payload": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/prompts": "^2.4.9",
+    "tsx": "^4.20.5",
+    "typescript": "^5.6.0"
+  }
+}

@@ -67,13 +67,17 @@ export async function selectFeatures(root: string): Promise<Selection | null> {
     if (!collRes.keep) return null
     keepCollectionSlugs = [...coreSlugs, ...(collRes.keep as string[])]
 
-    // Conflict confirm: pruning a collection that a kept block requires.
+    // Conflict confirm: pruning a collection that a kept block requires. A block whose ENTIRE
+    // requiresCollections set is pruned is auto-pruned by the engine, so it is NOT a dangling
+    // conflict — only warn when at least one required collection survives (a genuine dangle).
     const keptColl = new Set(keepCollectionSlugs)
     const keptBlockSet = new Set(keepBlockSlugs)
     const conflicts: string[] = []
     for (const b of d.blocks) {
       if (!keptBlockSet.has(b.slug)) continue
-      for (const need of b.override.requiresCollections ?? []) {
+      const reqs = b.override.requiresCollections ?? []
+      if (reqs.length > 0 && reqs.every((need) => !keptColl.has(need))) continue
+      for (const need of reqs) {
         if (!keptColl.has(need)) conflicts.push(`${b.slug} → ${need}`)
       }
     }

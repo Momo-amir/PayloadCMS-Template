@@ -12,7 +12,8 @@ interface Config {
 
 const dirname = import.meta.dirname;
 
-const root = Path.resolve(dirname, "../../");
+const rootFlag = process.argv.find((a) => a.startsWith("--root="))?.slice("--root=".length);
+const root = rootFlag ? Path.resolve(rootFlag) : Path.resolve(dirname, "../../");
 const winPrefix = (os.platform() == "win32" ? "file://" : "");
 const configPath = winPrefix + Path.resolve(root, ".cli/config.json");
 const config: Config = await import(configPath);
