@@ -64,11 +64,31 @@ const CORE_COLLECTION_SYMBOLS = new Set([
   'AnalyticsAggregates',
 ])
 
+export interface DiscoveredHero {
+  slug: string // the `value` in the hero `type` select (e.g. 'highImpact')
+  folder: string // dir under src/website/layout/heros (e.g. 'HighImpact')
+  symbol: string // export/import name in RenderHero.tsx (e.g. 'HighImpactHero')
+}
+
 export interface Discovery {
   blocks: DiscoveredBlock[]
   collections: DiscoveredCollection[]
+  heros: DiscoveredHero[]
   pluginCollections: string[]
   overrides: Overrides
+}
+
+// Presentational heros the scaffolder offers for pruning. `none` is always kept; `search` follows the
+// search plugin and `PostHero` is posts-owned, so neither is independently selectable here.
+const SELECTABLE_HEROS: DiscoveredHero[] = [
+  { slug: 'highImpact', folder: 'HighImpact', symbol: 'HighImpactHero' },
+  { slug: 'mediumImpact', folder: 'MediumImpact', symbol: 'MediumImpactHero' },
+  { slug: 'lowImpact', folder: 'LowImpact', symbol: 'LowImpactHero' },
+]
+
+function discoverHeros(root: string): DiscoveredHero[] {
+  const dir = Path.resolve(root, 'src/website/layout/heros')
+  return SELECTABLE_HEROS.filter((h) => fs.existsSync(Path.resolve(dir, h.folder)))
 }
 
 const PLUGIN_COLLECTIONS: Record<string, string[]> = {
@@ -280,5 +300,11 @@ export function discover(root: string): Discovery {
       .filter((c): c is ContainerChild => !!c.slug)
   }
 
-  return { blocks, collections, pluginCollections: discoverPluginCollections(root), overrides }
+  return {
+    blocks,
+    collections,
+    heros: discoverHeros(root),
+    pluginCollections: discoverPluginCollections(root),
+    overrides,
+  }
 }

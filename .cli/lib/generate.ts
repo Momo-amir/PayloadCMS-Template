@@ -9,6 +9,7 @@ import {
   applyStringRemovals,
   applyValueRemovals,
   applyFieldRelationRemovals,
+  applyObjectPropertyRemovals,
 } from './codemod'
 
 export interface GenerateOptions {
@@ -16,7 +17,14 @@ export interface GenerateOptions {
   outDir: string
   keepBlockSlugs: string[] // slugs the user chose to KEEP
   keepCollectionSlugs?: string[] // optional-collection slugs to KEEP; undefined = keep all
+  keepHeroSlugs?: string[] // presentational hero slugs to KEEP; undefined = keep all
   dryRun: boolean
+}
+
+export interface HeroPrune {
+  slug: string
+  folder: string // repo-relative folder to remove
+  symbol: string // RenderHero import/map symbol
 }
 
 export interface ContainerChildEdit {
@@ -49,6 +57,7 @@ export interface GeneratePlan {
   containerChildEdits: ContainerChildEdit[]
   prunedCollections: CollectionPrune[]
   relationTrimEdits: RelationTrimEdit[]
+  prunedHeros: HeroPrune[]
   warnings: string[]
 }
 
@@ -57,9 +66,29 @@ export interface GeneratePlan {
  * (import-closure handles this at the file level), OR it is a required sub-block. Prerequisites on
  * collections/plugins are surfaced as warnings for the caller to act on.
  */
-function planPrune(root: string, keepSlugs: Set<string>, keepCollectionSlugs?: string[]): GeneratePlan {
+function planPrune(
+  root: string,
+  keepSlugs: Set<string>,
+  keepCollectionSlugs?: string[],
+  keepHeroSlugs?: string[],
+): GeneratePlan {
   const d = discover(root)
   const warnings: string[] = []
+
+  // Heros: prune any presentational hero not in the keep list (undefined = keep all).
+  const prunedHeros: HeroPrune[] = []
+  if (keepHeroSlugs) {
+    const keep = new Set(keepHeroSlugs)
+    for (const h of d.heros) {
+      if (!keep.has(h.slug)) {
+        prunedHeros.push({
+          slug: h.slug,
+          folder: Path.relative(root, Path.resolve(root, 'src/website/layout/heros', h.folder)),
+          symbol: h.symbol,
+        })
+      }
+    }
+  }
 
   // onlyInside sub-blocks survive iff their parent survives.
   for (const b of d.blocks) {
@@ -226,6 +255,7 @@ function planPrune(root: string, keepSlugs: Set<string>, keepCollectionSlugs?: s
     containerChildEdits,
     prunedCollections,
     relationTrimEdits,
+    prunedHeros,
     warnings,
   }
 }
@@ -264,7 +294,7 @@ function copyTree(root: string, outDir: string) {
 
 export function generate(opts: GenerateOptions): GeneratePlan {
   const keepSlugs = new Set(opts.keepBlockSlugs)
-  const plan = planPrune(opts.root, keepSlugs, opts.keepCollectionSlugs)
+  const plan = planPrune(opts.root, keepSlugs, opts.keepCollectionSlugs, opts.keepHeroSlugs)
 
   if (opts.dryRun) return plan
 
@@ -367,6 +397,26 @@ export function generate(opts: GenerateOptions): GeneratePlan {
         values: e.removeCollectionSlugs,
       })),
     )
+  }
+
+  // 7. Prune deselected presentational heros: delete the folder, remove the `{ value }` option from
+  //    the hero config select, and remove the slug→component entry (+ import) from RenderHero.
+  if (plan.prunedHeros.length) {
+    for (const h of plan.prunedHeros) {
+      fs.rmSync(Path.resolve(opts.outDir, h.folder), { recursive: true, force: true })
+    }
+    applyValueRemovals(outProject, [
+      {
+        absPath: Path.resolve(opts.outDir, 'src/website/layout/heros/config.ts'),
+        values: plan.prunedHeros.map((h) => h.slug),
+      },
+    ])
+    applyObjectPropertyRemovals(outProject, [
+      {
+        absPath: Path.resolve(opts.outDir, 'src/website/layout/heros/RenderHero.tsx'),
+        names: plan.prunedHeros.map((h) => h.slug),
+      },
+    ])
   }
 
   return plan

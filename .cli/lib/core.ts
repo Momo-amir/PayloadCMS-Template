@@ -142,6 +142,10 @@ Command.register(
       let keepCollectionSlugs: string[] | undefined = collectionsArg
         ? collectionsArg.split(",").map((s) => s.trim()).filter(Boolean)
         : undefined;
+      const herosArg = typeof keyArgs.heros === "string" ? keyArgs.heros : "";
+      let keepHeroSlugs: string[] | undefined = herosArg
+        ? herosArg.split(",").map((s) => s.trim()).filter(Boolean)
+        : undefined;
 
       if (!dryRun && !out) {
         console.error("Provide --out=<dir> (or use --dry-run to preview).");
@@ -157,6 +161,7 @@ Command.register(
         }
         keepBlockSlugs = sel.keepBlockSlugs;
         keepCollectionSlugs = sel.keepCollectionSlugs;
+        keepHeroSlugs = sel.keepHeroSlugs;
       }
       if (keepBlockSlugs.length === 0) {
         console.error("No blocks selected — nothing to generate.");
@@ -169,7 +174,7 @@ Command.register(
         process.exit(1);
       }
 
-      const plan = generate({ root, outDir, keepBlockSlugs, keepCollectionSlugs, dryRun });
+      const plan = generate({ root, outDir, keepBlockSlugs, keepCollectionSlugs, keepHeroSlugs, dryRun });
 
       console.log(`\n${dryRun ? "DRY RUN — plan only" : `Generated at ${outDir}`}`);
       console.log(`\nKept blocks (${plan.keptBlocks.length}): ${plan.keptBlocks.join(", ")}`);
@@ -187,6 +192,9 @@ Command.register(
         console.log(`\nPruned collections (${plan.prunedCollections.length}):`);
         for (const c of plan.prunedCollections)
           console.log(`  - ${c.slug}${c.conflicts.length ? ` [conflicts: ${c.conflicts.join(", ")}]` : ""}`);
+      }
+      if (plan.prunedHeros.length) {
+        console.log(`\nPruned heros (${plan.prunedHeros.length}): ${plan.prunedHeros.map((h) => h.slug).join(", ")}`);
       }
       if (plan.warnings.length) {
         console.log(`\nWarnings:`);

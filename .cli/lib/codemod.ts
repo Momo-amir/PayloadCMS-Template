@@ -106,6 +106,41 @@ export function removeFieldByRelationTo(sf: SourceFile, slug: string): boolean {
   return changed
 }
 
+/**
+ * Remove object-literal properties whose key equals `name`, across the file (e.g. an entry in a
+ * slug→component map like RenderHero's `heroes`). Then drop the now-unused import of the removed
+ * initializer's symbol. Returns true if anything changed.
+ */
+export function removeObjectPropertyByName(sf: SourceFile, name: string): boolean {
+  let changed = false
+  const removedInitializers: string[] = []
+  for (const obj of sf.getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression)) {
+    const prop = obj.getProperty(name)?.asKind(SyntaxKind.PropertyAssignment)
+    if (prop) {
+      const init = prop.getInitializer()?.getText()
+      if (init) removedInitializers.push(init)
+      prop.remove()
+      changed = true
+    }
+  }
+  for (const symbol of removedInitializers) {
+    const stillUsed = sf
+      .getDescendantsOfKind(SyntaxKind.Identifier)
+      .some((id) => id.getText() === symbol && id.getParent()?.getKind() !== SyntaxKind.ImportSpecifier)
+    if (stillUsed) continue
+    for (const imp of sf.getImportDeclarations()) {
+      const named = imp.getNamedImports().find((n) => n.getName() === symbol)
+      if (named) {
+        named.remove()
+        if (imp.getNamedImports().length === 0 && !imp.getDefaultImport() && !imp.getNamespaceImport()) {
+          imp.remove()
+        }
+      }
+    }
+  }
+  return changed
+}
+
 export interface PruneReport {
   file: string
   removedSymbols: string[]
@@ -168,6 +203,27 @@ export function applyStringRemovals(
     const removed: string[] = []
     for (const value of values) {
       if (removeStringArrayMember(sf, value)) removed.push(value)
+    }
+    if (removed.length) {
+      sf.saveSync()
+      reports.push({ file: absPath, removedSymbols: removed })
+    }
+  }
+  return reports
+}
+
+/** Remove object-literal properties by key (e.g. entries in a slug→component map), across files. */
+export function applyObjectPropertyRemovals(
+  rootProject: Project,
+  edits: { absPath: string; names: string[] }[],
+): PruneReport[] {
+  const reports: PruneReport[] = []
+  for (const { absPath, names } of edits) {
+    const sf = rootProject.addSourceFileAtPathIfExists(absPath)
+    if (!sf) continue
+    const removed: string[] = []
+    for (const name of names) {
+      if (removeObjectPropertyByName(sf, name)) removed.push(name)
     }
     if (removed.length) {
       sf.saveSync()

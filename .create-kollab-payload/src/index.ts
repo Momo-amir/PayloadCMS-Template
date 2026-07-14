@@ -31,8 +31,17 @@ interface Args {
   templateRepo: string
   blocks?: string
   collections?: string
+  brand?: string
   skipInstall: boolean
   skipGit: boolean
+}
+
+function titleCase(slug: string): string {
+  return slug
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 function readSelfVersion(): string {
@@ -54,6 +63,7 @@ function parseArgs(argv: string[]): Args {
       args.templateRepo = raw.slice('--template-repo='.length)
     else if (raw.startsWith('--blocks=')) args.blocks = raw.slice('--blocks='.length)
     else if (raw.startsWith('--collections=')) args.collections = raw.slice('--collections='.length)
+    else if (raw.startsWith('--brand=')) args.brand = raw.slice('--brand='.length)
     else if (raw === '--skip-install') args.skipInstall = true
     else if (raw === '--skip-git') args.skipGit = true
     else if (!raw.startsWith('--') && !args.target) args.target = raw
@@ -109,6 +119,19 @@ async function main() {
   const targetDir = path.resolve(process.cwd(), target)
   const projectName = path.basename(targetDir)
 
+  // 1b. Brand/site name — used for the site title, OG/meta, SEO. Defaults to the project name.
+  let brand = args.brand
+  if (brand === undefined && !args.blocks) {
+    const res = await prompts({
+      type: 'text',
+      name: 'brand',
+      message: 'Site / brand name',
+      initial: titleCase(projectName),
+    })
+    brand = res.brand
+  }
+  brand = (brand && brand.trim()) || titleCase(projectName)
+
   if (fs.existsSync(targetDir) && fs.readdirSync(targetDir).length > 0) {
     fail(`Target directory is not empty: ${targetDir}`)
   }
@@ -154,7 +177,7 @@ async function main() {
     if (interactive) console.log(dim('─'.repeat(48)))
 
     step('Finalizing project files …')
-    cleanOutput(targetDir, projectName)
+    cleanOutput(targetDir, projectName, brand)
     setupEnv(targetDir)
   } finally {
     rm(tmpClone)
@@ -225,7 +248,7 @@ function printDone(projectName: string, target: string, args: Args) {
   console.log(lines.join('\n'))
 }
 
-function cleanOutput(dir: string, projectName: string) {
+function cleanOutput(dir: string, projectName: string, brand: string) {
   const remove = [
     '.cli/lib/discovery.ts',
     '.cli/lib/closure.ts',
@@ -243,8 +266,31 @@ function cleanOutput(dir: string, projectName: string) {
   ]
   for (const rel of remove) rm(path.resolve(dir, rel))
 
+  applyBrand(dir, brand)
   slimCoreTs(path.resolve(dir, '.cli/lib/core.ts'))
   resetPackageJson(path.resolve(dir, 'package.json'), projectName)
+}
+
+// Replace the template's default brand string in the generated project. These are the only files
+// carrying the literal (og/meta/seo/seed); kept as an explicit list so the rename is auditable.
+function applyBrand(dir: string, brand: string) {
+  if (brand === 'Kollab Website Template') return
+  const files = [
+    'src/cms/utilities/mergeOpenGraph.ts',
+    'src/cms/utilities/generateMeta.ts',
+    'src/cms/plugins/index.ts',
+    'src/cms/endpoints/seed/home-static.tsx',
+  ]
+  let touched = 0
+  for (const rel of files) {
+    const abs = path.resolve(dir, rel)
+    if (!fs.existsSync(abs)) continue
+    const src = fs.readFileSync(abs, 'utf8')
+    if (!src.includes('Kollab Website Template')) continue
+    fs.writeFileSync(abs, src.split('Kollab Website Template').join(brand))
+    touched++
+  }
+  if (touched) console.log(dim(`  Set brand name to “${brand}” in ${touched} file(s).`))
 }
 
 function slimCoreTs(file: string) {

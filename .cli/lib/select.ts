@@ -4,6 +4,7 @@ import { discover } from './discovery'
 export interface Selection {
   keepBlockSlugs: string[]
   keepCollectionSlugs: string[]
+  keepHeroSlugs: string[]
 }
 
 /**
@@ -95,5 +96,20 @@ export async function selectFeatures(root: string): Promise<Selection | null> {
     }
   }
 
-  return { keepBlockSlugs, keepCollectionSlugs }
+  // Hero selection — presentational heros only ('none' and the search hero are always available).
+  let keepHeroSlugs = d.heros.map((h) => h.slug)
+  if (d.heros.length) {
+    const heroRes = await prompts({
+      type: 'multiselect',
+      name: 'keep',
+      message: 'Select the page HEROS to keep (space to toggle)',
+      choices: d.heros.map((h) => ({ title: h.slug, value: h.slug, selected: true })),
+      hint: '- “None” is always available; the search hero follows the search plugin',
+      instructions: false,
+    })
+    if (!heroRes.keep) return null
+    keepHeroSlugs = heroRes.keep as string[]
+  }
+
+  return { keepBlockSlugs, keepCollectionSlugs, keepHeroSlugs }
 }
