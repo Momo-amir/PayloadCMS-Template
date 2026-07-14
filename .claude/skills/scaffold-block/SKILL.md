@@ -24,10 +24,14 @@ the folder and registers the block; you fill in the fields and rendering.
 3. **Verify registration** — open `src/website/blocks/exports.ts` and confirm `<Name>Block` is both
    imported and present in the `blocks` array. (The CLI edits this via regex; double-check it landed.)
 
-4. **Fill in `config.ts`** — define the block's fields. It's typed `ComponentBlock` (see
-   `src/website/types/ComponentBlock.ts`) and carries `component`, `slug`, `interfaceName`,
-   `showOnPage`. Add fields following existing blocks; localize with `localized: true` where content
-   varies per language. Reference a rich example: `src/website/blocks/Accordion/config.ts`.
+4. **Fill in `config.ts`** — define the block's fields, following the **normalized naming convention**:
+   - export const = interfaceName = `<Name>Block`; alias the component import as `<Name>BlockComponent`
+     (avoids colliding with the export const).
+   - slug = camelCase with `*Block` suffix (`testimonialBlock`).
+   - If the slug is long and the block has nested/array fields, add a short `dbName` so generated
+     Postgres identifiers stay under 63 chars (e.g. `dbName: 'cta'`).
+   - Add `labels: { singular: { en, da }, plural: { en, da } }`; localize fields with `localized: true`.
+   - Reference a rich example: `src/website/blocks/Accordion/config.ts`.
 
 5. **Fill in `Component.tsx`** — the renderer. Server component by default; if it needs
    interactivity, put the interactive part in a `Component.client.tsx` with `'use client'`. Props
@@ -40,7 +44,14 @@ the folder and registers the block; you fill in the fields and rendering.
    yarn generate:types   # container: docker compose exec payload yarn _generate:types
    ```
 
-7. **Verify:** `yarn lint`, then check the block appears in the admin page builder at
-   `:8890/admin` and renders on a page.
+7. **If this block reads an optional collection** (via `relationTo`), make it collection-agnostic so the
+   scaffolder can prune that collection: drive `relationTo` from an editable const and compile with an
+   empty list (see `ARCHIVE_COLLECTIONS` in `Archive/config.ts`). Add a `requiresCollections` entry in
+   `features/overrides.json`. Container blocks must use a data-driven, lazily-computed child map (see
+   `TwoColumn/fields.tsx`) — never a hardcoded map/switch.
+
+8. **Verify:** `npx tsc --noEmit` (lint is currently broken — see CLAUDE.md), regenerate types, then
+   check the block appears in the admin page builder at `:8890/admin` and **renders on a page** (the
+   running app is the only thing that catches config/component runtime import cycles).
 
 Report the files created/edited and any follow-up (types regen, restart) the user still needs.
