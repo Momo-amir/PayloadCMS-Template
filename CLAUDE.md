@@ -29,10 +29,16 @@ yarn dev                 # Next dev server directly on host (port 8890)
 yarn build               # production Next build (+ postbuild sitemap)
 yarn test                # vitest run
 yarn test:watch          # vitest watch
-yarn lint                # next lint (ESLint 10, flat config)
-yarn lint:fix            # next lint --fix
 yarn cli create:block <BlockName>   # scaffold a new block (note the COLON in create:block)
+yarn cli list                       # list discoverable features (blocks + collections)
+yarn cli manifest validate          # validate feature discovery + features/overrides.json
+yarn cli generate --out=<dir> [--dry-run]   # generate a pruned site (interactive if no flags)
 ```
+
+> **Linting is currently broken.** `yarn lint` / `next lint` fails in Next 16 (arg misrouting) and
+> ESLint 10 throws a circular-structure error with the `eslint-config-next` flat-config compat. This
+> is pre-existing, not from recent changes. Use `npx tsc --noEmit` for typechecking until the lint
+> setup is migrated to `eslint .` directly. Don't treat lint failures as your regression without checking.
 
 **Payload tooling runs through the container** (assume Docker is running; verify with
 `docker compose ps` first). These wrappers `docker compose exec payload yarn _...`:
@@ -48,7 +54,8 @@ The `_`-prefixed twins (`_generate:types`, etc.) run bare-metal with
 `NODE_OPTIONS` flag; the Payload CLI needs the scss-loader shim.
 
 There are **no git hooks, no lint-staged, and no CI lint/test gate** (CI is Bitbucket Pipelines,
-deploy-only). Local verification is the only safety net — run lint + `generate:types` + tests yourself.
+deploy-only). Local verification is the only safety net — run `generate:types` + `tsc` + tests, and
+**drive the running app** (`tsc`/`generate:types` do NOT catch runtime module-init cycles — see Conventions).
 
 ## Architecture
 
@@ -103,8 +110,22 @@ For work inside `core/`, prefer the **`core-maintainer`** subagent.
 - **Validation is hand-written type guards, NOT zod** (there is no zod in the repo). See
   `normalizeConsentState` / `sanitizePreferences` in `src/core/privacy/models/consent-model.ts`.
 - **Blocks** carry their own React component via the `ComponentBlock` type
-  (`src/website/types/ComponentBlock.ts`); every block is registered in
-  `src/website/blocks/exports.ts` and rendered by `RenderBlocks.tsx`.
+  (`src/website/types/ComponentBlock.ts`); page-builder blocks are registered in
+  `src/website/blocks/exports.ts` and rendered by `RenderBlocks.tsx`. Inline-only (rich-text) blocks
+  are registered in a collection's `BlocksFeature` instead (e.g. `bannerBlock`/`codeBlock` in Posts).
+- **Block naming is normalized** (do not deviate): folder = PascalCase noun with no redundant `Block`
+  (`Media`, `Card`, `TwoColumn`); export const = interfaceName = `<Folder>Block`; the component import
+  is aliased `<Name>BlockComponent` to avoid colliding with the export const; slug = camelCase with a
+  `*Block` suffix (`mediaBlock`, `twoColumnBlock`). Long slugs use a short `dbName` so generated
+  Postgres identifiers stay under 63 chars (e.g. `callToActionBlock` → `dbName: 'cta'`).
+- **Container blocks** (nest other blocks via a `type: 'blocks'` field, e.g. `twoColumnBlock`) must
+  build their child slug→component map **from the config's `blocks` arrays**, lazily, not from a
+  hardcoded map/switch — see `src/website/blocks/TwoColumn/fields.tsx`. This keeps rendering data-driven
+  (so the scaffolder can prune children) AND avoids a runtime import cycle.
+- **Runtime import cycles:** a block's `config.ts` → `Component.tsx` → `fields.tsx` → back to `config.ts`
+  forms a cycle. Anything reading the config at **module top-level** throws
+  `ReferenceError: Cannot access 'XBlock' before initialization`. `tsc`/`generate:types` do NOT catch
+  it — only the running admin does. Compute config-derived data lazily (memoized inside a function).
 - **Hooks** are typed with Payload's specific hook types; revalidation hooks are **locale-aware**
   (revalidate both `/path` and `/en/path`, tag `x:slug:da` / `x:slug:en`) and guard on
   `context.disableRevalidate`.
@@ -137,6 +158,26 @@ For work inside `core/`, prefer the **`core-maintainer`** subagent.
 **Add a locale / translations:** update Payload localization (`src/i18n/localization.ts`), next-intl
 routing, and add keys to **all** `src/i18n/messages/*.json`. See `docs/LOCALIZATION.md` or `/add-locale`.
 
+## Feature distribution / scaffolder (`create-kollab-app`)
+
+This template is a maximal superset; a `.cli` generator produces client sites by **copy-then-prune** —
+keep selected blocks/collections, remove the rest. Full design: `docs/DISTRIBUTION.md`. Engine lives in
+`.cli/lib/` (`discovery.ts`, `closure.ts`, `codemod.ts` (ts-morph), `generate.ts`, `select.ts`).
+
+- **Discovery is convention + one sidecar.** Blocks come from `exports.ts` + collection `BlocksFeature`
+  lists; collections from `payload.config.ts`. `features/overrides.json` (schema:
+  `features/overrides.schema.json`) holds only what code can't express: `group`, `requiresCollections`,
+  `requiresPlugins`, `onlyInside`, and per-collection `ownedFiles` + `patches`.
+- **When authoring a new block/collection**, keep discovery working: register it correctly, and if it
+  has non-derivable prerequisites, add an `overrides.json` entry. Blocks that read an optional
+  collection must be **collection-agnostic** — drive `relationTo` from an editable const (see
+  `ARCHIVE_COLLECTIONS` in `Archive/config.ts`) and compile with an empty list; guard optional module
+  imports dynamically (see the posts branch in `src/app/(frontend)/[locale]/[...slug]/page.tsx`).
+- Skills: `/generate-site`, `/author-feature`. Agent: `feature-manifest-author`.
+- Status: block + container-child + deep collection pruning all work and are verified. Next step is
+  packaging as `npx create-kollab-payload`. Only `posts` has full `ownedFiles`/`patches`; other
+  optional collections need theirs filled in when pruned.
+
 ## Guardrails — don't change lightly
 
 - Don't bump `payload` / `@payloadcms/*` versions individually — they're interdependent, move all
@@ -161,3 +202,4 @@ routing, and add keys to **all** `src/i18n/messages/*.json`. See `docs/LOCALIZAT
 - `docs/DEV_HANDBOOK_QUICK.md` — where-to-change-things map + recipes.
 - `docs/LOCALIZATION.md` — i18n deep dive.
 - `docs/ANALYTICS_OVERVIEW.md` — GDPR/consent/analytics model.
+- `docs/DISTRIBUTION.md` — feature-selectable scaffolder (copy-then-prune) design + conventions.
