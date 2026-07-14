@@ -169,6 +169,27 @@ function fail(msg: string): never {
   process.exit(1)
 }
 
+// Resolve a yarn runner. Prefer an existing yarn, then corepack (ships with Node). If neither is
+// present, offer to install yarn globally via npm (with consent — it changes the user's environment).
+async function ensureYarn(): Promise<string> {
+  if (has('yarn')) return 'yarn'
+  if (has('corepack')) return 'corepack'
+  if (!has('npm')) fail('yarn is required and neither yarn, corepack, nor npm was found on PATH.')
+  const res = await prompts({
+    type: 'confirm',
+    name: 'ok',
+    message: 'yarn is not installed. Install it globally now with `npm install -g yarn`?',
+    initial: true,
+  })
+  if (!res.ok) {
+    fail('yarn is required. Install it (e.g. `npm install -g yarn`) and re-run.')
+  }
+  await runSpinner('Installing yarn', 'npm', ['install', '-g', 'yarn'])
+  if (!has('yarn'))
+    fail('Installed yarn but it is still not on PATH — open a new shell and re-run.')
+  return 'yarn'
+}
+
 function rm(target: string) {
   fs.rmSync(target, { recursive: true, force: true })
 }
@@ -211,8 +232,7 @@ async function main() {
     fail(`Target directory is not empty: ${targetDir}`)
   }
   if (!has('git')) fail('git is required but was not found on PATH.')
-  const yarnCmd = has('yarn') ? 'yarn' : has('corepack') ? 'corepack' : null
-  if (!yarnCmd) fail('yarn (or corepack) is required but was not found on PATH.')
+  const yarnCmd = await ensureYarn()
   const yarnArgs = (rest: string[]) => (yarnCmd === 'corepack' ? ['yarn', ...rest] : rest)
   const interactive = !args.blocks
 
@@ -338,12 +358,13 @@ function printDone(projectName: string, target: string, args: Args) {
     `  ${teal(`cd ${target}`)}`,
   ]
   if (args.skipInstall) lines.push(`  ${teal('yarn install')}`)
+  lines.push(`  ${teal('yarn docker-dev')}          ${dim('# start Payload + Postgres on :8890')}`)
+  lines.push(`  ${teal('yarn generate:types')}      ${dim('# regenerate Payload types')}`)
   lines.push(
-    `  ${teal('yarn generate:types')}   ${dim('# regenerate Payload types (needs the DB up)')}`,
+    `  ${teal('yarn generate:importmap')}  ${dim('# rebuild the admin import map for your feature set')}`,
   )
-  lines.push(`  ${teal('yarn docker-dev')}        ${dim('# start Payload + Postgres on :8890')}`)
   lines.push(``)
-  lines.push(dim(`  Remember to fill in .env before starting.`))
+  lines.push(dim(`  Fill in .env first. generate:* need the DB (docker-dev) running.`))
   lines.push(``)
   console.log(lines.join('\n'))
 }

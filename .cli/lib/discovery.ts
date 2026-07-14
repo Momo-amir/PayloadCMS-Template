@@ -78,6 +78,7 @@ export interface DiscoveredPlugin {
   injectsCollections: string[] // collection slugs this plugin injects (vanish with it)
   ownedFiles: string[] // repo-relative files that exist solely to configure this plugin
   relatedBlocks: string[] // block slugs that become meaningless without this plugin
+  ownedHero?: DiscoveredHero // a hero that is meaningless without this plugin (pruned with it)
 }
 
 export interface Discovery {
@@ -127,8 +128,9 @@ const SELECTABLE_PLUGINS: DiscoveredPlugin[] = [
     pkg: '@payloadcms/plugin-search',
     helperImports: ['searchFields', 'beforeSyncWithSearch'],
     injectsCollections: ['search'],
-    ownedFiles: ['src/cms/search'],
+    ownedFiles: ['src/cms/search', 'src/website/components/Search'],
     relatedBlocks: [],
+    ownedHero: { slug: 'search', folder: 'SearchHero', symbol: 'SearchHero' },
   },
 ]
 

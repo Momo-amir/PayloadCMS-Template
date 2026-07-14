@@ -50,6 +50,7 @@ export interface PluginPrune {
   injectsCollections: string[] // collection slugs that vanish with the plugin
   ownedFiles: string[] // repo-relative plugin-config files to delete
   relatedBlocks: string[] // blocks that become meaningless (warned)
+  ownedHero?: { slug: string; folder: string; symbol: string } // hero pruned with the plugin
 }
 
 export interface ContainerChildEdit {
@@ -107,6 +108,7 @@ function planPrune(
   const prunedPlugins: PluginPrune[] = []
   const pluginForcePruneBlocks = new Set<string>()
   const pluginPrunedCollSlugs = new Set<string>()
+  const pluginOwnedHeros: HeroPrune[] = []
   if (keepPluginSlugs) {
     const keep = new Set(keepPluginSlugs)
     for (const p of d.plugins) {
@@ -119,14 +121,26 @@ function planPrune(
         injectsCollections: p.injectsCollections,
         ownedFiles: p.ownedFiles,
         relatedBlocks: p.relatedBlocks,
+        ownedHero: p.ownedHero,
       })
       p.relatedBlocks.forEach((b) => pluginForcePruneBlocks.add(b))
       p.injectsCollections.forEach((c) => pluginPrunedCollSlugs.add(c))
+      if (p.ownedHero) {
+        pluginOwnedHeros.push({
+          slug: p.ownedHero.slug,
+          folder: Path.relative(
+            root,
+            Path.resolve(root, 'src/website/layout/heros', p.ownedHero.folder),
+          ),
+          symbol: p.ownedHero.symbol,
+        })
+      }
     }
   }
 
-  // Heros: prune any presentational hero not in the keep list (undefined = keep all).
-  const prunedHeros: HeroPrune[] = []
+  // Heros: prune any presentational hero not in the keep list (undefined = keep all), plus any hero
+  // owned by a pruned plugin (e.g. the search hero when the search plugin is pruned).
+  const prunedHeros: HeroPrune[] = [...pluginOwnedHeros]
   if (keepHeroSlugs) {
     const keep = new Set(keepHeroSlugs)
     for (const h of d.heros) {
@@ -293,11 +307,8 @@ function planPrune(
   // Plugin prune warnings: the search hero is not auto-removed with the search plugin (it is part of
   // the hero dimension), so flag it if search was pruned while a search hero could still be selected.
   for (const p of prunedPlugins) {
-    if (p.slug === 'search') {
-      warnings.push(
-        `Plugin "search" pruned — the "Search Hero" option and website search UI (SearchHero, ` +
-          `components/Search) still reference it. Remove those manually if unused.`,
-      )
+    if (p.ownedHero) {
+      warnings.push(`Plugin "${p.slug}" pruned — its "${p.ownedHero.slug}" hero was removed too.`)
     }
     if (p.relatedBlocks.length) {
       warnings.push(`Plugin "${p.slug}" pruned — related block(s) removed: ${p.relatedBlocks.join(', ')}.`)
