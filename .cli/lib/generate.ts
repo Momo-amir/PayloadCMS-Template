@@ -4,7 +4,12 @@ import { execSync } from 'child_process'
 import { Project } from 'ts-morph'
 import { discover, DiscoveredBlock } from './discovery'
 import { fileClosure } from './closure'
-import { applyRemovals, applyStringRemovals, applyValueRemovals } from './codemod'
+import {
+  applyRemovals,
+  applyStringRemovals,
+  applyValueRemovals,
+  applyFieldRelationRemovals,
+} from './codemod'
 
 export interface GenerateOptions {
   root: string
@@ -326,6 +331,19 @@ export function generate(opts: GenerateOptions): GeneratePlan {
       outProject,
       [...stringEdits.keys()].map((file) => ({ absPath: Path.resolve(opts.outDir, file), symbols: prunedSymbols })),
     )
+  }
+
+  // 5a2. Remove any relationship field pointing at a pruned collection from shared config files
+  //      (e.g. Posts' `authors`→people / `categories`→categories). ts-morph keyed on relationTo, so
+  //      it is whitespace-independent and never silently no-ops the way a text patch could.
+  if (plan.prunedCollections.length) {
+    const prunedSlugs = plan.prunedCollections.map((c) => c.slug)
+    applyFieldRelationRemovals(outProject, [
+      {
+        absPath: Path.resolve(opts.outDir, 'src/cms/collections/Posts/index.ts'),
+        slugs: prunedSlugs,
+      },
+    ])
   }
 
   // 5b. Apply per-collection shared-file patches (find/replace) for pruned collections.

@@ -79,6 +79,33 @@ export function removeObjectArrayMemberByValue(sf: SourceFile, value: string): b
   return changed
 }
 
+/**
+ * Remove Payload field object-literals whose `relationTo` equals `slug`, across the file. Handles a
+ * bare string (`relationTo: 'people'`) — matching how the template declares single-target relations.
+ * Whitespace-independent, so it never silently no-ops on reformatting the way a text patch would.
+ * Returns true if anything changed.
+ */
+export function removeFieldByRelationTo(sf: SourceFile, slug: string): boolean {
+  let changed = false
+  for (const arr of sf.getDescendantsOfKind(SyntaxKind.ArrayLiteralExpression)) {
+    const els = arr.getElements()
+    for (let i = els.length - 1; i >= 0; i--) {
+      const obj = els[i].asKind(SyntaxKind.ObjectLiteralExpression)
+      const rel = obj
+        ?.getProperty('relationTo')
+        ?.asKind(SyntaxKind.PropertyAssignment)
+        ?.getInitializer()
+        ?.asKind(SyntaxKind.StringLiteral)
+        ?.getLiteralValue()
+      if (rel === slug) {
+        arr.removeElement(i)
+        changed = true
+      }
+    }
+  }
+  return changed
+}
+
 export interface PruneReport {
   file: string
   removedSymbols: string[]
@@ -141,6 +168,27 @@ export function applyStringRemovals(
     const removed: string[] = []
     for (const value of values) {
       if (removeStringArrayMember(sf, value)) removed.push(value)
+    }
+    if (removed.length) {
+      sf.saveSync()
+      reports.push({ file: absPath, removedSymbols: removed })
+    }
+  }
+  return reports
+}
+
+/** Remove Payload relationship field objects by their `relationTo` slug, across files. */
+export function applyFieldRelationRemovals(
+  rootProject: Project,
+  edits: { absPath: string; slugs: string[] }[],
+): PruneReport[] {
+  const reports: PruneReport[] = []
+  for (const { absPath, slugs } of edits) {
+    const sf = rootProject.addSourceFileAtPathIfExists(absPath)
+    if (!sf) continue
+    const removed: string[] = []
+    for (const slug of slugs) {
+      if (removeFieldByRelationTo(sf, slug)) removed.push(slug)
     }
     if (removed.length) {
       sf.saveSync()

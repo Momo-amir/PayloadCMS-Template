@@ -3,13 +3,9 @@
   "_note": "Maintainer-owned. Auto-discovery derives most feature metadata from block/collection configs and static imports. Add an entry here ONLY for facts code cannot express: plugin/collection prerequisites (bare relationTo strings), grouping, sub-block markers, and collection-owned app files/routes.",
   "collections": {
     "categories": {
+      "_note": "The Posts `categories` relationship field is removed by the engine's relationTo-keyed field remover, not a text patch.",
       "ownedFiles": [],
       "patches": [
-        {
-          "file": "src/cms/collections/Posts/index.ts",
-          "find": "            {\n              name: 'categories',\n              type: 'relationship',\n              hasMany: true,\n              relationTo: 'categories',\n            },\n",
-          "replace": "            // categories pruned\n"
-        },
         {
           "file": "src/cms/search/beforeSync.ts",
           "find": "        collection: 'categories',",
@@ -23,13 +19,9 @@
       ]
     },
     "people": {
+      "_note": "The Posts `authors` relationship field is removed by the engine's relationTo-keyed field remover, not a text patch.",
       "ownedFiles": [],
       "patches": [
-        {
-          "file": "src/cms/collections/Posts/index.ts",
-          "find": "            {\n              name: 'authors',\n              type: 'relationship',\n              hasMany: true,\n              relationTo: 'people',\n            },\n",
-          "replace": "            // people pruned\n"
-        },
         {
           "file": "src/cms/collections/Posts/hooks/populateAuthors.ts",
           "find": "        collection: 'people',",
@@ -101,6 +93,18 @@
     },
     "twoColumnBlock": {
       "group": "Layout"
+    },
+    "contentBlock": {
+      "group": "Content"
+    },
+    "accordionBlock": {
+      "group": "Content"
+    },
+    "promoStripBlock": {
+      "group": "Content"
+    },
+    "callToActionBlock": {
+      "group": "Content"
     }
   }
 }

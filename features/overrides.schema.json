@@ -12,6 +12,10 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
+          "_note": {
+            "type": "string",
+            "description": "Maintainer note; ignored by the engine."
+          },
           "ownedFiles": {
             "type": "array",
             "items": { "type": "string" },
