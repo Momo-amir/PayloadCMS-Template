@@ -48,6 +48,9 @@ yarn docker-dev       # start Payload + Postgres on :8890
 | `--template-repo=<url>` | Public GitHub template repo (HTTPS) | Template repo URL. Accepts the private Bitbucket SSH URL or a local `file://` clone for testing. |
 | `--blocks=<slug,…>` | interactive | Block slugs to keep (skips the selection screen). |
 | `--collections=<slug,…>` | interactive | Optional-collection slugs to keep. |
+| `--heros=<slug,…>` | interactive | Presentational heros to keep (`highImpact`, `mediumImpact`, `lowImpact`). |
+| `--plugins=<slug,…>` | interactive | Payload plugins to keep (`redirects`, `form-builder`, `search`). Pruning cascades to related blocks/collections. |
+| `--brand="<name>"` | project name | Site/brand name written into the generated project. |
 | `--skip-install` | off | Don't run `yarn install` in the generated project. |
 | `--skip-git` | off | Don't `git init` / create the initial commit. |
 
