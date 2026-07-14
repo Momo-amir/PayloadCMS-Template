@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(yarn lint)",
+      "Bash(yarn lint:fix)",
+      "Bash(yarn lint:fix *)",
+      "Bash(yarn test)",
+      "Bash(yarn test:watch)",
+      "Bash(yarn test *)",
+      "Bash(yarn cli create:block *)",
+      "Bash(docker compose ps)",
+      "Bash(docker compose ps *)",
+      "Bash(docker compose logs *)",
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch)",
+      "Bash(git branch *)",
+      "Bash(git show *)",
+      "Bash(python3 -m json.tool .claude/settings.json)",
+      "Bash(yarn cli *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(yarn reinstall)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(docker compose -f docker-compose.prod.yml down *)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ],
+    "ask": [
+      "Bash(yarn install)",
+      "Bash(yarn install *)",
+      "Bash(yarn add *)",
+      "Bash(yarn remove *)",
+      "Bash(yarn upgrade *)",
+      "Bash(yarn generate:types)",
+      "Bash(yarn generate:importmap)",
+      "Bash(yarn migrate:create)",
+      "Bash(yarn build)",
+      "Bash(docker compose up *)",
+      "Bash(docker compose down *)",
+      "Bash(docker compose build *)",
+      "Bash(docker compose restart *)",
+      "Bash(docker compose exec *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(psql *)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$(cat | sed -n 's/.*\"file_path\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p' | head -1)\"; case \"$f\" in *src/*.ts|*src/*.tsx) [ -f \"$f\" ] && ./node_modules/.bin/prettier --write \"$f\" >/dev/null 2>&1 || true ;; esac; case \"$f\" in *src/cms/collections/*|*src/cms/globals/*|*src/cms/fields/*|*payload.config.ts) echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Schema file changed — remember to run: yarn generate:types (container must be up), and yarn migrate:create for production.\"}}' ;; esac"
+          }
+        ]
+      }
+    ]
+  }
+}

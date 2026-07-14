@@ -188,9 +188,9 @@ Out of the box, the system tracks:
 Use the custom CLI to scaffold new Blocks. Generated blocks are immediately available in the Admin Page Builder.
 
 ```bash
-yarn cli create-block <BlockName>
+yarn cli create:block <BlockName>
 # Example:
-yarn cli create-block Accordion
+yarn cli create:block Accordion
 ```
 
 Details:
