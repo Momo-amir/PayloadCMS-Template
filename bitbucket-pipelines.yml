@@ -3,6 +3,20 @@ image: atlassian/default-image:4
 pipelines:
   branches:
     main:
+      # >>> template-only: mirror-to-github (stripped from generated client sites by the scaffolder)
+      # Mirror main + tags to the public GitHub repo. That repo is what `npx create-kollab-payload`
+      # clones, and its release Action tags + publishes the initializer on a version-bump commit.
+      # Needs a repository variable GITHUB_TOKEN (a GitHub PAT with `repo` scope) and GITHUB_REPO
+      # (e.g. Momo-amir/PayloadCMS-Template). Runs before deploy so a mirror failure surfaces early.
+      - step:
+          name: Mirror to GitHub
+          clone:
+            depth: full
+          script:
+            - git fetch origin --tags --prune
+            - git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git" "HEAD:refs/heads/main"
+            - git push --force --tags "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git"
+      # <<< template-only: mirror-to-github
       - step:
           name: Deploy to server
           deployment: production

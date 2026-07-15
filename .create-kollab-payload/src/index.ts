@@ -78,6 +78,31 @@ function readSelfVersion(): string {
   return String(pkg.version)
 }
 
+// Locate the bundled engine + the initializer's own tsx binary. The engine ships inside this
+// package (engine/) with ts-morph/prompts as real deps, so it runs from here against a template
+// clone via --root — no install in the clone is needed to build the catalog or prune.
+function packageRoot(): string {
+  return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+}
+
+function engineEntry(): string {
+  const entry = path.resolve(packageRoot(), 'engine/lib/core.ts')
+  if (!fs.existsSync(entry)) {
+    fail(`bundled engine not found at ${entry} — the package build did not run \`bundle-engine\`.`)
+  }
+  return entry
+}
+
+function tsxBin(): string {
+  const bin = path.resolve(
+    packageRoot(),
+    'node_modules/.bin',
+    process.platform === 'win32' ? 'tsx.cmd' : 'tsx',
+  )
+  if (!fs.existsSync(bin)) fail(`tsx not found at ${bin} — reinstall create-kollab-payload.`)
+  return bin
+}
+
 function parseArgs(argv: string[]): Args {
   const args: Args = {
     templateRef: `v${SELF_VERSION}`,
@@ -169,29 +194,68 @@ function fail(msg: string): never {
   process.exit(1)
 }
 
-// Resolve a yarn runner. Prefer an existing yarn, then corepack (ships with Node). If neither is
-// present, offer to install yarn globally via npm (with consent — it changes the user's environment).
-async function ensureYarn(): Promise<string> {
-  if (has('yarn')) return 'yarn'
+type PM = 'corepack' | 'yarn' | 'npm'
+
+// Resolve the package manager for the output install. The generated project is yarn-based
+// (yarn.lock, scripts, Docker all assume yarn), so prefer yarn — via corepack first, which honors
+// the template's pinned `packageManager` and works even when the host's global yarn is the wrong
+// major or absent. npm is accepted as a last resort so the initializer still runs without yarn;
+// we warn afterwards that day-to-day commands expect yarn.
+function resolvePackageManager(): PM {
   if (has('corepack')) return 'corepack'
-  if (!has('npm')) fail('yarn is required and neither yarn, corepack, nor npm was found on PATH.')
-  const res = await prompts({
-    type: 'confirm',
-    name: 'ok',
-    message: 'yarn is not installed. Install it globally now with `npm install -g yarn`?',
-    initial: true,
-  })
-  if (!res.ok) {
-    fail('yarn is required. Install it (e.g. `npm install -g yarn`) and re-run.')
-  }
-  await runSpinner('Installing yarn', 'npm', ['install', '-g', 'yarn'])
-  if (!has('yarn'))
-    fail('Installed yarn but it is still not on PATH — open a new shell and re-run.')
-  return 'yarn'
+  if (has('yarn')) return 'yarn'
+  if (has('npm')) return 'npm'
+  fail('a package manager is required: none of corepack, yarn, or npm was found on PATH.')
+}
+
+// The install invocation for a PM, run in the output project. corepack shells out to yarn.
+function installInvocation(pm: PM): { cmd: string; args: string[] } {
+  if (pm === 'corepack') return { cmd: 'corepack', args: ['yarn', 'install'] }
+  if (pm === 'yarn') return { cmd: 'yarn', args: ['install'] }
+  return { cmd: 'npm', args: ['install'] }
 }
 
 function rm(target: string) {
   fs.rmSync(target, { recursive: true, force: true })
+}
+
+// `create-kollab-payload add <blockSlug>` — pull a block (and its file closure) from the template
+// into an existing project. Clones the template (no install), runs the bundled engine's add:block
+// against the current project, then reminds about type/importmap regeneration.
+async function addFeature(argv: string[]) {
+  const slug = argv.find((a) => !a.startsWith('--'))
+  if (!slug) fail('Usage: create-kollab-payload add <blockSlug> [--template-ref=<ref>]')
+
+  const templateRef =
+    argv.find((a) => a.startsWith('--template-ref='))?.slice('--template-ref='.length) ??
+    `v${SELF_VERSION}`
+  const templateRepo =
+    argv.find((a) => a.startsWith('--template-repo='))?.slice('--template-repo='.length) ??
+    DEFAULT_TEMPLATE_REPO
+
+  const targetDir = process.cwd()
+  if (!fs.existsSync(path.resolve(targetDir, 'src/website/blocks/exports.ts'))) {
+    fail('Run this from the root of a Kollab project (no src/website/blocks/exports.ts here).')
+  }
+  if (!has('git')) fail('git is required but was not found on PATH.')
+
+  printBanner()
+  const tmpClone = fs.mkdtempSync(path.join(os.tmpdir(), 'kollab-template-'))
+  try {
+    await runSpinner(`Fetching template ${templateRef}`, 'git', [
+      'clone',
+      '--quiet',
+      '--depth',
+      '1',
+      '--branch',
+      templateRef,
+      templateRepo,
+      tmpClone,
+    ])
+    run(tsxBin(), [engineEntry(), 'add:block', slug, `--root=${tmpClone}`, `--target=${targetDir}`])
+  } finally {
+    rm(tmpClone)
+  }
 }
 
 async function main() {
@@ -232,14 +296,14 @@ async function main() {
     fail(`Target directory is not empty: ${targetDir}`)
   }
   if (!has('git')) fail('git is required but was not found on PATH.')
-  const yarnCmd = await ensureYarn()
-  const yarnArgs = (rest: string[]) => (yarnCmd === 'corepack' ? ['yarn', ...rest] : rest)
+  const pm = args.skipInstall ? null : resolvePackageManager()
   const interactive = !args.blocks
 
   const tmpClone = fs.mkdtempSync(path.join(os.tmpdir(), 'kollab-template-'))
 
   try {
-    // 2. Fetch the template (feature menu is derived from its source, so we clone first).
+    // 2. Fetch the template (feature menu is derived from its source, so we clone first). No install
+    //    in the clone — the pruning engine is bundled in this package and runs against --root.
     await runSpinner(`Fetching template ${args.templateRef}`, 'git', [
       'clone',
       '--quiet',
@@ -250,12 +314,6 @@ async function main() {
       args.templateRepo,
       tmpClone,
     ])
-    await runSpinner(
-      'Preparing the feature catalog',
-      yarnCmd,
-      yarnArgs(['install', '--silent']),
-      tmpClone,
-    )
 
     // 3. Selection screen — clearly framed so the choices stand out.
     if (interactive) {
@@ -263,32 +321,34 @@ async function main() {
       banner('Choose the features to include')
       console.log(dim('  Everything is selected by default — deselect what you don’t need.\n'))
     }
-    const genArgs = ['cli', 'generate', `--out=${targetDir}`, `--root=${tmpClone}`]
+    const genArgs = [engineEntry(), 'generate', `--out=${targetDir}`, `--root=${tmpClone}`]
     if (args.blocks) genArgs.push(`--blocks=${args.blocks}`)
     if (args.collections) genArgs.push(`--collections=${args.collections}`)
     if (args.heros) genArgs.push(`--heros=${args.heros}`)
     if (args.plugins) genArgs.push(`--plugins=${args.plugins}`)
-    run(yarnCmd, yarnArgs(genArgs), tmpClone)
+    run(tsxBin(), genArgs, tmpClone)
     if (interactive) console.log(dim('─'.repeat(48)))
 
     step('Finalizing project files …')
     cleanOutput(targetDir, projectName, brand)
     setupEnv(targetDir)
-
-    // Reuse the clone's node_modules for the generated project: the output's deps are a subset of
-    // the template's, and yarn.lock ships with the copy, so a follow-up install just reconciles
-    // (prunes the few removed packages) instead of re-downloading the whole Payload+Next tree.
-    if (!args.skipInstall) {
-      reuseNodeModules(path.join(tmpClone, 'node_modules'), path.join(targetDir, 'node_modules'))
-    }
   } finally {
     rm(tmpClone)
   }
 
-  // 4. Install dependencies in the generated project (unless opted out). With node_modules reused
-  //    above, this reconciles against the pruned package.json rather than doing a cold install.
-  if (!args.skipInstall) {
-    await runSpinner('Installing dependencies', yarnCmd, yarnArgs(['install']), targetDir)
+  // 4. Install dependencies in the generated project (unless opted out). This is the single install
+  //    of the run — a cold install against the pruned package.json + shipped yarn.lock.
+  if (pm) {
+    const { cmd, args: installArgs } = installInvocation(pm)
+    await runSpinner('Installing dependencies (Payload + Next)', cmd, installArgs, targetDir)
+    if (pm === 'npm') {
+      console.log(
+        dim(
+          "  Installed with npm. This project's scripts and Docker setup expect yarn —\n" +
+            '  install it (`corepack enable` or `npm i -g yarn`) before `yarn docker-dev`.',
+        ),
+      )
+    }
   }
 
   // 5. Initialize git with a single initial commit (so it isn't a pile of untracked files).
@@ -300,24 +360,6 @@ async function main() {
   }
 
   printDone(projectName, target, args)
-}
-
-// Move the clone's node_modules into the generated project (rename is instant on the same volume;
-// fall back to a recursive copy across devices). Best-effort: on any failure the follow-up
-// `yarn install` still produces a correct tree, just slower.
-function reuseNodeModules(from: string, to: string) {
-  if (!fs.existsSync(from) || fs.existsSync(to)) return
-  try {
-    fs.renameSync(from, to)
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === 'EXDEV') {
-      try {
-        fs.cpSync(from, to, { recursive: true })
-      } catch {
-        rm(to)
-      }
-    }
-  }
 }
 
 function setupEnv(dir: string) {
@@ -374,6 +416,7 @@ function cleanOutput(dir: string, projectName: string, brand: string) {
     '.cli/lib/discovery.ts',
     '.cli/lib/closure.ts',
     '.cli/lib/codemod.ts',
+    '.cli/lib/add.ts',
     '.cli/lib/generate.ts',
     '.cli/lib/select.ts',
     '.cli/NEXT_SESSION_PROMPT.md',
@@ -384,12 +427,41 @@ function cleanOutput(dir: string, projectName: string, brand: string) {
     '.claude/agents/feature-manifest-author.md',
     'create-kollab-payload',
     '.create-kollab-payload',
+    // Release automation is template-only: a client site must not publish create-kollab-payload.
+    '.github/workflows/release.yml',
   ]
   for (const rel of remove) rm(path.resolve(dir, rel))
 
+  pruneTemplateOnlyPipeline(path.resolve(dir, 'bitbucket-pipelines.yml'))
   applyBrand(dir, brand)
   slimCoreTs(path.resolve(dir, '.cli/lib/core.ts'))
   resetPackageJson(path.resolve(dir, 'package.json'), projectName)
+}
+
+// Strip fenced `template-only` steps from the copied bitbucket-pipelines.yml. The GitHub-mirror step
+// only makes sense in the Kollab template repo; a generated client site keeps just its deploy step.
+function pruneTemplateOnlyPipeline(file: string) {
+  if (!fs.existsSync(file)) return
+  const lines = fs.readFileSync(file, 'utf8').split('\n')
+  const out: string[] = []
+  let skipping = false
+  let removed = false
+  for (const line of lines) {
+    if (/# >>> template-only:/.test(line)) {
+      skipping = true
+      removed = true
+      continue
+    }
+    if (/# <<< template-only:/.test(line)) {
+      skipping = false
+      continue
+    }
+    if (!skipping) out.push(line)
+  }
+  if (removed) {
+    fs.writeFileSync(file, out.join('\n'))
+    console.log(dim('  Removed template-only CI steps from bitbucket-pipelines.yml.'))
+  }
 }
 
 // Replace the template's default brand string in the generated project. These are the only files
@@ -491,4 +563,6 @@ function resetPackageJson(file: string, projectName: string) {
   fs.writeFileSync(file, `${JSON.stringify(pkg, null, 2)}\n`)
 }
 
-main().catch((err) => fail(err instanceof Error ? err.message : String(err)))
+const argv = process.argv.slice(2)
+const entry = argv[0] === 'add' ? addFeature(argv.slice(1)) : main()
+entry.catch((err) => fail(err instanceof Error ? err.message : String(err)))

@@ -1,0 +1,87 @@
+name: Release create-kollab-payload
+
+# Fires when a commit on main changes the initializer. If its package.json version does not yet have
+# a matching git tag, this tags the commit vX.Y.Z (so `npx create-kollab-payload@X.Y.Z` can clone the
+# tag) and publishes the package to npm. Every push without a version bump is a safe no-op.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.create-kollab-payload/**'
+
+concurrency:
+  group: release-create-kollab-payload
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create + push the vX.Y.Z tag
+      id-token: write # mint the OIDC token npm trusted publishing verifies
+    steps:
+      - name: Checkout (full history + tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Read initializer version
+        id: ver
+        run: |
+          V=$(node -p "require('./.create-kollab-payload/package.json').version")
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "tag=v$V" >> "$GITHUB_OUTPUT"
+
+      - name: Skip if tag already exists
+        id: check
+        run: |
+          if git rev-parse -q --verify "refs/tags/${{ steps.ver.outputs.tag }}" >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Tag ${{ steps.ver.outputs.tag }} already exists — nothing to release."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Warn if initializer source changed without a version bump
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+              | grep -qE '^\.create-kollab-payload/(src|scripts)/'; then
+            echo "::warning::Initializer source changed but package.json version ${{ steps.ver.outputs.version }} is already tagged — bump the version to ship these changes."
+          fi
+
+      - name: Install + build initializer
+        if: steps.check.outputs.exists == 'false'
+        working-directory: .create-kollab-payload
+        run: |
+          npm ci || npm install
+          npm run build
+
+      # npm trusted publishing (OIDC) needs a recent npm; setup-node ships an older one.
+      - name: Upgrade npm for trusted publishing
+        if: steps.check.outputs.exists == 'false'
+        run: npm install -g npm@latest
+
+      - name: Publish to npm (trusted publisher / OIDC)
+        if: steps.check.outputs.exists == 'false'
+        working-directory: .create-kollab-payload
+        run: npm publish --access public
+
+      - name: Tag the released commit and push
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.ver.outputs.tag }}" -m "${{ steps.ver.outputs.tag }}"
+          git push origin "${{ steps.ver.outputs.tag }}"
+
+      - name: Summary
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          echo "Released create-kollab-payload@${{ steps.ver.outputs.version }} and pushed tag ${{ steps.ver.outputs.tag }}." >> "$GITHUB_STEP_SUMMARY"

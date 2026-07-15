@@ -4,6 +4,7 @@ import os from "os";
 import Command from "./Command";
 import { discover } from "./discovery";
 import { generate } from "./generate";
+import { addBlock } from "./add";
 import { selectFeatures } from "./select";
 
 interface Config {
@@ -212,6 +213,44 @@ Command.register(
         console.log(`\nNext: cd ${out} && yarn install && yarn generate:types`);
       }
       console.log();
+    })
+);
+
+Command.register(
+  new Command("add:block")
+    .setDescription("Add a block (and its file closure) from the template into an existing project")
+    .setSyntax("<blockSlug> --target=<projectDir>  (--root=<templateDir> is the source template)")
+    .setCallback((keyArgs, slug) => {
+      if (!slug) {
+        console.error("Provide a block slug: add:block <blockSlug> --target=<projectDir>");
+        process.exit(1);
+      }
+      const targetArg = typeof keyArgs.target === "string" ? keyArgs.target : "";
+      const targetRoot = targetArg ? Path.resolve(targetArg) : process.cwd();
+      if (!fs.existsSync(Path.resolve(targetRoot, "src/website/blocks/exports.ts"))) {
+        console.error(`Not a Kollab project (no src/website/blocks/exports.ts): ${targetRoot}`);
+        process.exit(1);
+      }
+      if (Path.resolve(targetRoot) === Path.resolve(root)) {
+        console.error("--target must be a generated project, not the template itself.");
+        process.exit(1);
+      }
+      try {
+        const res = addBlock({ templateRoot: root, targetRoot, slug });
+        console.log(`\nAdded block "${slug}"${res.children.length ? ` (+ children: ${res.children.join(", ")})` : ""}`);
+        console.log(`\nFiles copied (${res.added.length}):`);
+        for (const f of res.added) console.log(`  + ${f}`);
+        if (res.skipped.length) {
+          console.log(`\nAlready present, left untouched (${res.skipped.length}):`);
+          for (const f of res.skipped) console.log(`  = ${f}`);
+        }
+        console.log(`\nRegistration: ${res.registered ? "updated src/website/blocks/exports.ts" : "no exports.ts change (inline/sub-block)"}`);
+        console.log(`\nNext: yarn generate:types && yarn generate:importmap`);
+        console.log();
+      } catch (err) {
+        console.error(`\n${err instanceof Error ? err.message : String(err)}\n`);
+        process.exit(1);
+      }
     })
 );
 

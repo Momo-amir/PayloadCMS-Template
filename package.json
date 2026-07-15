@@ -4,6 +4,7 @@
   "description": "Website template for PayloadCMS created for Kollab Solutions",
   "license": "MIT",
   "type": "module",
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "attach": "docker attach $(docker compose ps -q payload)",
     "attach:ps": "powershell -Command \"docker attach $(docker compose ps --quiet payload | Select-Object -First 1)\"",
