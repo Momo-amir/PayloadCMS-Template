@@ -1,7 +1,8 @@
 # create-kollab-payload
 
 Generate a Kollab Payload CMS + Next.js client site from the
-[`kollab-payload-template`](https://github.com/Momo-amir/PayloadCMS-Template).
+[`kollab-payload-template`](https://github.com/Momo-amir/PayloadCMS-Template). Also supports pulling
+a block into an existing project later — see [Adding a block later](#adding-a-block-later).
 
 > Clones the public template repo over HTTPS — no SSH or credentials needed. `git` and
 > `yarn`/`corepack` must be on your PATH. To fetch from the private Bitbucket origin instead, pass
