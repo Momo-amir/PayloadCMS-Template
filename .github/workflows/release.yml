@@ -94,16 +94,9 @@ jobs:
         if: steps.check.outputs.exists == 'false'
         working-directory: .create-kollab-payload
         # A stray `_auth` (seen in `npm config list`) makes npm think it's already authenticated with
-        # a basic-auth credential, so it never attempts OIDC → ENEEDAUTH. It comes from an env var
-        # (npm reads npm_config_* / NPM_CONFIG_* as config), not a file, so it must be unset in the
-        # environment — deleting from .npmrc can't remove it. Blank every spelling for this step.
-        env:
-          npm_config__auth: ''
-          NPM_CONFIG__AUTH: ''
-          npm_config_auth: ''
-          NPM_CONFIG_AUTH: ''
-          npm_config__authToken: ''
-          NODE_AUTH_TOKEN: ''
+        # a basic-auth credential, so it never attempts OIDC → ENEEDAUTH. npm reads npm_config_* /
+        # NPM_CONFIG_* env vars as config; unset every spelling here so npm falls through to OIDC.
+        # (Can't neutralize via env: '' — GitHub folds npm_config__auth/NPM_CONFIG__AUTH to one key.)
         run: |
           unset npm_config__auth NPM_CONFIG__AUTH npm_config_auth NPM_CONFIG_AUTH npm_config__authToken NODE_AUTH_TOKEN
           for f in "$HOME/.npmrc" ./.npmrc; do
