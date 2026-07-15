@@ -107,6 +107,11 @@ That's it. From there:
    stored: npm verifies the publish came from this repo's `release.yml` workflow. Pushes without a
    version bump are safe no-ops.
 
+> **One caveat:** the Bitbucket `GITHUB_TOKEN` intentionally lacks the `workflow` scope, so the
+> mirror step **cannot** push commits that add or change files under `.github/workflows/`. Normal
+> commits (source, docs, version bumps) mirror fine; when you edit a workflow file, push that commit
+> to GitHub yourself once: `git push ghub main`. After that, Bitbucket-only pushing resumes.
+
 The tag is authored **on GitHub** (where `npx` clones from), so the version→tag→npm contract can't
 drift: publishing and tagging happen together in one job, keyed off the single version number.
 
