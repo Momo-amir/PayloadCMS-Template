@@ -93,13 +93,24 @@ jobs:
       - name: Publish to npm (trusted publisher / OIDC)
         if: steps.check.outputs.exists == 'false'
         working-directory: .create-kollab-payload
+        # A stray `_auth` (seen in `npm config list`) makes npm think it's already authenticated with
+        # a basic-auth credential, so it never attempts OIDC → ENEEDAUTH. It comes from an env var
+        # (npm reads npm_config_* / NPM_CONFIG_* as config), not a file, so it must be unset in the
+        # environment — deleting from .npmrc can't remove it. Blank every spelling for this step.
+        env:
+          npm_config__auth: ''
+          NPM_CONFIG__AUTH: ''
+          npm_config_auth: ''
+          NPM_CONFIG_AUTH: ''
+          npm_config__authToken: ''
+          NODE_AUTH_TOKEN: ''
         run: |
-          # Remove any token/auth lines any npm layer left behind (setup-node writes an _authToken
-          # line; a stray _authToken makes npm use token auth and skip OIDC entirely).
+          unset npm_config__auth NPM_CONFIG__AUTH npm_config_auth NPM_CONFIG_AUTH npm_config__authToken NODE_AUTH_TOKEN
           for f in "$HOME/.npmrc" ./.npmrc; do
-            [ -f "$f" ] && sed -i -E '/_authToken|always-auth|_auth=/d' "$f" || true
+            [ -f "$f" ] && sed -i -E '/_authToken|_auth[[:space:]]*=|always-auth/d' "$f" || true
           done
           echo "publishing with npm $(npm --version)"
+          echo "_auth after scrub: [$(npm config get _auth 2>/dev/null)]"
           npm publish --access public --provenance --loglevel verbose
 
       - name: Tag the released commit and push
