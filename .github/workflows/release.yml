@@ -77,19 +77,30 @@ jobs:
           npm ci || npm install
           npm run build
 
+      - name: Diagnose npm auth config
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          echo "npm: $(npm --version)"
+          echo "OIDC url present: ${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"
+          echo "----- npm config list -----"
+          npm config list -l 2>/dev/null | grep -iE "registry|auth|token|provenance|_auth" || true
+          echo "----- .npmrc locations -----"
+          for f in "$HOME/.npmrc" "$(npm config get globalconfig 2>/dev/null)" "./.npmrc" ".create-kollab-payload/.npmrc"; do
+            echo "## $f"
+            [ -f "$f" ] && sed -E 's/(_authToken=).*/\1<redacted>/' "$f" || echo "(none)"
+          done
+
       - name: Publish to npm (trusted publisher / OIDC)
         if: steps.check.outputs.exists == 'false'
         working-directory: .create-kollab-payload
         run: |
+          # Remove any token/auth lines any npm layer left behind (setup-node writes an _authToken
+          # line; a stray _authToken makes npm use token auth and skip OIDC entirely).
+          for f in "$HOME/.npmrc" ./.npmrc; do
+            [ -f "$f" ] && sed -i -E '/_authToken|always-auth|_auth=/d' "$f" || true
+          done
           echo "publishing with npm $(npm --version)"
-          if [ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then echo "OIDC token endpoint: present"; else echo "OIDC token endpoint: MISSING (id-token perm not effective)"; fi
-          # Strip any legacy always-auth (from the runner's user .npmrc) — it forces token auth and
-          # overrides OIDC. Point at the public registry cleanly. No _authToken → npm 11 uses OIDC.
-          npm config delete always-auth --location=user 2>/dev/null || true
-          npm config delete always-auth --location=global 2>/dev/null || true
-          npm config set registry https://registry.npmjs.org/ --location=user
-          echo "always-auth is now: $(npm config get always-auth)"
-          npm publish --access public --provenance
+          npm publish --access public --provenance --loglevel verbose
 
       - name: Tag the released commit and push
         if: steps.check.outputs.exists == 'false'
