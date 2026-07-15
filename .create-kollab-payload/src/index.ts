@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { spawn, spawnSync } from 'node:child_process'
+import { createRequire } from 'node:module'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -93,14 +94,46 @@ function engineEntry(): string {
   return entry
 }
 
-function tsxBin(): string {
-  const bin = path.resolve(
-    packageRoot(),
-    'node_modules/.bin',
-    process.platform === 'win32' ? 'tsx.cmd' : 'tsx',
-  )
-  if (!fs.existsSync(bin)) fail(`tsx not found at ${bin} — reinstall create-kollab-payload.`)
-  return bin
+// Resolve tsx's CLI script via Node's own module resolution, which finds it wherever the installer
+// placed it — nested under this package (local install) OR hoisted to a top-level node_modules
+// (npm/npx dedupe). We then run it with `node <script>` rather than a .bin symlink, so no assumption
+// about where .bin lives. Falls back to the nested .bin path if resolution somehow fails.
+function tsxScript(): string {
+  const require = createRequire(import.meta.url)
+  try {
+    const pkgJson = require.resolve('tsx/package.json')
+    const pkgDir = path.dirname(pkgJson)
+    const pkg = JSON.parse(fs.readFileSync(pkgJson, 'utf8'))
+    const binRel = typeof pkg.bin === 'string' ? pkg.bin : pkg.bin?.tsx
+    if (binRel) {
+      const bin = path.resolve(pkgDir, binRel)
+      if (fs.existsSync(bin)) return bin
+    }
+  } catch {
+    // fall through to the .bin lookup below
+  }
+  const binName = process.platform === 'win32' ? 'tsx.cmd' : 'tsx'
+  for (const dir of [
+    path.resolve(packageRoot(), 'node_modules/.bin'),
+    path.resolve(packageRoot(), '../.bin'),
+  ]) {
+    const bin = path.resolve(dir, binName)
+    if (fs.existsSync(bin)) return bin
+  }
+  fail('tsx could not be resolved — reinstall create-kollab-payload.')
+}
+
+// Run the bundled engine (engine/lib/core.ts) with the given engine args. tsx's resolved entry is a
+// node-runnable script when found via package.json (run it with `node`); the .bin fallback is a
+// shell shim (run it directly). Either way the engine args follow.
+function runEngine(engineArgs: string[], cwd?: string) {
+  const tsx = tsxScript()
+  const runnableWithNode = /\.(mjs|cjs|js)$/.test(tsx)
+  const cmd = runnableWithNode ? process.execPath : tsx
+  const args = runnableWithNode
+    ? [tsx, engineEntry(), ...engineArgs]
+    : [engineEntry(), ...engineArgs]
+  run(cmd, args, cwd)
 }
 
 function parseArgs(argv: string[]): Args {
@@ -252,7 +285,7 @@ async function addFeature(argv: string[]) {
       templateRepo,
       tmpClone,
     ])
-    run(tsxBin(), [engineEntry(), 'add:block', slug, `--root=${tmpClone}`, `--target=${targetDir}`])
+    runEngine(['add:block', slug, `--root=${tmpClone}`, `--target=${targetDir}`])
   } finally {
     rm(tmpClone)
   }
@@ -321,12 +354,12 @@ async function main() {
       banner('Choose the features to include')
       console.log(dim('  Everything is selected by default — deselect what you don’t need.\n'))
     }
-    const genArgs = [engineEntry(), 'generate', `--out=${targetDir}`, `--root=${tmpClone}`]
+    const genArgs = ['generate', `--out=${targetDir}`, `--root=${tmpClone}`]
     if (args.blocks) genArgs.push(`--blocks=${args.blocks}`)
     if (args.collections) genArgs.push(`--collections=${args.collections}`)
     if (args.heros) genArgs.push(`--heros=${args.heros}`)
     if (args.plugins) genArgs.push(`--plugins=${args.plugins}`)
-    run(tsxBin(), genArgs, tmpClone)
+    runEngine(genArgs, tmpClone)
     if (interactive) console.log(dim('─'.repeat(48)))
 
     step('Finalizing project files …')
