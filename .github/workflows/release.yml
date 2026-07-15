@@ -8,6 +8,9 @@ on:
     branches: [main]
     paths:
       - '.create-kollab-payload/**'
+  # Manual trigger — re-run a release without a content change (e.g. after fixing the workflow, or
+  # to retry a failed publish). Still a no-op if the current version is already tagged.
+  workflow_dispatch:
 
 concurrency:
   group: release-create-kollab-payload
@@ -32,12 +35,14 @@ jobs:
         with:
           node-version: 24
 
-      # Trusted publishing (OIDC) needs npm >= 11.5.1; Node 24 ships an older npm. Upgrade before the
-      # build so prepublishOnly's nested npm invocations also run on the OIDC-capable npm.
+      # Trusted publishing (OIDC) needs npm >= 11.5.1; Node 24 ships an older npm. Pin to 11 (proven
+      # for OIDC) rather than @latest — npm 12 is brand-new with install-time security changes we
+      # don't want to debug mid-release. Upgrade before the build so prepublishOnly's nested npm
+      # invocations also run on the OIDC-capable npm.
       - name: Upgrade npm for trusted publishing
         run: |
-          npm install -g npm@latest
-          npm --version
+          npm install -g npm@11
+          echo "npm is now $(npm --version)"
 
       - name: Read initializer version
         id: ver
@@ -74,7 +79,9 @@ jobs:
       - name: Publish to npm (trusted publisher / OIDC)
         if: steps.check.outputs.exists == 'false'
         working-directory: .create-kollab-payload
-        run: npm publish --access public
+        run: |
+          echo "publishing with npm $(npm --version)"
+          npm publish --access public
 
       - name: Tag the released commit and push
         if: steps.check.outputs.exists == 'false'
