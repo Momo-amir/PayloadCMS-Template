@@ -25,11 +25,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      # NOTE: do NOT set registry-url here — it writes an .npmrc expecting NODE_AUTH_TOKEN, which
+      # forces token auth and breaks OIDC trusted publishing (npm sends an empty token → 404).
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing (OIDC) needs npm >= 11.5.1; Node 24 ships an older npm. Upgrade before the
+      # build so prepublishOnly's nested npm invocations also run on the OIDC-capable npm.
+      - name: Upgrade npm for trusted publishing
+        run: |
+          npm install -g npm@latest
+          npm --version
 
       - name: Read initializer version
         id: ver
@@ -62,11 +70,6 @@ jobs:
         run: |
           npm ci || npm install
           npm run build
-
-      # npm trusted publishing (OIDC) needs a recent npm; setup-node ships an older one.
-      - name: Upgrade npm for trusted publishing
-        if: steps.check.outputs.exists == 'false'
-        run: npm install -g npm@latest
 
       - name: Publish to npm (trusted publisher / OIDC)
         if: steps.check.outputs.exists == 'false'
