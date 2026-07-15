@@ -28,14 +28,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      # registry-url points npm at the public registry (the publish target OIDC trusted publishing
-      # authenticates against). With id-token: write granted and NO NODE_AUTH_TOKEN set, npm >= 11.5.1
-      # uses the OIDC token instead of a stored token.
+      # Do NOT use setup-node's registry-url: it writes an .npmrc with `always-auth=true`, which
+      # forces token auth on every request and overrides OIDC (npm then sends an empty token → 404).
+      # We set the registry cleanly (no always-auth) in the publish step instead.
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          registry-url: 'https://registry.npmjs.org'
 
       # Trusted publishing (OIDC) needs npm >= 11.5.1; Node 24 ships an older npm. Pin to 11 (proven
       # for OIDC) rather than @latest — npm 12 is brand-new with install-time security changes we
@@ -84,6 +83,12 @@ jobs:
         run: |
           echo "publishing with npm $(npm --version)"
           if [ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then echo "OIDC token endpoint: present"; else echo "OIDC token endpoint: MISSING (id-token perm not effective)"; fi
+          # Strip any legacy always-auth (from the runner's user .npmrc) — it forces token auth and
+          # overrides OIDC. Point at the public registry cleanly. No _authToken → npm 11 uses OIDC.
+          npm config delete always-auth --location=user 2>/dev/null || true
+          npm config delete always-auth --location=global 2>/dev/null || true
+          npm config set registry https://registry.npmjs.org/ --location=user
+          echo "always-auth is now: $(npm config get always-auth)"
           npm publish --access public
 
       - name: Tag the released commit and push
