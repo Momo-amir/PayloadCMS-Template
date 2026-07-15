@@ -77,34 +77,16 @@ jobs:
           npm ci || npm install
           npm run build
 
-      - name: Diagnose npm auth config
-        if: steps.check.outputs.exists == 'false'
-        run: |
-          echo "npm: $(npm --version)"
-          echo "OIDC url present: ${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"
-          echo "----- npm config list -----"
-          npm config list -l 2>/dev/null | grep -iE "registry|auth|token|provenance|_auth" || true
-          echo "----- .npmrc locations -----"
-          for f in "$HOME/.npmrc" "$(npm config get globalconfig 2>/dev/null)" "./.npmrc" ".create-kollab-payload/.npmrc"; do
-            echo "## $f"
-            [ -f "$f" ] && sed -E 's/(_authToken=).*/\1<redacted>/' "$f" || echo "(none)"
-          done
-
       - name: Publish to npm (trusted publisher / OIDC)
         if: steps.check.outputs.exists == 'false'
         working-directory: .create-kollab-payload
-        # A stray `_auth` (seen in `npm config list`) makes npm think it's already authenticated with
-        # a basic-auth credential, so it never attempts OIDC → ENEEDAUTH. npm reads npm_config_* /
-        # NPM_CONFIG_* env vars as config; unset every spelling here so npm falls through to OIDC.
-        # (Can't neutralize via env: '' — GitHub folds npm_config__auth/NPM_CONFIG__AUTH to one key.)
+        # A stray `_auth` env var (npm reads npm_config_* / NPM_CONFIG_* as config) makes npm think
+        # it is already authenticated, so it never attempts OIDC → ENEEDAUTH. Unset every spelling so
+        # npm falls through to the OIDC token exchange. (Delete the source var from repo/org Actions
+        # variables to remove this need. Can't neutralize via env: '' — GitHub folds the casings.)
         run: |
           unset npm_config__auth NPM_CONFIG__AUTH npm_config_auth NPM_CONFIG_AUTH npm_config__authToken NODE_AUTH_TOKEN
-          for f in "$HOME/.npmrc" ./.npmrc; do
-            [ -f "$f" ] && sed -i -E '/_authToken|_auth[[:space:]]*=|always-auth/d' "$f" || true
-          done
-          echo "publishing with npm $(npm --version)"
-          echo "_auth after scrub: [$(npm config get _auth 2>/dev/null)]"
-          npm publish --access public --provenance --loglevel verbose
+          npm publish --access public --provenance
 
       - name: Tag the released commit and push
         if: steps.check.outputs.exists == 'false'
