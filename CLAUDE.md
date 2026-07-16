@@ -14,7 +14,8 @@ with `package.json`. Human docs in `docs/` and `README.md` go deeper — link to
 | **React** | `19.2.6`. |
 | **DB** | Postgres via `@payloadcms/db-postgres` (Drizzle). |
 | **Node** | `>=20.9.0`; `.nvmrc` pins `24.5.0`. |
-| **Styling** | Tailwind v4 + shadcn/ui conventions. |
+| **Styling** | Tailwind v4. Frontend = theme tokens + `container`; shadcn/ui is mostly admin-panel UI. |
+| **Icons** | **Tabler** (`@tabler/icons-react`) on the frontend. (`lucide-react` is admin/shadcn only.) |
 | **i18n** | Payload localization (content) + next-intl (UI). Default locale **Danish (`da`)**, English fallback. |
 | **Tests** | Vitest (`tests/**`, node env). |
 
@@ -101,11 +102,19 @@ For work inside `core/`, prefer the **`core-maintainer`** subagent.
   - `access/` & server `hooks/` files → **camelCase** matching the export (`authenticatedOrPublished.ts`).
   - Client components → **`.client.tsx` suffix** + `'use client'`. Server components are the default (plain `Component.tsx`).
   - Constants `SCREAMING_SNAKE_CASE`. Job/task slugs `camelCase`. Collection slugs `kebab`/lowercase. Analytics data keys `snake_case`.
+  - **Readable names, always.** Variables, params, and callbacks get descriptive names — `event`
+    not `e`, `variant` not `v`, `item`/`index` not `t`/`i`. Single-letter names read as messy and
+    are not allowed in component code. Match the surrounding file's existing names and conventions.
 - **Path aliases** (prefer over relative imports): `@/*`→`src/*`, `@/cms/*`, `@site/*`→`src/website/*`, `@public/*`, `@payload-config`.
 - **Type-only imports** use `import type { … }`.
 - **Reusable fields are factories** with a default options object, applying caller overrides via
   `deepMerge(result, overrides)` (`src/cms/utilities/deepMerge.ts`). See `src/cms/fields/link.ts`.
 - **Class names** via `cn()` from `@/cms/utilities/ui` (clsx + tailwind-merge).
+- **Styling is theme-driven and responsive.** Colors come **only** from the theme tokens
+  (`--color-*` in `src/app/(frontend)/[locale]/globals.css`) and typography from the same theme
+  section — never hardcode hex/px or off-theme values. Everything is responsive by default: use the
+  `container` class for page-width layout and Tailwind's responsive utilities. Both light and dark
+  themes are defined in that file — style for both.
 - **Collections are typed** `CollectionConfig<'slug'>`; labels are inline localized objects `{ en, da }`.
 - **Validation is hand-written type guards, NOT zod** (there is no zod in the repo). See
   `normalizeConsentState` / `sanitizePreferences` in `src/core/privacy/models/consent-model.ts`.
@@ -113,6 +122,21 @@ For work inside `core/`, prefer the **`core-maintainer`** subagent.
   (`src/website/types/ComponentBlock.ts`); page-builder blocks are registered in
   `src/website/blocks/exports.ts` and rendered by `RenderBlocks.tsx`. Inline-only (rich-text) blocks
   are registered in a collection's `BlocksFeature` instead (e.g. `bannerBlock`/`codeBlock` in Posts).
+- **Blocks are composed from components + elements**, not built inline. Reuse primitives in
+  `src/website/components/elements/` (buttons, etc.) and shared `src/website/components/*`; a block's
+  `Component.tsx` assembles these, it does not reinvent them. New shared UI → a component/element,
+  then use it from the block.
+- **New blocks must emit analytics.** Wrap block content in `TrackImpression`
+  (`@/cms/components/Analytics/TrackImpression`) like every existing block does (see
+  `src/website/blocks/Card/Component.tsx`), and track the obvious interactions (CTA clicks, etc.).
+  All tracking is consent-gated and GDPR-compliant by construction — go through the existing
+  analytics client / hooks (`src/cms/hooks/useAnalytics.ts`), never add ad-hoc/third-party tracking.
+  See `docs/ANALYTICS_OVERVIEW.md`.
+- **Variations over customization.** Empower editors with a clean, safe editing experience — do NOT
+  expose free-form styling knobs that let them break the design (this is not WordPress). Offer a
+  curated `variant`/scenario select and reuse shared field factories; every option must map to a
+  design we've planned and built for. When a block needs to serve multiple scenarios, model them as
+  named variations, not as loose per-instance overrides.
 - **Block naming is normalized** (do not deviate): folder = PascalCase noun with no redundant `Block`
   (`Media`, `Card`, `TwoColumn`); export const = interfaceName = `<Folder>Block`; the component import
   is aliased `<Name>BlockComponent` to avoid colliding with the export const; slug = camelCase with a

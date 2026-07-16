@@ -4,8 +4,8 @@ import os from "os";
 import Command from "./Command";
 import { discover } from "./discovery";
 import { generate } from "./generate";
-import { addBlock } from "./add";
-import { selectFeatures } from "./select";
+import { addBlock, AddBlockResult } from "./add";
+import { selectFeatures, selectBlocksToAdd } from "./select";
 
 interface Config {
   blockDirectory: string;
@@ -216,6 +216,61 @@ Command.register(
     })
 );
 
+// Resolve + validate a --target project dir shared by `add` and `add:block`.
+function resolveTarget(keyArgs: { [k: string]: string | number | boolean }): string {
+  const targetArg = typeof keyArgs.target === "string" ? keyArgs.target : "";
+  const targetRoot = targetArg ? Path.resolve(targetArg) : process.cwd();
+  if (!fs.existsSync(Path.resolve(targetRoot, "src/website/blocks/exports.ts"))) {
+    console.error(`Not a Kollab project (no src/website/blocks/exports.ts): ${targetRoot}`);
+    process.exit(1);
+  }
+  if (Path.resolve(targetRoot) === Path.resolve(root)) {
+    console.error("--target must be a generated project, not the template itself.");
+    process.exit(1);
+  }
+  return targetRoot;
+}
+
+function printAddResult(slug: string, res: AddBlockResult) {
+  console.log(`\nAdded block "${slug}"${res.children.length ? ` (+ children: ${res.children.join(", ")})` : ""}`);
+  console.log(`\nFiles copied (${res.added.length}):`);
+  for (const f of res.added) console.log(`  + ${f}`);
+  if (res.skipped.length) {
+    console.log(`\nAlready present, left untouched (${res.skipped.length}):`);
+    for (const f of res.skipped) console.log(`  = ${f}`);
+  }
+  console.log(`\nRegistration: ${res.registered ? "updated src/website/blocks/exports.ts" : "no exports.ts change (inline/sub-block)"}`);
+}
+
+Command.register(
+  new Command("add")
+    .setDescription("Interactively pick blocks to add from the template into an existing project")
+    .setSyntax("--target=<projectDir>  (--root=<templateDir> is the source template)")
+    .setCallback(async (keyArgs) => {
+      const targetRoot = resolveTarget(keyArgs);
+      const slugs = await selectBlocksToAdd(root, targetRoot);
+      if (slugs === null) {
+        console.error("Aborted.");
+        process.exit(1);
+      }
+      if (slugs.length === 0) {
+        console.log();
+        return;
+      }
+      let failed = false;
+      for (const slug of slugs) {
+        try {
+          printAddResult(slug, addBlock({ templateRoot: root, targetRoot, slug }));
+        } catch (err) {
+          failed = true;
+          console.error(`\n${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+      console.log(`\nNext: yarn generate:types && yarn generate:importmap\n`);
+      if (failed) process.exit(1);
+    })
+);
+
 Command.register(
   new Command("add:block")
     .setDescription("Add a block (and its file closure) from the template into an existing project")
@@ -225,26 +280,9 @@ Command.register(
         console.error("Provide a block slug: add:block <blockSlug> --target=<projectDir>");
         process.exit(1);
       }
-      const targetArg = typeof keyArgs.target === "string" ? keyArgs.target : "";
-      const targetRoot = targetArg ? Path.resolve(targetArg) : process.cwd();
-      if (!fs.existsSync(Path.resolve(targetRoot, "src/website/blocks/exports.ts"))) {
-        console.error(`Not a Kollab project (no src/website/blocks/exports.ts): ${targetRoot}`);
-        process.exit(1);
-      }
-      if (Path.resolve(targetRoot) === Path.resolve(root)) {
-        console.error("--target must be a generated project, not the template itself.");
-        process.exit(1);
-      }
+      const targetRoot = resolveTarget(keyArgs);
       try {
-        const res = addBlock({ templateRoot: root, targetRoot, slug });
-        console.log(`\nAdded block "${slug}"${res.children.length ? ` (+ children: ${res.children.join(", ")})` : ""}`);
-        console.log(`\nFiles copied (${res.added.length}):`);
-        for (const f of res.added) console.log(`  + ${f}`);
-        if (res.skipped.length) {
-          console.log(`\nAlready present, left untouched (${res.skipped.length}):`);
-          for (const f of res.skipped) console.log(`  = ${f}`);
-        }
-        console.log(`\nRegistration: ${res.registered ? "updated src/website/blocks/exports.ts" : "no exports.ts change (inline/sub-block)"}`);
+        printAddResult(slug, addBlock({ templateRoot: root, targetRoot, slug }));
         console.log(`\nNext: yarn generate:types && yarn generate:importmap`);
         console.log();
       } catch (err) {

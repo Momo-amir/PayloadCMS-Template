@@ -1,11 +1,103 @@
 import prompts from 'prompts'
-import { discover } from './discovery'
+import { discover, DiscoveredBlock } from './discovery'
+import { missingPrereqs } from './add'
 
 export interface Selection {
   keepBlockSlugs: string[]
   keepCollectionSlugs: string[]
   keepHeroSlugs: string[]
   keepPluginSlugs: string[]
+}
+
+export type AddableStatus = 'installed' | 'available' | 'blocked'
+
+export interface AddableBlock {
+  block: DiscoveredBlock
+  status: AddableStatus
+  reason?: string // why it is blocked (missing prereqs), for the picker label
+}
+
+/**
+ * Classify every template page-builder block against a target project: already installed, available
+ * to add, or blocked by missing collections/plugins. Pure sub-blocks (registered via a container's
+ * blocks array, not exports.ts) are excluded — they come in automatically as a container's children.
+ */
+export function addableBlocks(templateRoot: string, targetRoot: string): AddableBlock[] {
+  const template = discover(templateRoot)
+  const target = discover(targetRoot)
+  const installed = new Set(target.blocks.map((b) => b.slug))
+
+  return template.blocks
+    .filter((b) => b.registeredIn === 'exports')
+    .map((block) => {
+      if (installed.has(block.slug)) return { block, status: 'installed' as const }
+      const missing = missingPrereqs(block, target)
+      if (missing.collections.length || missing.plugins.length) {
+        const parts: string[] = []
+        if (missing.collections.length) parts.push(`collections: ${missing.collections.join(', ')}`)
+        if (missing.plugins.length) parts.push(`plugins: ${missing.plugins.join(', ')}`)
+        return { block, status: 'blocked' as const, reason: parts.join('; ') }
+      }
+      return { block, status: 'available' as const }
+    })
+}
+
+/**
+ * Interactive picker for `add` with no slug: shows installed / available / blocked blocks and returns
+ * the slugs the user chose to add. Installed and blocked blocks are shown disabled. Returns null on
+ * abort (ctrl-c); returns [] when there is nothing addable.
+ */
+export async function selectBlocksToAdd(
+  templateRoot: string,
+  targetRoot: string,
+): Promise<string[] | null> {
+  const items = addableBlocks(templateRoot, targetRoot)
+
+  const choices = [...items]
+    .sort((a, z) => {
+      const rank = { available: 0, blocked: 1, installed: 2 } as const
+      if (rank[a.status] !== rank[z.status]) return rank[a.status] - rank[z.status]
+      return a.block.slug.localeCompare(z.block.slug)
+    })
+    .map((it) => {
+      const group = it.block.override.group ?? 'Other'
+      const container = it.block.children.length ? ' (container)' : ''
+      const suffix =
+        it.status === 'installed'
+          ? ' — installed'
+          : it.status === 'blocked'
+            ? ` — needs ${it.reason}`
+            : ''
+      return {
+        title: `[${group}] ${it.block.slug}${container}${suffix}`,
+        value: it.block.slug,
+        disabled: it.status !== 'available',
+        selected: false,
+      }
+    })
+
+  const available = items.filter((it) => it.status === 'available')
+  if (available.length === 0) {
+    console.log('\nNo blocks available to add — everything addable is already installed.')
+    const blocked = items.filter((it) => it.status === 'blocked')
+    if (blocked.length) {
+      console.log('\nBlocked (add the prerequisites first):')
+      for (const it of blocked) console.log(`  • ${it.block.slug} — needs ${it.reason}`)
+    }
+    return []
+  }
+
+  const res = await prompts({
+    type: 'multiselect',
+    name: 'add',
+    message: 'Select the blocks to ADD (space to toggle, enter to confirm)',
+    choices,
+    hint: '- installed / blocked blocks are disabled',
+    instructions: false,
+  })
+
+  if (!res.add) return null // aborted (ctrl-c)
+  return res.add as string[]
 }
 
 /**

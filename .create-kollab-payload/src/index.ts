@@ -252,12 +252,12 @@ function rm(target: string) {
   fs.rmSync(target, { recursive: true, force: true })
 }
 
-// `create-kollab-payload add <blockSlug>` — pull a block (and its file closure) from the template
-// into an existing project. Clones the template (no install), runs the bundled engine's add:block
-// against the current project, then reminds about type/importmap regeneration.
+// `create-kollab-payload add [blockSlug]` — pull a block (and its file closure) from the template
+// into an existing project. With a slug, adds that block directly; with no slug, opens an interactive
+// picker of addable blocks. Clones the template (no install), runs the bundled engine against the
+// current project, then reminds about type/importmap regeneration.
 async function addFeature(argv: string[]) {
   const slug = argv.find((a) => !a.startsWith('--'))
-  if (!slug) fail('Usage: create-kollab-payload add <blockSlug> [--template-ref=<ref>]')
 
   const templateRef =
     argv.find((a) => a.startsWith('--template-ref='))?.slice('--template-ref='.length) ??
@@ -285,7 +285,10 @@ async function addFeature(argv: string[]) {
       templateRepo,
       tmpClone,
     ])
-    runEngine(['add:block', slug, `--root=${tmpClone}`, `--target=${targetDir}`])
+    const engineArgs = slug
+      ? ['add:block', slug, `--root=${tmpClone}`, `--target=${targetDir}`]
+      : ['add', `--root=${tmpClone}`, `--target=${targetDir}`]
+    runEngine(engineArgs)
   } finally {
     rm(tmpClone)
   }

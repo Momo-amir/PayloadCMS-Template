@@ -1,12 +1,36 @@
 import Path from 'path'
 import fs from 'fs'
-import { discover, DiscoveredBlock } from './discovery'
+import { discover, Discovery, DiscoveredBlock } from './discovery'
 import { fileClosure } from './closure'
 
 export interface AddBlockOptions {
   templateRoot: string
   targetRoot: string
   slug: string
+}
+
+export interface MissingPrereqs {
+  collections: string[]
+  plugins: string[]
+}
+
+// Which of a block's declared prerequisites the target project lacks. Shared by addBlock's guard and
+// the interactive picker so the list and the enforcement can never drift.
+export function missingPrereqs(block: DiscoveredBlock, target: Discovery): MissingPrereqs {
+  const haveCollections = new Set(target.collections.map((c) => c.slug))
+  // requiresPlugins holds npm package names; discovered plugins carry both slug and pkg.
+  const havePlugins = new Set(target.plugins.map((p) => p.pkg))
+  return {
+    collections: (block.override.requiresCollections ?? []).filter((c) => !haveCollections.has(c)),
+    plugins: (block.override.requiresPlugins ?? []).filter((p) => !havePlugins.has(p)),
+  }
+}
+
+function prereqReason(missing: MissingPrereqs): string {
+  const parts: string[] = []
+  if (missing.collections.length) parts.push(`collection(s): ${missing.collections.join(', ')}`)
+  if (missing.plugins.length) parts.push(`plugin(s): ${missing.plugins.join(', ')}`)
+  return parts.join(' and ')
 }
 
 export interface AddBlockResult {
@@ -87,19 +111,10 @@ export function addBlock(opts: AddBlockOptions): AddBlockResult {
   // Dependency guard: refuse if the block needs a collection/plugin the target does not have, rather
   // than silently leaving a dangling relationTo. Adding collections/plugins is out of scope here.
   const target = discover(targetRoot)
-  const haveCollections = new Set(target.collections.map((c) => c.slug))
-  // requiresPlugins holds npm package names; discovered plugins carry both slug and pkg.
-  const havePlugins = new Set(target.plugins.map((p) => p.pkg))
-  const missingCollections = (block.override.requiresCollections ?? []).filter(
-    (c) => !haveCollections.has(c),
-  )
-  const missingPlugins = (block.override.requiresPlugins ?? []).filter((p) => !havePlugins.has(p))
-  if (missingCollections.length || missingPlugins.length) {
-    const parts: string[] = []
-    if (missingCollections.length) parts.push(`collection(s): ${missingCollections.join(', ')}`)
-    if (missingPlugins.length) parts.push(`plugin(s): ${missingPlugins.join(', ')}`)
+  const missing = missingPrereqs(block, target)
+  if (missing.collections.length || missing.plugins.length) {
     throw new Error(
-      `Cannot add "${slug}" — this project is missing required ${parts.join(' and ')}. ` +
+      `Cannot add "${slug}" — this project is missing required ${prereqReason(missing)}. ` +
         `Add those first; adding collections/plugins is not yet supported by \`add:block\`.`,
     )
   }
