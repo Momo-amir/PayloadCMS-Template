@@ -25,7 +25,12 @@ export default async function Login({ params, searchParams }: Args) {
   const { user } = await payload.auth({ headers })
 
   if (user) {
-    redirect(`/account?warning=${encodeURIComponent('You are already logged in.')}`)
+    const redirectTarget = search.redirect
+    redirect(
+      redirectTarget
+        ? `${redirectTarget}?warning=${encodeURIComponent('You are already logged in.')}`
+        : `/?warning=${encodeURIComponent('You are already logged in.')}`,
+    )
   }
 
   const customization = await getCustomization(locale)()

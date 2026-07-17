@@ -4,11 +4,13 @@ import React from 'react'
 import type { TypedLocale } from 'payload'
 
 import type { Header } from '@/payload-types'
-import { getCustomization, toLogoProps } from '@/cms/utilities/customization'
+import { getCustomization, getLoginPagePath, toLogoProps } from '@/cms/utilities/customization'
 
 export async function Header({ locale }: { locale?: TypedLocale } = {}) {
   const headerData: Header = await getCachedGlobal('header', 1, locale)()
-  const customization = await getCustomization()()
+  const customization = await getCustomization(locale)()
   const logoProps = toLogoProps(customization)
-  return <HeaderClient data={headerData} logoProps={logoProps} />
+  const loginPath = getLoginPagePath(customization)
+
+  return <HeaderClient data={headerData} loginPath={loginPath} logoProps={logoProps} />
 }

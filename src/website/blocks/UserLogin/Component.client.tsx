@@ -32,6 +32,8 @@ type QueryFeedback = {
   warning?: string
 }
 
+const DEFAULT_POST_LOGIN_PATH = '/'
+
 const label = (value: string | null | undefined, fallback: string) => value || fallback
 
 // A plain text view-switch link that preserves other params and sets ?view=.
@@ -131,7 +133,7 @@ const LoginView: React.FC<{
   const onSubmit = handleSubmit(async (data) => {
     try {
       await login(data)
-      router.push(params.get('redirect') || '/account')
+      router.push(params.get('redirect') || DEFAULT_POST_LOGIN_PATH)
     } catch (_error) {
       setError('There was an error with the credentials provided. Please try again.')
     }
@@ -247,7 +249,7 @@ const CreateAccountView: React.FC<{
     }
     try {
       await login({ email: data.email, password: data.password })
-      router.push(params.get('redirect') || '/account')
+      router.push(params.get('redirect') || DEFAULT_POST_LOGIN_PATH)
     } catch (_error) {
       setLoading(false)
       setError('Account created, but sign-in failed. Please log in.')
