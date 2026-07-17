@@ -76,6 +76,9 @@
     "userLoginBlock": {
       "group": "Account"
     },
+    "accountDetailsBlock": {
+      "group": "Account"
+    },
     "richTextBlock": {
       "group": "Layout",
       "onlyInside": "twoColumnBlock"

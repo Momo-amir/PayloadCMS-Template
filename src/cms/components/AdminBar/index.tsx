@@ -55,7 +55,9 @@ export const AdminBar: React.FC<{
   const router = useRouter()
 
   const onAuthChange = React.useCallback((user: PayloadMeUser) => {
-    setShow(Boolean(user?.id))
+    // Only admin/editor may use the admin panel (see Users access.admin) — hide the bar for everyone else.
+    const roles = (user as { roles?: string[] } | null)?.roles || []
+    setShow(Boolean(user?.id) && (roles.includes('admin') || roles.includes('editor')))
   }, [])
 
   return (

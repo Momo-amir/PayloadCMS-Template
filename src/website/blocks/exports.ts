@@ -1,4 +1,5 @@
 import { AccordionBlock } from './Accordion/config'
+import { AccountDetailsBlock } from './AccountDetails/config'
 import { PromoStripBlock } from './PromoStrip/config'
 import { RichTextBlock } from './RichText/config'
 import { PeopleArchiveBlock } from './PeopleArchive/config'
@@ -28,6 +29,7 @@ export default {
       CardBlock,
       CallToActionBlock,
       UserLoginBlock,
+      AccountDetailsBlock,
       PeopleArchiveBlock,
       RichTextBlock,
       ColumnsBlock,

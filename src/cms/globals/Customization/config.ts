@@ -65,21 +65,45 @@ export const CustomizationGlobal: GlobalConfig = {
       ],
     },
     {
-      type: 'group',
-      label: { en: 'Choose Login page', da: 'Vælg Login-side' },
-      admin: { width: '50%' },
+      type: 'row',
       fields: [
         {
-          name: 'loginPage',
-          type: 'relationship',
-          relationTo: 'pages',
-          label: { en: 'Login page', da: 'Login-side' },
-          admin: {
-            description: {
-              en: 'The page containing the User Login block. Used for login/account redirects.',
-              da: 'Siden med User Login-blokken. Bruges til login/konto-omdirigeringer.',
+          type: 'group',
+          label: { en: 'Choose Login page', da: 'Vælg Login-side' },
+          admin: { width: '50%' },
+          fields: [
+            {
+              name: 'loginPage',
+              type: 'relationship',
+              relationTo: 'pages',
+              label: { en: 'Login page', da: 'Login-side' },
+              admin: {
+                description: {
+                  en: 'The page containing the User Login block. Used for login/account redirects.',
+                  da: 'Siden med User Login-blokken. Bruges til login/konto-omdirigeringer.',
+                },
+              },
             },
-          },
+          ],
+        },
+        {
+          type: 'group',
+          label: { en: 'Choose Account page', da: 'Vælg Konto-side' },
+          admin: { width: '50%' },
+          fields: [
+            {
+              name: 'accountPage',
+              type: 'relationship',
+              relationTo: 'pages',
+              label: { en: 'Account page', da: 'Konto-side' },
+              admin: {
+                description: {
+                  en: 'The page containing the Account Details block. Used for account links.',
+                  da: 'Siden med Account Details-blokken. Bruges til konto-links.',
+                },
+              },
+            },
+          ],
         },
       ],
     },

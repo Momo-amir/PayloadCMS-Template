@@ -22,7 +22,7 @@ type View = 'login' | 'create' | 'forgot'
 type Props = {
   config?: Partial<LoginConfig> | null
   title?: string
-  basePath?: string
+  accountPath?: string
 }
 
 type QueryFeedback = {
@@ -58,7 +58,7 @@ const ViewLink: React.FC<{
   )
 }
 
-export const UserLoginClient: React.FC<Props> = ({ config, title }) => {
+export const UserLoginClient: React.FC<Props> = ({ config, title, accountPath }) => {
   const { user } = useAuth()
   const searchParams = useSearchParams()
   const viewParam = searchParams.get('view')
@@ -72,7 +72,7 @@ export const UserLoginClient: React.FC<Props> = ({ config, title }) => {
   }
 
   if (user) {
-    return <AccountPanel config={config} queryFeedback={queryFeedback} />
+    return <AccountPanel accountPath={accountPath} config={config} queryFeedback={queryFeedback} />
   }
 
   if (view === 'create') {
@@ -91,9 +91,10 @@ export const UserLoginClient: React.FC<Props> = ({ config, title }) => {
 }
 
 const AccountPanel: React.FC<{
+  accountPath?: string
   config?: Partial<LoginConfig> | null
   queryFeedback?: QueryFeedback
-}> = ({ config, queryFeedback }) => {
+}> = ({ accountPath, config, queryFeedback }) => {
   const { user, logout } = useAuth()
   return (
     <section className="container my-16 max-w-lg">
@@ -103,9 +104,11 @@ const AccountPanel: React.FC<{
           Signed in as <span className="font-medium">{user?.name || user?.email}</span>.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Button asChild variant="default">
-            <a href="/account">Your account</a>
-          </Button>
+          {accountPath && (
+            <Button asChild variant="default">
+              <a href={accountPath}>{label(config?.accountTitle, 'Your account')}</a>
+            </Button>
+          )}
           <Button onClick={() => logout()} variant="ghost">
             {label(config?.logoutLabel, 'Log out')}
           </Button>

@@ -18,10 +18,16 @@ import { AccountLink } from '@/website/components/auth/AccountLink.client'
 interface HeaderClientProps {
   data: Header
   loginPath: string
+  accountPath?: string
   logoProps?: LogoProps
 }
 
-export const HeaderClient: React.FC<HeaderClientProps> = ({ data, loginPath, logoProps }) => {
+export const HeaderClient: React.FC<HeaderClientProps> = ({
+  data,
+  loginPath,
+  accountPath,
+  logoProps,
+}) => {
   /* Storing the value in a useState to avoid hydration errors */
   const [isScrolled, setIsScrolled] = useState(false)
   const { override: headerTheme } = useLocalTheme('header')
@@ -87,9 +93,8 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, loginPath, log
         <HeaderNav data={data} />
         <div className="ml-3 md:ml-auto flex flex-row items-center gap-x-2">
           {data.showLanguageSwitcher && <LocaleSwitcher />}
-          <div className="flex flex-row items-center gap-x-2">
-            <AccountLink loginPath={loginPath} />
-          </div>
+
+          <AccountLink loginPath={loginPath} accountPath={accountPath} />
         </div>
       </div>
     </header>

@@ -11,11 +11,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/website/components/el
 
 type AccountLinkProps = {
   loginPath: string
+  accountPath?: string
 }
 
 const LOGOUT_SUCCESS_MESSAGE = 'You are now logged out.'
 
-export const AccountLink: React.FC<AccountLinkProps> = ({ loginPath }) => {
+export const AccountLink: React.FC<AccountLinkProps> = ({ loginPath, accountPath }) => {
   const { user, logout } = useAuth()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -45,7 +46,7 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ loginPath }) => {
 
   if (!user) {
     return (
-      <Button asChild variant="default" size="sm">
+      <Button asChild variant="link">
         <Link href={loginHref}>Sign in</Link>
       </Button>
     )
@@ -62,6 +63,15 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ loginPath }) => {
       <PopoverContent align="end" className="min-w-48" role="menu">
         <div className="flex flex-col gap-1">
           <p className="truncate px-2 py-1 text-sm text-primary/60">{user.name || user.email}</p>
+          {accountPath && accountPath !== loginPath && (
+            <Link
+              className="rounded px-2 py-1 hover:bg-accent/10"
+              href={accountPath}
+              role="menuitem"
+            >
+              Your account
+            </Link>
+          )}
           <button
             className="rounded px-2 py-1 text-left hover:bg-accent/10"
             onClick={async () => {

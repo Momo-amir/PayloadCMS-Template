@@ -12,6 +12,7 @@ export type CustomizationData = {
   homePage?: HomePageRef
   postsPage?: HomePageRef
   loginPage?: HomePageRef
+  accountPage?: HomePageRef
   logoDark?: MediaRef
   logoLight?: MediaRef
 }
@@ -68,6 +69,16 @@ export const getLoginPagePath = (customization: CustomizationData | null): strin
   const breadcrumbs = page.breadcrumbs
   const lastUrl = breadcrumbs?.[breadcrumbs.length - 1]?.url
   return lastUrl || (page.slug ? `/${page.slug}` : '/')
+}
+
+// Falls back to the login page (its logged-in panel links onwards) so account links never 404.
+export const getAccountPagePath = (customization: CustomizationData | null): string => {
+  const relation = customization?.accountPage
+  if (!relation || typeof relation !== 'object') return getLoginPagePath(customization)
+  const page = relation as Page
+  const breadcrumbs = page.breadcrumbs
+  const lastUrl = breadcrumbs?.[breadcrumbs.length - 1]?.url
+  return lastUrl || (page.slug ? `/${page.slug}` : getLoginPagePath(customization))
 }
 
 export const getHomePageID = (customization: CustomizationData | null): number | null => {

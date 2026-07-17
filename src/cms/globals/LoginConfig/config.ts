@@ -22,7 +22,7 @@ const localizedText = (
 export const LoginConfig: GlobalConfig = {
   slug: 'login-config',
   access: { read: () => true },
-  label: { en: 'Login', da: 'Login' },
+  label: { en: 'Login & Account', da: 'Login & Konto' },
   admin: {
     group: { en: 'Settings', da: 'Indstillinger' },
   },
@@ -137,6 +137,99 @@ export const LoginConfig: GlobalConfig = {
               defaultValue:
                 'Check your email for a link that will allow you to securely reset your password.',
               label: { en: 'Success message', da: 'Succes-besked' },
+            },
+          ],
+        },
+        {
+          label: { en: 'Account', da: 'Konto' },
+          description: {
+            en: 'Texts for the Account Details block (overview + profile editing).',
+            da: 'Tekster til Account Details-blokken (overblik + profilredigering).',
+          },
+          fields: [
+            localizedText('accountTitle', 'Your account', 'Title', 'Titel', '100%'),
+            {
+              name: 'accountIntro',
+              type: 'textarea',
+              localized: true,
+              label: { en: 'Intro text', da: 'Introtekst' },
+            },
+            {
+              type: 'row',
+              fields: [
+                localizedText(
+                  'profileSectionLabel',
+                  'Profile',
+                  'Profile section',
+                  'Profil-sektion',
+                ),
+                localizedText(
+                  'profileSubmitLabel',
+                  'Save changes',
+                  'Profile submit button',
+                  'Profil gem-knap',
+                ),
+              ],
+            },
+            localizedText(
+              'profileSuccessMessage',
+              'Profile updated.',
+              'Profile success message',
+              'Profil succes-besked',
+              '100%',
+            ),
+            {
+              type: 'row',
+              fields: [
+                localizedText(
+                  'passwordSectionLabel',
+                  'Change password',
+                  'Password section',
+                  'Adgangskode-sektion',
+                ),
+                localizedText(
+                  'passwordSubmitLabel',
+                  'Update password',
+                  'Password submit button',
+                  'Adgangskode gem-knap',
+                ),
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                localizedText(
+                  'currentPasswordLabel',
+                  'Current password',
+                  'Current-password field',
+                  'Nuværende adgangskode-felt',
+                ),
+                localizedText(
+                  'newPasswordLabel',
+                  'New password',
+                  'New-password field',
+                  'Ny adgangskode-felt',
+                ),
+              ],
+            },
+            localizedText(
+              'passwordSuccessMessage',
+              'Password updated.',
+              'Password success message',
+              'Adgangskode succes-besked',
+              '100%',
+            ),
+            {
+              type: 'row',
+              fields: [
+                localizedText(
+                  'loggedOutMessage',
+                  'You need to sign in to view your account.',
+                  'Logged-out message',
+                  'Ikke-logget-ind besked',
+                ),
+                localizedText('signInLabel', 'Sign in', 'Sign-in button', 'Log ind-knap'),
+              ],
             },
           ],
         },
