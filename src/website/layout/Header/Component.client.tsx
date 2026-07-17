@@ -13,13 +13,15 @@ import type { Header } from '@/payload-types'
 import { Logo } from '@/website/components/elements/Logo'
 import type { LogoProps } from '@/website/components/elements/Logo'
 import { HeaderNav } from './Nav'
+import { AccountLink } from '@/website/components/auth/AccountLink.client'
 
 interface HeaderClientProps {
   data: Header
+  loginPath: string
   logoProps?: LogoProps
 }
 
-export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) => {
+export const HeaderClient: React.FC<HeaderClientProps> = ({ data, loginPath, logoProps }) => {
   /* Storing the value in a useState to avoid hydration errors */
   const [isScrolled, setIsScrolled] = useState(false)
   const { override: headerTheme } = useLocalTheme('header')
@@ -83,8 +85,11 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logoProps }) =
           />
         </Link>
         <HeaderNav data={data} />
-        <div className="ml-3 md:ml-auto flex flex-row  items-center gap-x-2 ">
+        <div className="ml-3 md:ml-auto flex flex-row items-center gap-x-2">
           {data.showLanguageSwitcher && <LocaleSwitcher />}
+          <div className="flex flex-row items-center gap-x-2">
+            <AccountLink loginPath={loginPath} />
+          </div>
         </div>
       </div>
     </header>
