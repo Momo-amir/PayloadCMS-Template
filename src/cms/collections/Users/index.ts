@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { isAdmin, isAdminFieldLevel } from '../../access/isAdmin'
 import { isAdminOrSelf } from '../../access/isAdminOrSelf'
 import { canEditUserRoles } from '../../access/canEditUserRoles'
+import { ensureFirstUserIsAdmin } from '../../access/ensureFirstUserIsAdmin'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -52,6 +53,8 @@ export const Users: CollectionConfig = {
     update: isAdminOrSelf,
     // Delete: only admins (they may delete themselves if desired).
     delete: isAdmin,
+    // Unlock (after failed-login lockout): admins only.
+    unlock: isAdmin,
     // Admin UI visibility for this collection (and effectively ability to use the admin panel navigation).
     admin: ({ req }) => {
       const roles = req.user?.roles || []
@@ -70,13 +73,16 @@ export const Users: CollectionConfig = {
       saveToJWT: true,
       type: 'select',
       hasMany: true,
-      defaultValue: ['admin'],
+      defaultValue: ['customer'],
       admin: {
         description: 'User roles. Only admins can edit roles (not their own).',
       },
       access: {
         create: isAdminFieldLevel, // admins setting roles on manual creation
         update: ({ req, doc }) => canEditUserRoles({ req, doc }),
+      },
+      hooks: {
+        beforeChange: [ensureFirstUserIsAdmin],
       },
       options: [
         {
@@ -90,6 +96,10 @@ export const Users: CollectionConfig = {
         {
           label: 'User',
           value: 'user',
+        },
+        {
+          label: 'Customer',
+          value: 'customer',
         },
       ],
     },

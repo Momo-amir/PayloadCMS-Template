@@ -11,6 +11,7 @@ export type CustomizationData = {
   faviconLight?: MediaRef
   homePage?: HomePageRef
   postsPage?: HomePageRef
+  loginPage?: HomePageRef
   logoDark?: MediaRef
   logoLight?: MediaRef
 }
@@ -40,11 +41,9 @@ async function queryCustomization(locale?: TypedLocale): Promise<CustomizationDa
 }
 
 export const getCustomization = (locale?: TypedLocale) =>
-  unstable_cache(
-    async () => queryCustomization(locale),
-    ['customization', locale ?? 'default'],
-    { tags: ['global_customization', `global_customization:${locale ?? 'default'}`] },
-  )
+  unstable_cache(async () => queryCustomization(locale), ['customization', locale ?? 'default'], {
+    tags: ['global_customization', `global_customization:${locale ?? 'default'}`],
+  })
 
 export const getPostsPagePath = (customization: CustomizationData | null): string => {
   const relation = customization?.postsPage
@@ -60,6 +59,15 @@ export const getPostsPageLabel = (customization: CustomizationData | null): stri
   if (!relation || typeof relation !== 'object') return 'Posts'
   const page = relation as Page
   return page.title || 'Posts'
+}
+
+export const getLoginPagePath = (customization: CustomizationData | null): string => {
+  const relation = customization?.loginPage
+  if (!relation || typeof relation !== 'object') return '/'
+  const page = relation as Page
+  const breadcrumbs = page.breadcrumbs
+  const lastUrl = breadcrumbs?.[breadcrumbs.length - 1]?.url
+  return lastUrl || (page.slug ? `/${page.slug}` : '/')
 }
 
 export const getHomePageID = (customization: CustomizationData | null): number | null => {

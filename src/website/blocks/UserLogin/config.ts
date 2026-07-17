@@ -16,8 +16,7 @@ export const UserLoginBlock: ComponentBlock = {
     {
       name: 'title',
       type: 'text',
-      label: 'Title',
-      required: true,
+      label: { en: 'Title', da: 'Titel' },
     },
   ],
 }

@@ -5,6 +5,7 @@ import type { AbstractIntlMessages } from 'next-intl'
 import { ThemeProvider } from './Theme'
 import { LocalThemeProvider } from './Theme/LocalTheme/LocalTheme'
 import { CollectionPathsProvider } from './CollectionPaths'
+import { AuthProvider } from './Auth'
 
 export const Providers: React.FC<{
   children: React.ReactNode
@@ -17,7 +18,9 @@ export const Providers: React.FC<{
       <ThemeProvider>
         <LocalThemeProvider>
           <CollectionPathsProvider postsBasePath={postsBasePath}>
-            {children}
+            <AuthProvider>
+              {children}
+            </AuthProvider>
           </CollectionPathsProvider>
         </LocalThemeProvider>
       </ThemeProvider>

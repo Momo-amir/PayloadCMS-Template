@@ -65,6 +65,25 @@ export const CustomizationGlobal: GlobalConfig = {
       ],
     },
     {
+      type: 'group',
+      label: { en: 'Choose Login page', da: 'Vælg Login-side' },
+      admin: { width: '50%' },
+      fields: [
+        {
+          name: 'loginPage',
+          type: 'relationship',
+          relationTo: 'pages',
+          label: { en: 'Login page', da: 'Login-side' },
+          admin: {
+            description: {
+              en: 'The page containing the User Login block. Used for login/account redirects.',
+              da: 'Siden med User Login-blokken. Bruges til login/konto-omdirigeringer.',
+            },
+          },
+        },
+      ],
+    },
+    {
       type: 'row',
       fields: [
         {
