@@ -63,11 +63,11 @@ export const getPostsPageLabel = (customization: CustomizationData | null): stri
 
 export const getLoginPagePath = (customization: CustomizationData | null): string => {
   const relation = customization?.loginPage
-  if (!relation || typeof relation !== 'object') return '/login'
+  if (!relation || typeof relation !== 'object') return '/'
   const page = relation as Page
   const breadcrumbs = page.breadcrumbs
   const lastUrl = breadcrumbs?.[breadcrumbs.length - 1]?.url
-  return lastUrl || (page.slug ? `/${page.slug}` : '/login')
+  return lastUrl || (page.slug ? `/${page.slug}` : '/')
 }
 
 export const getHomePageID = (customization: CustomizationData | null): number | null => {
