@@ -727,6 +727,10 @@ html[data-theme='dark'] .nav__link:hover {
   mask-image: url('https://cdn.jsdelivr.net/npm/lucide-static@0.562.0/icons/users.svg');
   content: '';
 }
+.nav-group .nav__link[id*='login']::before {
+  mask-image: url('https://cdn.jsdelivr.net/npm/lucide-static@0.562.0/icons/lock.svg');
+  content: '';
+}
 
 .nav-group .nav__link[id*='session']::before {
   mask-image: url('https://cdn.jsdelivr.net/npm/lucide-static@0.562.0/icons/key.svg');

@@ -121,8 +121,8 @@
         },
         {
           "file": "src/providers/index.tsx",
-          "find": "            <AuthProvider>\n              {children}\n            </AuthProvider>",
-          "replace": "            {children}"
+          "find": "            <AuthProvider>\n              <ToastProvider>\n                {children}\n                <Toaster />\n              </ToastProvider>\n            </AuthProvider>",
+          "replace": "            <ToastProvider>\n              {children}\n              <Toaster />\n            </ToastProvider>"
         },
         {
           "file": "src/cms/globals/Customization/config.ts",
@@ -173,6 +173,16 @@
       "group": "Content"
     },
     "callToActionBlock": {
+      "group": "Content"
+    },
+    "embedBlock": {
+      "group": "Content"
+    },
+    "mediaGalleryBlock": {
+      "group": "Media",
+      "requiresCollections": ["media"]
+    },
+    "priceCardsBlock": {
       "group": "Content"
     }
   }

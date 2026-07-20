@@ -9,9 +9,11 @@ The template is a **maximal, ever-growing superset** of blocks, collections, and
 sites are generated `create-next-app`-style: pick the blocks/collections/features you want, get a fresh
 project containing only those. No packages — everything is copied source (fork-and-own).
 
-- **Generate a NEW project**, not "add features into an existing repo."
+- **Generate a NEW project**, not "add features into an existing repo" — though blocks CAN be pulled
+  into an already-generated project afterwards, see "Adding features later" below.
 - **Template stays maximal** — adding blocks grows the menu; nothing is deleted from the template.
-- **Target DX:** `npx create-kollab-app my-site`. First working version runs in-repo via the `.cli` tool.
+- **Shipped DX:** `npx create-kollab-payload my-site` — a published npm package
+  (`.create-kollab-payload/`), not a future target. It bundles the in-repo `.cli` engine at build time.
 
 ## Output model: copy-then-prune
 
@@ -51,7 +53,10 @@ strings), grouping, sub-block markers. Schema: [`features/overrides.schema.json`
   `providers/index.tsx`, `i18n/messages/*.json` + `localization.ts`, `app/api/*`, `next.config.js`,
   `.env.example`, `package.json`. `@/payload-types` is regenerated (`yarn generate:types`), never edited.
 - **prerequisites gate** — deselecting `posts` while `archiveBlock` is kept warns/auto-keeps.
-- **modes** (design-toward, not built) — localization `none` / `opt-in` / `full` (per-language slugs).
+- Also selectable today: **heros** (HighImpact/MediumImpact/LowImpact via `--heros=`) and **plugins**
+  (redirects/form-builder/search via `--plugins=`, which cascades — pruning form-builder also prunes
+  `formBlock` and the plugin-injected `forms` collection). **Not yet wired:** locale selection (da+en
+  are always kept).
 
 ## Container blocks (nested blocks)
 
@@ -99,17 +104,29 @@ guard optional imports (dynamic + try/catch, like the posts branch in `[...slug]
 - `dbName` (short) on long-slug blocks to keep generated Postgres identifiers under 63 chars.
 - Sub-blocks use `showOnPage: false`; inline-only blocks register via a collection's `BlocksFeature`.
 
+## Adding features into an already-generated project
+
+`yarn cli add --target=<dir>` (interactive) or `yarn cli add:block <slug> --target=<dir>` pulls one
+block plus its transitive file closure from the template into a project that's already been generated.
+It registers the block in the target's `exports.ts`, pulls in any container children, and refuses
+(rather than leaving a dangling `relationTo`) if the block needs a collection or plugin the target
+doesn't have. End-user facing: `npx create-kollab-payload add <blockSlug>`, run from the generated
+project's root. **Blocks only** — collections and plugins aren't addable this way yet (would need
+insertion codemods + `ownedFiles` copy + a package.json dependency source; removal codemods don't
+invert cheaply). Engine: `.cli/lib/add.ts`.
+
 ## AI tooling
 
 - `/generate-site` skill — agent runs the scaffolder from a feature selection (parity with the CLI).
 - `/author-feature` skill — adds a NEW selectable feature and keeps `overrides.json` + the template compiling.
 - `feature-manifest-author` agent — computes/validates a feature's file + dependency closure.
 
-## Build order (future)
+## Status
 
-1. `.cli/lib/manifest.ts` — discovery + import walker + keep-closure resolver + registration-op appliers.
-2. `.cli/lib/commands/{generate,list,manifest}.ts`.
-3. `create-kollab-app` — thin `npx` wrapper at a pinned template version.
-
-Hardest part to prototype first: de-registering from a hand-formatted `payload.config.ts` — likely a
-ts-morph codemod, not regex.
+Built, tested (`tests/cli/generate.test.ts`), and shipped. `create-kollab-payload` is published to npm
+(`.create-kollab-payload/`, currently `1.0.6`) with an automated release pipeline: a version bump to
+`.create-kollab-payload/package.json` pushed to `main` triggers Bitbucket→GitHub mirroring, then
+`.github/workflows/release.yml` builds, publishes via npm trusted publishing (OIDC), and tags
+`vX.Y.Z` — keeping npm version, git tag, and template ref in lockstep. Engine modules: `discovery.ts`,
+`closure.ts`, `codemod.ts` (ts-morph), `generate.ts`, `select.ts`, `add.ts`. Full runbook and current
+roadmap: `.create-kollab-payload/README.md` and `.create-kollab-payload/ROADMAP.md`.

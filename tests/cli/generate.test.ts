@@ -6,7 +6,7 @@ import { generate } from '../../.cli/lib/generate'
 
 const root = Path.resolve(__dirname, '../..')
 
-// All 17 template blocks except the two customer-login ones, for a "keep everything but login" plan.
+// All 20 template blocks except the two customer-login ones, for a "keep everything but login" plan.
 const ALL_BLOCKS_EXCEPT_LOGIN = [
   'accordionBlock',
   'archiveBlock',
@@ -23,6 +23,9 @@ const ALL_BLOCKS_EXCEPT_LOGIN = [
   'richTextBlock',
   'twoColumnBlock',
   'mediaBlock',
+  'embedBlock',
+  'mediaGalleryBlock',
+  'priceCardsBlock',
 ]
 
 const ALL_BLOCKS = [...ALL_BLOCKS_EXCEPT_LOGIN, 'userLoginBlock', 'accountDetailsBlock']

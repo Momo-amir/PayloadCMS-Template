@@ -23,9 +23,7 @@ export const LoginConfig: GlobalConfig = {
   slug: 'login-config',
   access: { read: () => true },
   label: { en: 'Login & Account', da: 'Login & Konto' },
-  admin: {
-    group: { en: 'Settings', da: 'Indstillinger' },
-  },
+
   fields: [
     {
       type: 'tabs',

@@ -364,11 +364,41 @@ main {
   will-change: transform;
 }
 
+@keyframes gallery-tile-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gallery-stagger-item {
+  opacity: 0;
+  transform: translateY(2rem);
+}
+
+.gallery-stagger-item-visible-scope .gallery-stagger-item {
+  animation: gallery-tile-enter 700ms ease-out both;
+  animation-delay: calc(var(--gallery-stagger-index, 0) * 100ms);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .archive-stagger-grid .archive-stagger-item {
     opacity: 1;
     animation: none;
     transform: none;
+  }
+
+  .gallery-stagger-item {
+    opacity: 1;
+    transform: none;
+  }
+
+  .gallery-stagger-item-visible-scope .gallery-stagger-item {
+    animation: none;
   }
 
   .carousel-track {

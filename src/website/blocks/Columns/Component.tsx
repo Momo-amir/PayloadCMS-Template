@@ -23,7 +23,7 @@ export const ColumnsBlock: React.FC<Props> = ({ layout, columns, className }) =>
       {columns.map((column, index) => (
         <div key={column.id || index} className="space-y-4">
           {column.contentType === 'text' && column.content && (
-            <RichText data={column.content} enableGutter={false} enableProse />
+            <RichText data={column.content} enableGutter={false} />
           )}
           {column.contentType === 'media' && column.media && (
             <Media

@@ -1,3 +1,6 @@
+import { PriceCardsBlock } from './PriceCards/config'
+import { MediaGalleryBlock } from './MediaGallery/config'
+import { EmbedBlock } from './Embed/config'
 import { AccordionBlock } from './Accordion/config'
 import { AccountDetailsBlock } from './AccountDetails/config'
 import { PromoStripBlock } from './PromoStrip/config'
@@ -35,6 +38,9 @@ export default {
       ColumnsBlock,
       PromoStripBlock,
       AccordionBlock,
+      EmbedBlock,
+      MediaGalleryBlock,
+      PriceCardsBlock,
     ] satisfies ComponentBlock[])
   ),
 }

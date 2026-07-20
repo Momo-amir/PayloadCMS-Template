@@ -33,7 +33,9 @@ yarn test:watch          # vitest watch
 yarn cli create:block <BlockName>   # scaffold a new block (note the COLON in create:block)
 yarn cli list                       # list discoverable features (blocks + collections)
 yarn cli manifest validate          # validate feature discovery + features/overrides.json
-yarn cli generate --out=<dir> [--dry-run]   # generate a pruned site (interactive if no flags)
+yarn cli generate --out=<dir> [--blocks=..] [--collections=..] [--heros=..] [--plugins=..] [--dry-run]
+yarn cli add --target=<dir>                    # interactively pull blocks into an existing generated project
+yarn cli add:block <slug> --target=<dir>       # pull one block + its file closure non-interactively
 ```
 
 > **Linting is currently broken.** `yarn lint` / `next lint` fails in Next 16 (arg misrouting) and
@@ -182,11 +184,21 @@ For work inside `core/`, prefer the **`core-maintainer`** subagent.
 **Add a locale / translations:** update Payload localization (`src/i18n/localization.ts`), next-intl
 routing, and add keys to **all** `src/i18n/messages/*.json`. See `docs/LOCALIZATION.md` or `/add-locale`.
 
-## Feature distribution / scaffolder (`create-kollab-app`)
+## Feature distribution / scaffolder (`create-kollab-payload`)
 
 This template is a maximal superset; a `.cli` generator produces client sites by **copy-then-prune** —
-keep selected blocks/collections, remove the rest. Full design: `docs/DISTRIBUTION.md`. Engine lives in
-`.cli/lib/` (`discovery.ts`, `closure.ts`, `codemod.ts` (ts-morph), `generate.ts`, `select.ts`).
+keep selected blocks/collections/heros/plugins, remove the rest. Full design: `docs/DISTRIBUTION.md`.
+Engine lives in `.cli/lib/` (`discovery.ts`, `closure.ts`, `codemod.ts` (ts-morph), `generate.ts`,
+`select.ts`, `add.ts`), driven via `yarn cli <command>` (see Commands above).
+
+**`create-kollab-payload` is a published, shipped npm package** (`.create-kollab-payload/`, currently
+`1.0.6`) — not a work-in-progress. It bundles the `.cli` engine at build time
+(`scripts/bundle-engine.ts`) and is what `npx create-kollab-payload my-site` actually runs. Releases are
+automated: bump `.create-kollab-payload/package.json`'s version and push to `main`; Bitbucket Pipelines
+mirrors to GitHub, then `.github/workflows/release.yml` builds, publishes to npm (trusted
+publishing/OIDC, no stored token), and tags `vX.Y.Z` — keeping npm version, git tag, and template ref in
+lockstep. Full runbook: `.create-kollab-payload/README.md` "Releasing". Status/next-up:
+`.create-kollab-payload/ROADMAP.md`.
 
 - **Discovery is convention + one sidecar.** Blocks come from `exports.ts` + collection `BlocksFeature`
   lists; collections from `payload.config.ts`. `features/overrides.json` (schema:
@@ -197,10 +209,16 @@ keep selected blocks/collections, remove the rest. Full design: `docs/DISTRIBUTI
   collection must be **collection-agnostic** — drive `relationTo` from an editable const (see
   `ARCHIVE_COLLECTIONS` in `Archive/config.ts`) and compile with an empty list; guard optional module
   imports dynamically (see the posts branch in `src/app/(frontend)/[locale]/[...slug]/page.tsx`).
+- **Adding a block/collection to the template automatically grows the scaffolder's menu** — no
+  scaffolder code changes needed for a plain feature with no external prerequisites.
+- **Adding a block into an already-generated project** (not the template) uses
+  `yarn cli add`/`add:block` or `npx create-kollab-payload add <blockSlug>` — collections and plugins
+  aren't addable this way yet, blocks only.
 - Skills: `/generate-site`, `/author-feature`. Agent: `feature-manifest-author`.
-- Status: block + container-child + deep collection pruning all work and are verified. Next step is
-  packaging as `npx create-kollab-payload`. Only `posts` has full `ownedFiles`/`patches`; other
-  optional collections need theirs filled in when pruned.
+- Status: block, container-child, hero, and plugin pruning, plus deep collection pruning, all work and
+  are tested (`tests/cli/generate.test.ts`). Only `posts`/`categories`/`people` have full
+  `ownedFiles`/`patches` filled in; other optional collections need theirs filled in when pruned. Locale
+  selection is not yet wired (da+en fixed).
 
 ## Guardrails — don't change lightly
 

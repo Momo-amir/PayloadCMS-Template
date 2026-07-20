@@ -1,10 +1,13 @@
+import { AccountDetailsBlock } from '../AccountDetails/config'
 import { ArchiveBlock } from '../Archive/config'
 import { CallToActionBlock } from '../CallToAction/config'
 import { FormBlock } from '../Form/config'
 import { MediaBlock } from '../Media/config'
 import { RichTextBlock } from '../RichText/config'
+import { UserLoginBlock } from '../UserLogin/config'
 import { ComponentBlock } from '@/website/types/ComponentBlock'
 import { TwoBlock as TwoColumnBlockComponent } from './Component'
+import { EmbedBlock } from '../Embed/config'
 
 export const TwoColumnBlock: ComponentBlock = {
   slug: 'twoColumnBlock',
@@ -20,14 +23,32 @@ export const TwoColumnBlock: ComponentBlock = {
     {
       name: 'left',
       type: 'blocks',
-      blocks: [ArchiveBlock, CallToActionBlock, FormBlock, MediaBlock, RichTextBlock],
+      blocks: [
+        ArchiveBlock,
+        CallToActionBlock,
+        FormBlock,
+        MediaBlock,
+        RichTextBlock,
+        UserLoginBlock,
+        AccountDetailsBlock,
+        EmbedBlock,
+      ],
       label: 'Left Column',
       maxRows: 1,
     },
     {
       name: 'right',
       type: 'blocks',
-      blocks: [ArchiveBlock, CallToActionBlock, FormBlock, MediaBlock, RichTextBlock],
+      blocks: [
+        ArchiveBlock,
+        CallToActionBlock,
+        FormBlock,
+        MediaBlock,
+        RichTextBlock,
+        UserLoginBlock,
+        AccountDetailsBlock,
+        EmbedBlock,
+      ],
       label: 'Right Column',
       maxRows: 1,
     },

@@ -6,6 +6,7 @@ import { ThemeProvider } from './Theme'
 import { LocalThemeProvider } from './Theme/LocalTheme/LocalTheme'
 import { CollectionPathsProvider } from './CollectionPaths'
 import { AuthProvider } from './Auth'
+import { ToastProvider, Toaster } from './Toast'
 
 export const Providers: React.FC<{
   children: React.ReactNode
@@ -19,7 +20,10 @@ export const Providers: React.FC<{
         <LocalThemeProvider>
           <CollectionPathsProvider postsBasePath={postsBasePath}>
             <AuthProvider>
-              {children}
+              <ToastProvider timeout={2500}>
+                {children}
+                <Toaster />
+              </ToastProvider>
             </AuthProvider>
           </CollectionPathsProvider>
         </LocalThemeProvider>

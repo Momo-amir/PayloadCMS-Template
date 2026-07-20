@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { IconUserCircle } from '@tabler/icons-react'
 
 import { useAuth } from '@/providers/Auth'
+import { useToast } from '@/providers/Toast'
 import { Button } from '@/website/components/elements/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/website/components/elements/popover'
 
@@ -14,10 +15,9 @@ type AccountLinkProps = {
   accountPath?: string
 }
 
-const LOGOUT_SUCCESS_MESSAGE = 'You are now logged out.'
-
 export const AccountLink: React.FC<AccountLinkProps> = ({ loginPath, accountPath }) => {
   const { user, logout } = useAuth()
+  const toast = useToast()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -37,12 +37,6 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ loginPath, accountPath
     const query = next.toString()
     return query ? `${loginPath}?${query}` : loginPath
   }, [currentPath, loginPath])
-
-  const logoutHref = React.useMemo(() => {
-    const next = new URLSearchParams()
-    next.set('success', LOGOUT_SUCCESS_MESSAGE)
-    return `${loginPath}?${next.toString()}`
-  }, [loginPath])
 
   if (!user) {
     return (
@@ -75,8 +69,16 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ loginPath, accountPath
           <button
             className="rounded px-2 py-1 text-left hover:bg-accent/10"
             onClick={async () => {
-              await logout()
-              router.push(logoutHref)
+              try {
+                await logout()
+                toast.add({ description: 'You are now signed out.', type: 'success' })
+                router.push(loginPath)
+              } catch (_error) {
+                toast.add({
+                  description: 'There was an error signing out. Please try again.',
+                  type: 'error',
+                })
+              }
             }}
             role="menuitem"
             type="button"

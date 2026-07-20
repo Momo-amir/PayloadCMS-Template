@@ -8,6 +8,7 @@ import Link from 'next/link'
 import type { LoginConfig, User } from '@/payload-types'
 
 import { useAuth } from '@/providers/Auth'
+import { useToast } from '@/providers/Toast'
 import { useTrackClick } from '@/cms/hooks/useAnalytics'
 import { getClientSideURL } from '@/cms/utilities/getURL'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
@@ -16,7 +17,6 @@ import { Input } from '@/website/components/elements/input'
 import { Label } from '@/website/components/elements/label'
 import { FormError } from '@/website/components/auth/FormError'
 import { FormItem } from '@/website/components/auth/FormItem'
-import { Message } from '@/website/components/auth/Message'
 
 type Props = {
   config?: Partial<LoginConfig> | null
@@ -30,6 +30,7 @@ export const AccountDetailsClient: React.FC<Props> = ({ config, title, loginPath
   const { user } = useAuth()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const trackSignIn = useTrackClick('Sign in', 'Account Details Block')
 
   if (user === undefined) {
     return <section className="container my-16 max-w-lg" aria-busy="true" />
@@ -43,14 +44,16 @@ export const AccountDetailsClient: React.FC<Props> = ({ config, title, loginPath
     const signInHref = next.toString() ? `${loginPath}?${next.toString()}` : loginPath
 
     return (
-      <TrackImpression componentName="AccountDetails" componentType="AccountDetails">
+      <TrackImpression componentName="Account Details Block" componentType="account-details">
         <section className="container my-16 max-w-lg">
           <div className="rounded-lg border border-border bg-surface p-8">
             <p className="mb-6 text-primary">
               {label(config?.loggedOutMessage, 'You need to sign in to view your account.')}
             </p>
             <Button asChild variant="default">
-              <Link href={signInHref}>{label(config?.signInLabel, 'Sign in')}</Link>
+              <Link href={signInHref} onClick={() => trackSignIn(signInHref)}>
+                {label(config?.signInLabel, 'Sign in')}
+              </Link>
             </Button>
           </div>
         </section>
@@ -79,6 +82,17 @@ const AccountOverview: React.FC<{
   user: User
 }> = ({ config, user }) => {
   const { logout } = useAuth()
+  const toast = useToast()
+
+  const onLogout = async () => {
+    try {
+      await logout()
+      toast.add({ description: 'You are now signed out.', type: 'success' })
+    } catch (_error) {
+      toast.add({ description: 'There was an error signing out. Please try again.', type: 'error' })
+    }
+  }
+
   return (
     <div className="mb-8 rounded-lg border border-border bg-surface p-8">
       <dl className="flex flex-col gap-4">
@@ -91,7 +105,7 @@ const AccountOverview: React.FC<{
           <dd className="text-primary">{user.email}</dd>
         </div>
       </dl>
-      <Button className="mt-6" onClick={() => logout()} variant="ghost">
+      <Button className="mt-6" onClick={onLogout} variant="ghost">
         {label(config?.logoutLabel, 'Log out')}
       </Button>
     </div>
@@ -103,10 +117,9 @@ const ProfileForm: React.FC<{
   user: User
 }> = ({ config, user }) => {
   const { setUser } = useAuth()
-  const trackSaveProfile = useTrackClick('Save profile', 'AccountDetails')
+  const toast = useToast()
+  const trackSaveProfile = useTrackClick('Save profile', 'Account Details Block')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<null | string>(null)
-  const [success, setSuccess] = useState<null | string>(null)
   const {
     formState: { errors },
     handleSubmit,
@@ -123,8 +136,6 @@ const ProfileForm: React.FC<{
   const onSubmit = handleSubmit(async (data) => {
     trackSaveProfile()
     setLoading(true)
-    setError(null)
-    setSuccess(null)
     const response = await fetch(`${getClientSideURL()}/api/users/${user.id}`, {
       body: JSON.stringify({ name: data.name, email: data.email }),
       credentials: 'include',
@@ -133,12 +144,20 @@ const ProfileForm: React.FC<{
     })
     setLoading(false)
     if (!response.ok) {
-      setError('There was an error updating your profile. Please try again.')
+      toast.add({
+        title: label(config?.profileSectionLabel, 'Profile'),
+        description: 'There was an error updating your profile. Please try again.',
+        type: 'error',
+      })
       return
     }
     const { doc } = await response.json()
     setUser(doc)
-    setSuccess(label(config?.profileSuccessMessage, 'Profile updated.'))
+    toast.add({
+      title: label(config?.profileSectionLabel, 'Profile'),
+      description: label(config?.profileSuccessMessage, 'Profile updated.'),
+      type: 'success',
+    })
   })
 
   return (
@@ -148,7 +167,6 @@ const ProfileForm: React.FC<{
       </h2>
 
       <form onSubmit={onSubmit}>
-        <Message error={error} success={success} />
         <div className="mb-8 flex flex-col gap-8">
           <FormItem>
             <Label htmlFor="account-name">{label(config?.nameLabel, 'Name')}</Label>
@@ -184,10 +202,9 @@ const PasswordForm: React.FC<{
   user: User
 }> = ({ config, user }) => {
   const { login } = useAuth()
-  const trackUpdatePassword = useTrackClick('Update password', 'AccountDetails')
+  const toast = useToast()
+  const trackUpdatePassword = useTrackClick('Update password', 'Account Details Block')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<null | string>(null)
-  const [success, setSuccess] = useState<null | string>(null)
   const {
     formState: { errors },
     handleSubmit,
@@ -200,15 +217,17 @@ const PasswordForm: React.FC<{
   const onSubmit = handleSubmit(async (data) => {
     trackUpdatePassword()
     setLoading(true)
-    setError(null)
-    setSuccess(null)
     try {
       // Payload's update endpoint does not verify the old password, so re-authenticate first.
       // Failed attempts count toward the collection's login lockout.
       await login({ email: user.email, password: data.currentPassword })
     } catch (_error) {
       setLoading(false)
-      setError('The current password is incorrect.')
+      toast.add({
+        title: label(config?.passwordSectionLabel, 'Change password'),
+        description: 'The current password is incorrect.',
+        type: 'error',
+      })
       return
     }
     const response = await fetch(`${getClientSideURL()}/api/users/${user.id}`, {
@@ -219,11 +238,19 @@ const PasswordForm: React.FC<{
     })
     setLoading(false)
     if (!response.ok) {
-      setError('There was an error updating your password. Please try again.')
+      toast.add({
+        title: label(config?.passwordSectionLabel, 'Change password'),
+        description: 'There was an error updating your password. Please try again.',
+        type: 'error',
+      })
       return
     }
     reset()
-    setSuccess(label(config?.passwordSuccessMessage, 'Password updated.'))
+    toast.add({
+      title: label(config?.passwordSectionLabel, 'Change password'),
+      description: label(config?.passwordSuccessMessage, 'Password updated.'),
+      type: 'success',
+    })
   })
 
   return (
@@ -233,7 +260,6 @@ const PasswordForm: React.FC<{
       </h2>
 
       <form onSubmit={onSubmit}>
-        <Message error={error} success={success} />
         <div className="mb-8 flex flex-col gap-8">
           <FormItem>
             <Label htmlFor="account-current-password">
