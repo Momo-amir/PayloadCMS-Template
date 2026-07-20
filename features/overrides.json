@@ -74,10 +74,76 @@
       "requiresCollections": ["media"]
     },
     "userLoginBlock": {
-      "group": "Account"
+      "group": "Account",
+      "ownedFiles": [
+        "src/providers/Auth",
+        "src/website/components/auth",
+        "src/cms/globals/LoginConfig",
+        "src/cms/access/customerOnlyFieldAccess.ts",
+        "src/cms/access/isDocumentOwner.ts"
+      ],
+      "ownedGlobals": ["LoginConfig"],
+      "patches": [
+        {
+          "file": "src/website/layout/Header/Component.client.tsx",
+          "find": "import { AccountLink } from '@/website/components/auth/AccountLink.client'",
+          "replace": "// AccountLink pruned"
+        },
+        {
+          "file": "src/website/layout/Header/Component.client.tsx",
+          "find": "          <AccountLink loginPath={loginPath} accountPath={accountPath} />",
+          "replace": "          {/* AccountLink pruned */}"
+        },
+        {
+          "file": "src/website/layout/Header/Component.tsx",
+          "find": "import {\n  getAccountPagePath,\n  getCustomization,\n  getLoginPagePath,\n  toLogoProps,\n} from '@/cms/utilities/customization'",
+          "replace": "import { getCustomization, toLogoProps } from '@/cms/utilities/customization'"
+        },
+        {
+          "file": "src/website/layout/Header/Component.tsx",
+          "find": "  const loginPath = getLoginPagePath(customization)\n  const accountPath = getAccountPagePath(customization)\n\n  return (\n    <HeaderClient\n      data={headerData}\n      loginPath={loginPath}\n      accountPath={accountPath}\n      logoProps={logoProps}\n    />\n  )",
+          "replace": "  return (\n    <HeaderClient\n      data={headerData}\n      logoProps={logoProps}\n    />\n  )"
+        },
+        {
+          "file": "src/website/layout/Header/Component.client.tsx",
+          "find": "interface HeaderClientProps {\n  data: Header\n  loginPath: string\n  accountPath?: string\n  logoProps?: LogoProps\n}",
+          "replace": "interface HeaderClientProps {\n  data: Header\n  logoProps?: LogoProps\n}"
+        },
+        {
+          "file": "src/website/layout/Header/Component.client.tsx",
+          "find": "export const HeaderClient: React.FC<HeaderClientProps> = ({\n  data,\n  loginPath,\n  accountPath,\n  logoProps,\n}) => {",
+          "replace": "export const HeaderClient: React.FC<HeaderClientProps> = ({\n  data,\n  logoProps,\n}) => {"
+        },
+        {
+          "file": "src/providers/index.tsx",
+          "find": "import { AuthProvider } from './Auth'",
+          "replace": "// AuthProvider pruned"
+        },
+        {
+          "file": "src/providers/index.tsx",
+          "find": "            <AuthProvider>\n              {children}\n            </AuthProvider>",
+          "replace": "            {children}"
+        },
+        {
+          "file": "src/cms/globals/Customization/config.ts",
+          "find": "    {\n      type: 'row',\n      fields: [\n        {\n          type: 'group',\n          label: { en: 'Choose Login page', da: 'Vælg Login-side' },\n          admin: { width: '50%' },\n          fields: [\n            {\n              name: 'loginPage',\n              type: 'relationship',\n              relationTo: 'pages',\n              label: { en: 'Login page', da: 'Login-side' },\n              admin: {\n                description: {\n                  en: 'The page containing the User Login block. Used for login/account redirects.',\n                  da: 'Siden med User Login-blokken. Bruges til login/konto-omdirigeringer.',\n                },\n              },\n            },\n          ],\n        },\n        {\n          type: 'group',\n          label: { en: 'Choose Account page', da: 'Vælg Konto-side' },\n          admin: { width: '50%' },\n          fields: [\n            {\n              name: 'accountPage',\n              type: 'relationship',\n              relationTo: 'pages',\n              label: { en: 'Account page', da: 'Konto-side' },\n              admin: {\n                description: {\n                  en: 'The page containing the Account Details block. Used for account links.',\n                  da: 'Siden med Account Details-blokken. Bruges til konto-links.',\n                },\n              },\n            },\n          ],\n        },\n      ],\n    },\n",
+          "replace": ""
+        },
+        {
+          "file": "src/cms/utilities/customization.ts",
+          "find": "  loginPage?: HomePageRef\n  accountPage?: HomePageRef\n",
+          "replace": ""
+        },
+        {
+          "file": "src/cms/utilities/customization.ts",
+          "find": "export const getLoginPagePath = (customization: CustomizationData | null): string => {\n  const relation = customization?.loginPage\n  if (!relation || typeof relation !== 'object') return '/'\n  const page = relation as Page\n  const breadcrumbs = page.breadcrumbs\n  const lastUrl = breadcrumbs?.[breadcrumbs.length - 1]?.url\n  return lastUrl || (page.slug ? `/${page.slug}` : '/')\n}\n\n// Falls back to the login page (its logged-in panel links onwards) so account links never 404.\nexport const getAccountPagePath = (customization: CustomizationData | null): string => {\n  const relation = customization?.accountPage\n  if (!relation || typeof relation !== 'object') return getLoginPagePath(customization)\n  const page = relation as Page\n  const breadcrumbs = page.breadcrumbs\n  const lastUrl = breadcrumbs?.[breadcrumbs.length - 1]?.url\n  return lastUrl || (page.slug ? `/${page.slug}` : getLoginPagePath(customization))\n}\n\n",
+          "replace": ""
+        }
+      ]
     },
     "accountDetailsBlock": {
-      "group": "Account"
+      "group": "Account",
+      "requiresBlocks": ["userLoginBlock"]
     },
     "richTextBlock": {
       "group": "Layout",

@@ -189,6 +189,9 @@ Command.register(
       for (const f of plan.prunedFolders) console.log(`  - ${f}`);
       console.log(`\nRegistration edits:`);
       for (const e of plan.registrationEdits) console.log(`  - ${e.file}: remove ${e.symbols.join(", ")}`);
+      if (plan.postsInlineSymbols.length) {
+        console.log(`  - src/cms/collections/Posts/index.ts: remove ${plan.postsInlineSymbols.join(", ")}`);
+      }
       if (plan.containerChildEdits.length) {
         console.log(`\nContainer child prunes:`);
         for (const e of plan.containerChildEdits)

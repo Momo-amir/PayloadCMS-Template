@@ -66,6 +66,11 @@
             "items": { "type": "string" },
             "description": "npm plugin packages that inject collections/fields this block depends on."
           },
+          "requiresBlocks": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Other block slugs this block cannot function without (e.g. it imports the other block's shared provider/components). Force-pruned together when the required block is pruned."
+          },
           "onlyInside": {
             "type": "string",
             "description": "Slug of the parent block this is a sub-block of (showOnPage:false)."
@@ -73,6 +78,30 @@
           "inlineOnly": {
             "type": "boolean",
             "description": "Block is registered via a collection's BlocksFeature (rich text) rather than exports.ts."
+          },
+          "ownedFiles": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Repo-relative files/dirs that exist solely to serve this block (shared providers, components). Deleted when the block is pruned. Do NOT list shared files used by other surviving features."
+          },
+          "ownedGlobals": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Exported symbol names of Payload globals that exist solely for this block (e.g. LoginConfig). Removed from payload.config.ts's `globals` array + import when the block is pruned."
+          },
+          "patches": {
+            "type": "array",
+            "description": "Find/replace edits applied to SHARED files when this block is pruned (e.g. remove its unconditional render from the Header).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": { "type": "string" },
+                "find": { "type": "string" },
+                "replace": { "type": "string" }
+              },
+              "required": ["file", "find", "replace"],
+              "additionalProperties": false
+            }
           },
           "modes": {
             "type": "object",

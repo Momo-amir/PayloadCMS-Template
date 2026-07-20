@@ -206,6 +206,56 @@ export function removeImportByModuleContains(sf: SourceFile, needle: string): bo
   return changed
 }
 
+/**
+ * Remove a named member from every union type in a source file (e.g. `Foo | Bar | Baz` -> `Foo | Baz`
+ * when removing `Bar`). Used to clean the RichText hub's `NodeTypes` union, which references each
+ * inline block's Props type independently of the value import removed by removeImportByModuleContains
+ * — that import removal alone leaves the type reference dangling. Returns true if anything changed.
+ */
+export function removeUnionTypeMember(sf: SourceFile, typeName: string): boolean {
+  let changed = false
+  for (const union of sf.getDescendantsOfKind(SyntaxKind.UnionType)) {
+    if (union.wasForgotten()) continue
+    const members = union.getTypeNodes()
+    const remaining = members.filter((m) => m.getText() !== typeName)
+    if (remaining.length === members.length) continue
+    // TS does not represent a single-member union as a UnionType node, so a union reduced to one
+    // member here becomes a bare type reference next call — replace with `never` when the whole
+    // union collapses to nothing so a lone final member (handled below) has something to land on.
+    union.replaceWithText(remaining.length ? remaining.map((m) => m.getText()).join(' | ') : 'never')
+    changed = true
+  }
+
+  // A union already reduced to its last member is a plain TypeReference, not a UnionType node (TS
+  // doesn't wrap single-member unions) — the loop above never sees it. Replace that lone reference
+  // with `never` directly wherever it appears as its own type-argument/annotation.
+  for (const ref of sf.getDescendantsOfKind(SyntaxKind.TypeReference)) {
+    if (ref.wasForgotten()) continue
+    if (ref.getTypeName().getText() !== typeName) continue
+    if (ref.getParent()?.getKind() === SyntaxKind.UnionType) continue
+    ref.replaceWithText('never')
+    changed = true
+  }
+
+  // Remove the (possibly aliased) type-only named import if no longer referenced anywhere.
+  const stillUsed = sf
+    .getDescendantsOfKind(SyntaxKind.TypeReference)
+    .some((ref) => ref.getTypeName().getText() === typeName)
+  if (!stillUsed) {
+    for (const imp of sf.getImportDeclarations()) {
+      const named = imp.getNamedImports().find((n) => (n.getAliasNode()?.getText() ?? n.getName()) === typeName)
+      if (named) {
+        named.remove()
+        changed = true
+        if (imp.getNamedImports().length === 0 && !imp.getDefaultImport() && !imp.getNamespaceImport()) {
+          imp.remove()
+        }
+      }
+    }
+  }
+  return changed
+}
+
 export interface PruneReport {
   file: string
   removedSymbols: string[]

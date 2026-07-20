@@ -2,7 +2,22 @@ import Path from 'path'
 import fs from 'fs'
 import { Project, SourceFile } from 'ts-morph'
 
-const IGNORE_LEAVES = ['payload-types.ts']
+// payload.config.ts is a hub file that imports every collection/global/block (via exports.ts) to
+// register them with Payload. A block reading its type/value (e.g. `configPromise` for a server-side
+// query) does NOT depend on every other block's source — walking into it would transitively pull the
+// entire block universe into any surviving block's closure, defeating pruning. Treat it as a leaf,
+// same as payload-types.ts.
+const IGNORE_LEAVES = ['payload-types.ts', 'payload.config.ts']
+
+// RichText/index.tsx is a rendering hub: it hardcodes a component import + converter-map entry for
+// every inline block (mediaBlock/code/columns/banner/cta) so it can render whatever block type shows
+// up in a document's rich-text content. A block that imports RichText to render ITS OWN rich-text
+// field does not depend on every other inline block's source — that direction is backwards, and
+// walking into the hub would falsely resurrect all five inline blocks whenever any one of them (or
+// anything that renders rich text) survives. generate.ts already keeps this hub in sync with pruned
+// inline blocks via a dedicated codemod step (see RICHTEXT_INLINE_BLOCKS), so the closure only needs
+// to know the hub file itself is reachable — not walk its outgoing edges.
+const STOP_EXPANDING = ['website/components/RichText/index.tsx']
 
 function resolveAlias(root: string, spec: string, fromFile: string): string[] {
   let base: string | null = null
@@ -47,6 +62,8 @@ export function fileClosure(root: string, entryFiles: string[], project?: Projec
     if (IGNORE_LEAVES.some((l) => file.endsWith(l))) continue
     if (!fs.existsSync(file)) continue
     seen.add(file)
+
+    if (STOP_EXPANDING.some((l) => file.endsWith(l))) continue
 
     let sf: SourceFile
     try {

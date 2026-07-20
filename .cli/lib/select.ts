@@ -124,6 +124,7 @@ export async function selectFeatures(root: string): Promise<Selection | null> {
             b.children.length ? `container` : null,
             b.showOnPage ? null : 'sub-block',
             b.override.requiresCollections?.length ? `needs ${b.override.requiresCollections.join('+')}` : null,
+            b.override.requiresBlocks?.length ? `needs ${b.override.requiresBlocks.join('+')} block` : null,
           ].filter(Boolean)
           return {
             title: `[${group}] ${b.slug}${tags.length ? ` (${tags.join(', ')})` : ''}`,

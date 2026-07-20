@@ -13,17 +13,20 @@ import {
   removeCallExpressionMember,
   removeImportByModuleContains,
   removeObjectPropertyByName,
+  removeUnionTypeMember,
 } from './codemod'
 
 // Inline blocks the RichText hub (src/website/components/RichText/index.tsx) hardcodes a component
-// import + converter-map entry for. When one is pruned, both must be cleaned or the build fails on a
-// dangling import of the deleted folder. Keyed by block slug → { folder, converter-map key }.
-const RICHTEXT_INLINE_BLOCKS: Record<string, { folder: string; converterKey: string }> = {
-  mediaBlock: { folder: 'Media', converterKey: 'mediaBlock' },
-  codeBlock: { folder: 'Code', converterKey: 'code' },
-  columnsBlock: { folder: 'Columns', converterKey: 'columns' },
-  bannerBlock: { folder: 'Banner', converterKey: 'banner' },
-  callToActionBlock: { folder: 'CallToAction', converterKey: 'cta' },
+// import + converter-map entry for, PLUS a Props-type union member (`NodeTypes`) that references the
+// same block independently of the value import. All three must be cleaned or the build breaks: a
+// dangling import of the deleted folder, or a dangling type reference in the union. Keyed by block
+// slug → { folder, converter-map key, NodeTypes union member name }.
+const RICHTEXT_INLINE_BLOCKS: Record<string, { folder: string; converterKey: string; propsType: string }> = {
+  mediaBlock: { folder: 'Media', converterKey: 'mediaBlock', propsType: 'MediaBlockProps' },
+  codeBlock: { folder: 'Code', converterKey: 'code', propsType: 'CodeBlockProps' },
+  columnsBlock: { folder: 'Columns', converterKey: 'columns', propsType: 'ColumnsBlockProps' },
+  bannerBlock: { folder: 'Banner', converterKey: 'banner', propsType: 'BannerBlockProps' },
+  callToActionBlock: { folder: 'CallToAction', converterKey: 'cta', propsType: 'CTABlockProps' },
 }
 
 export interface GenerateOptions {
@@ -75,6 +78,13 @@ export interface RelationTrimEdit {
   removeCollectionSlugs: string[]
 }
 
+export interface BlockPrune {
+  slug: string
+  ownedFiles: string[] // repo-relative files/dirs to delete
+  patches: { file: string; find: string; replace: string }[] // shared-file find/replace edits
+  ownedGlobals: string[] // symbols to remove from payload.config.ts's `globals` array + import
+}
+
 export interface GeneratePlan {
   keptBlocks: string[]
   prunedBlocks: string[]
@@ -85,6 +95,8 @@ export interface GeneratePlan {
   relationTrimEdits: RelationTrimEdit[]
   prunedHeros: HeroPrune[]
   prunedPlugins: PluginPrune[]
+  prunedBlockOwnership: BlockPrune[] // ownedFiles/patches for pruned blocks that declare them
+  postsInlineSymbols: string[] // exportConst symbols to remove from Posts' own BlocksFeature list
   warnings: string[]
 }
 
@@ -188,6 +200,23 @@ function planPrune(
     }
   }
 
+  // A block that requires another block (e.g. accountDetailsBlock ↔ userLoginBlock's AuthProvider)
+  // is force-pruned when that required block is not selected — mirrors the plugin→relatedBlocks
+  // cascade above, but keyed block→block. Loop to a fixed point in case requirements chain.
+  let requiresBlocksChanged = true
+  while (requiresBlocksChanged) {
+    requiresBlocksChanged = false
+    for (const b of d.blocks) {
+      if (forcePrune.has(b.slug)) continue
+      const needs = b.override.requiresBlocks ?? []
+      if (needs.some((need) => !keepSlugs.has(need) || forcePrune.has(need))) {
+        keepSlugs.delete(b.slug)
+        forcePrune.add(b.slug)
+        requiresBlocksChanged = true
+      }
+    }
+  }
+
   // Survival graph: a block survives if selected OR pulled in by a surviving block through a
   // NON-container dependency. Container→child edges are prunable (deselecting a child removes it
   // from the container), so they do NOT force survival.
@@ -231,6 +260,39 @@ function planPrune(
       warnings.push(`Block "${b.slug}" needs plugin "${plugin}" — keep it in package.json + plugins.`)
     }
   }
+
+  // Warn for blocks force-pruned because a block they require was pruned.
+  for (const b of pruned) {
+    const needs = (b.override.requiresBlocks ?? []).filter((need) => !survives.has(need))
+    if (needs.length) {
+      warnings.push(`Block "${b.slug}" removed — requires pruned block(s): ${needs.join(', ')}.`)
+    }
+  }
+
+  // Owned files/patches for pruned blocks that declare them (e.g. userLoginBlock's shared provider).
+  const prunedBlockOwnership: BlockPrune[] = pruned
+    .filter(
+      (b) =>
+        (b.override.ownedFiles?.length ?? 0) > 0 ||
+        (b.override.patches?.length ?? 0) > 0 ||
+        (b.override.ownedGlobals?.length ?? 0) > 0,
+    )
+    .map((b) => ({
+      slug: b.slug,
+      ownedFiles: b.override.ownedFiles ?? [],
+      patches: b.override.patches ?? [],
+      ownedGlobals: b.override.ownedGlobals ?? [],
+    }))
+
+  // Posts' own BlocksFeature list directly imports some RICHTEXT_INLINE_BLOCKS slugs (mediaBlock,
+  // columnsBlock) that are ALSO page-builder-registered via exports.ts. Discovery records only the
+  // exports.ts registration for these (registeredIn: 'exports' wins), so the exports.ts removal above
+  // never touches Posts/index.ts for them — compute that edit here using the real exportConst symbol.
+  // Blocks already registeredIn 'blocksFeature' (bannerBlock, codeBlock) are excluded — the
+  // registrationEdits loop above already targets Posts/index.ts for those.
+  const postsInlineSymbols = pruned
+    .filter((b) => b.slug in RICHTEXT_INLINE_BLOCKS && b.registeredIn !== 'blocksFeature')
+    .map((b) => b.exportConst)
 
   // Container child edits: for each KEPT container, remove children that did not survive.
   const containerChildEdits: ContainerChildEdit[] = []
@@ -337,6 +399,8 @@ function planPrune(
     relationTrimEdits,
     prunedHeros,
     prunedPlugins,
+    prunedBlockOwnership,
+    postsInlineSymbols,
     warnings,
   }
 }
@@ -406,9 +470,24 @@ export function generate(opts: GenerateOptions): GeneratePlan {
     })),
   )
 
-  // 3b. Clean the RichText hub for pruned inline blocks. RichText/index.tsx hardcodes component
-  //     imports + a converter map for banner/media/code/cta/columns; a pruned one leaves a dangling
-  //     import of a deleted folder (build break). Remove that block's component import + map entry.
+  // 3a. Posts' own BlocksFeature list directly imports the same RICHTEXT_INLINE_BLOCKS slugs a
+  //     page-builder-registered block also uses (e.g. mediaBlock, columnsBlock). Discovery only
+  //     records ONE registration site per slug (exports.ts wins when a block is dual-registered), so
+  //     registrationEdits above never targets Posts/index.ts for these — leaving a dangling import/
+  //     array entry there when such a block is pruned. Clean it the same way as exports.ts.
+  if (plan.postsInlineSymbols.length) {
+    applyRemovals(outProject, [
+      {
+        absPath: Path.resolve(opts.outDir, 'src/cms/collections/Posts/index.ts'),
+        symbols: plan.postsInlineSymbols,
+      },
+    ])
+  }
+
+  // 3b. Clean the RichText hub for pruned inline blocks. RichText/index.tsx hardcodes a component
+  //     import, a converter-map entry, and a NodeTypes union member for banner/media/code/cta/columns;
+  //     a pruned one leaves a dangling import of a deleted folder AND a dangling type reference in the
+  //     union (two independent edges — the union member isn't reachable from the value import).
   const richTextFile = Path.resolve(opts.outDir, 'src/website/components/RichText/index.tsx')
   const rtSf = fs.existsSync(richTextFile) ? outProject.addSourceFileAtPathIfExists(richTextFile) : null
   if (rtSf) {
@@ -418,8 +497,38 @@ export function generate(opts: GenerateOptions): GeneratePlan {
       if (!rt) continue
       if (removeImportByModuleContains(rtSf, `blocks/${rt.folder}/Component`)) rtChanged = true
       if (removeObjectPropertyByName(rtSf, rt.converterKey)) rtChanged = true
+      if (removeUnionTypeMember(rtSf, rt.propsType)) rtChanged = true
     }
     if (rtChanged) rtSf.saveSync()
+  }
+
+  // 3c. Apply per-block ownedFiles/patches/ownedGlobals for pruned blocks (e.g. userLoginBlock's
+  //     shared Auth provider + Header/providers wiring + its LoginConfig global). `applyRemovals`'s
+  //     array-member removal is array-agnostic, so it works the same against payload.config.ts's
+  //     `globals` array as it does against `collections` in step 5.
+  for (const b of plan.prunedBlockOwnership) {
+    for (const owned of b.ownedFiles) {
+      fs.rmSync(Path.resolve(opts.outDir, owned), { recursive: true, force: true })
+    }
+  }
+  for (const b of plan.prunedBlockOwnership) {
+    for (const patch of b.patches) {
+      const abs = Path.resolve(opts.outDir, patch.file)
+      if (!fs.existsSync(abs)) continue
+      const text = fs.readFileSync(abs, 'utf8')
+      if (text.includes(patch.find)) {
+        fs.writeFileSync(abs, text.split(patch.find).join(patch.replace))
+      }
+    }
+  }
+  const prunedGlobalSymbols = plan.prunedBlockOwnership.flatMap((b) => b.ownedGlobals)
+  if (prunedGlobalSymbols.length) {
+    applyRemovals(outProject, [
+      {
+        absPath: Path.resolve(opts.outDir, 'src/payload.config.ts'),
+        symbols: prunedGlobalSymbols,
+      },
+    ])
   }
 
   // 4. Remove deselected children from KEPT container configs (renderer is data-driven, so it follows).

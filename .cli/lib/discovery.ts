@@ -8,8 +8,12 @@ export interface BlockOverride {
   description?: string
   requiresCollections?: string[]
   requiresPlugins?: string[]
+  requiresBlocks?: string[] // block slugs this block cannot function without (force-pruned together)
   onlyInside?: string
   inlineOnly?: boolean
+  ownedFiles?: string[] // repo-relative files/dirs that exist solely for this block, deleted when pruned
+  patches?: CollectionPatch[] // shared-file find/replace edits applied when this block is pruned
+  ownedGlobals?: string[] // exported symbols to remove from payload.config.ts's `globals` array + import
 }
 
 export interface CollectionPatch {
