@@ -5,6 +5,7 @@ import { Media } from '@/website/components/Media'
 import { cn } from '@/cms/utilities/ui'
 import { TrackImpression } from '@/cms/components/Analytics/TrackImpression'
 import RichText from '@/website/components/RichText'
+import { RichTextBlock as RichTextBlockComponent } from '@/website/blocks/RichText/Component'
 import { ScrollRevealGrid } from './Component.client'
 
 const GALLERY_STAGGER_MAX_INDEX = 8
@@ -12,11 +13,11 @@ const GALLERY_STAGGER_MAX_INDEX = 8
 const galleryTileStyle = (index: number): CSSProperties =>
   ({ '--gallery-stagger-index': index % GALLERY_STAGGER_MAX_INDEX }) as CSSProperties
 
-type GalleryImage = NonNullable<MediaGalleryBlockType['images']>[number]
+type GalleryItem = NonNullable<MediaGalleryBlockType['images']>[number]
 type Props = MediaGalleryBlockType
 
 export const MediaGalleryBlock: React.FC<Props> = ({ introContent, layout, images }) => {
-  const safeImages: GalleryImage[] = images ?? []
+  const safeImages: GalleryItem[] = images ?? []
   const isBento = layout === 'bento'
 
   return (
@@ -40,6 +41,7 @@ export const MediaGalleryBlock: React.FC<Props> = ({ introContent, layout, image
             >
               {safeImages.map((image, i) => {
                 const isFeatured = isBento && image.featured
+                const isText = image.type === 'text'
                 return (
                   <div
                     key={image.id ?? i}
@@ -49,19 +51,30 @@ export const MediaGalleryBlock: React.FC<Props> = ({ introContent, layout, image
                       isBento
                         ? cn('aspect-square', isFeatured && 'col-span-2 row-span-2')
                         : 'mb-4 break-inside-avoid',
+                      isText && 'flex items-center bg-surface p-6',
                     )}
                   >
-                    <Media
-                      resource={image.media}
-                      fill={isBento}
-                      imgClassName={isBento ? 'object-cover' : 'w-full h-auto'}
-                      sizes="medium"
-                      priority={i === 0}
-                    />
-                    {image.caption && (
-                      <div className="absolute inset-0 flex items-end bg-black/0 p-4 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100">
-                        <span className="text-sm text-white">{image.caption}</span>
-                      </div>
+                    {isText ? (
+                      <RichTextBlockComponent
+                        richText={image.richText ?? undefined}
+                        links={image.links ?? undefined}
+                        enableGutter={false}
+                      />
+                    ) : (
+                      <>
+                        <Media
+                          resource={image.media}
+                          fill={isBento}
+                          imgClassName={isBento ? 'object-cover' : 'w-full h-auto'}
+                          sizes="medium"
+                          priority={i === 0}
+                        />
+                        {image.caption && (
+                          <div className="absolute inset-0 flex items-end bg-black/0 p-4 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100">
+                            <span className="text-sm text-white">{image.caption}</span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )
