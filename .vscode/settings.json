@@ -68,5 +68,6 @@
     "**/node_modules": false,
     "**/next-sitemap.config.cjs": false
   },
-  "explorerExclude.backup": {}
+  "explorerExclude.backup": {},
+  "explorerExcludeManager.backup": {}
 }

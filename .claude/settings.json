@@ -33,7 +33,8 @@
       "Bash(sed -n '/Generating site/,/Cleaning generated/p' /private/tmp/claude-501/-Users-momo-Repos-kollab-payload-template/14a10396-4826-4a9c-a177-9c7d1419f980/tasks/bh4lm9p3j.output 2>/dev/null | grep -vE \"^warning|Workspaces\" | grep -iE \"Kept blocks|Pruned blocks|PeopleArchive|Pruned coll|Warnings|dangle|people\" )",
       "Bash(git add *)",
       "Bash(git tag *)",
-      "Bash(bash /private/tmp/claude-501/-Users-momo-Repos-kollab-payload-template/14a10396-4826-4a9c-a177-9c7d1419f980/scratchpad/run-real.sh)"
+      "Bash(bash /private/tmp/claude-501/-Users-momo-Repos-kollab-payload-template/14a10396-4826-4a9c-a177-9c7d1419f980/scratchpad/run-real.sh)",
+      "Bash(xargs -I{} sh -c 'echo \"--- {} ---\"; cat -n {}')"
     ],
     "deny": [
       "Bash(rm -rf *)",
