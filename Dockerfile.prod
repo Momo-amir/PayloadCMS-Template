@@ -38,6 +38,12 @@ RUN chown nextjs:nodejs /app
 RUN mkdir -p .next
 RUN chown -R nextjs:nodejs .next
 
+# nextjs's home dir is otherwise never created, leaving yarn with no writable cache folder
+RUN mkdir -p /home/nextjs/.cache/yarn
+RUN chown -R nextjs:nodejs /home/nextjs
+
+USER nextjs
+
 # Copy files from the builder stage to the runner stage - only what is needed
 # public files needed at runtime to access assets and media in the public folder - yes
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
@@ -47,10 +53,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # Install production dependencies needed for Payload CLI in runtime
 # Copy manifest files and install only prod deps (for payload, cross-env, etc.)
-# Run as root: the nextjs user has no writable yarn cache folder
 COPY package.json yarn.lock ./
 RUN yarn install --production --frozen-lockfile
-RUN chown -R nextjs:nodejs node_modules
 
 # Copy files needed by Payload CLI at runtime
 COPY tsconfig.json ./tsconfig.json
@@ -63,7 +67,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/src ./src
 COPY --chown=nextjs:nodejs docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-USER nextjs
+# Give nextjs user ownership of the entire app directory for runtime build
+#RUN chown -R nextjs:nodejs /app
 
 EXPOSE 8890
 

@@ -8,8 +8,6 @@ import { PayloadAdminBar } from '@payloadcms/admin-bar'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import './index.scss'
-
 import { getClientSideURL } from '@/cms/utilities/getURL'
 import localization from '@/i18n/localization'
 import { useTranslations } from 'next-intl'
@@ -62,7 +60,7 @@ export const AdminBar: React.FC<{
 
   return (
     <div
-      className={cn(baseClass, 'py-2 bg-black text-white', {
+      className={cn(baseClass, 'py-2 bg-black text-white max-md:hidden', {
         block: show,
         hidden: !show,
       })}
